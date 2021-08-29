@@ -1,5 +1,9 @@
 """
-utils module of the pymetacode package.
+Auxiliary functionality used by other modules of the pymetacode package.
+
+To avoid circular dependencies, this module does *not* depend on any other
+modules of the pymetacode package, but it can be imported into every other
+module.
 """
 import collections
 import contextlib
@@ -13,15 +17,21 @@ import jinja2
 
 def ensure_file_exists(name=''):
     """
-    One sentence (on one line) describing the function.
+    Create an (empty) file if it not exists already.
 
-    More description comes here...
+    This is similar to the "touch" command from unixoid operating systems,
+    although it does *not* change the timestamp of the file.
 
     Parameters
     ----------
     name : :class:`str`
-        Short description
+        Name of the file
 
+
+    Raises
+    ------
+    ValueError
+        Raised if no filename is given.
 
     """
     if not name:
@@ -32,23 +42,32 @@ def ensure_file_exists(name=''):
 
 def get_data_from_pkg_resources(name='', directory='templates'):
     """
-    One sentence (on one line) describing the function.
+    Obtain contents from a non-code file stored within the package.
 
-    More description comes here...
+    Rather than manually playing around with paths relative to the package
+    root directory, contents non-code files need to be obtained in a way
+    that works with different kinds of package installation.
+
+    Note that in Python, only files within the package, *i.e.* within the
+    directory where all the modules are located, can be accessed, not files
+    that reside on the root directory of the package.
 
     Parameters
     ----------
     name : :class:`str`
-        Short description
+        Name of the file whose contents should be accessed.
 
     directory : :class:`str`
-        Short description
+        Directory within the package where the files are located.
+
+        Default: "templates"
 
     Returns
     -------
-    contents : :class:`str`
-        Short description
+    contents : :class:`bytes`
+        Bytes array containing the contents of the non-code file.
 
+        To convert this into a string, use the :func:`decode` function.
 
     """
     if not name:
@@ -169,14 +188,33 @@ class ToDictMixin:
 @contextlib.contextmanager
 def change_working_dir(path=''):
     """
-    One sentence (on one line) describing the function.
+    Context manager for temporarily changing the working directory.
 
-    More description comes here...
+    Sometimes it is necessary to temporarily change the working directory,
+    but one would like to ensure that the directory is reverted even in case
+    an exception is raised.
+
+    Due to its nature as a context manager, this function can be used with a
+    ``with`` statement. See below for an example.
+
 
     Parameters
     ----------
     path : :class:`str`
-        Short description
+        Path the current working directory should be changed to.
+
+
+    Examples
+    --------
+
+    To temporarily change the working directory:
+
+    .. code-block::
+
+        with change_working_dir(os.path.join('some', 'path')):
+            # Do something that may raise an exception
+
+    This can come in quite handy in case of tests.
 
     """
     oldpwd = os.getcwd()
@@ -189,19 +227,20 @@ def change_working_dir(path=''):
 
 def camel_case_to_underscore(name=''):
     """
-    One sentence (on one line) describing the function.
+    Change string from camel case to using underscores.
 
-    More description comes here...
+    According to PEP8, class names should follow camel case convention,
+    whereas methods, functions, and variables should use underscores.
 
     Parameters
     ----------
     name : :class:`str`
-        Short description
+        Name to be changed from camel case to using underscores.
 
     Returns
     -------
     name : :class:`str`
-        Short description
+        Name changed from camel case to using underscores.
 
     """
     name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
@@ -210,19 +249,20 @@ def camel_case_to_underscore(name=''):
 
 def underscore_to_camel_case(name=''):
     """
-    One sentence (on one line) describing the function.
+    Change string from underscores to using camel case.
 
-    More description comes here...
+    According to PEP8, class names should follow camel case convention,
+    whereas methods, functions, and variables should use underscores.
 
     Parameters
     ----------
     name : :class:`str`
-        Short description
+        Name to be changed from underscores to using camel case.
 
     Returns
     -------
     name : :class:`str`
-        Short description
+        Name changed from underscores to using camel case.
 
     """
     name = ''.join(char.capitalize() for char in name.split('_'))
@@ -231,41 +271,54 @@ def underscore_to_camel_case(name=''):
 
 class Template:
     """
-    One sentence (on one line) describing the class.
+    Wrapper for using the template engine (Jinja2).
 
-    More description comes here...
+    Dealing with templates requires a number of settings to be made, namely
+    the source of the template, its name, the context (*i.e.*,
+    the dictionary containing the variables to be replaced within the
+    template), and the destination the rendered template should be output to.
 
 
     Attributes
     ----------
     package_path : :class:`str`
-        Short description
+        Location within the package where the template resides.
 
     template : :class:`str`
-        Short description
+        Name of the template to be used.
+
+        Relative to the :attr:`package_path`.
 
     context : :class:`dict`
-        Short description
+        Key-value store of variables to be replaced within the template.
 
     destination : :class:`str`
-        Short description
-
-    Raises
-    ------
-    exception
-        Short description when and why raised
+        Name of the file the rendered template should be output to.
 
 
     Examples
     --------
 
-    It is always nice to give some examples how to use the class. Best to do
-    that with code examples:
+    Probably the best way to use the class is to instantiate an object
+    providing all necessary parameters:
 
     .. code-block::
 
-        template = Template()
-        ...
+        template = Template(
+            package_path='some/relative/path/to/the/template',
+            template='name_of_the_template',
+            context=dict(),
+            destination='name_of_the_file_to_output_rendered_template_to',
+        )
+
+    Afterwards, the respective command can be issued on the template,
+    depending on whether the rendered template should be written or appended
+    to the destination:
+
+    .. code-block::
+
+        template.create()
+        template.append()
 
     """
 
@@ -278,6 +331,18 @@ class Template:
 
     @property
     def environment(self):
+        """
+        Environment used by the template engine.
+
+        Read-only property that gets automatically set from the class
+        properties.
+
+        Returns
+        -------
+        env : :class:`jinja2.Environment`
+            Environment settings for the template engine.
+
+        """
         env = jinja2.Environment(
             loader=jinja2.PackageLoader(__package__,
                                         package_path=self.package_path),
@@ -287,24 +352,48 @@ class Template:
         return env
 
     def render(self):
+        """
+        Render the template.
+
+        Returns
+        -------
+        content : :class:`str`
+            Rendered template.
+        """
         self._add_rst_markup_to_context()
         template = self.environment.get_template(self.template)
         return template.render(self.context)
 
     def create(self):
+        """
+        Write rendered template to a file.
+
+        Note: If you need to *append* the rendered template to an existing
+        file, you should use :meth:`append` instead.
+
+        """
         with open(self.destination, 'w+') as file:
             file.write(self.render())
 
     def append(self):
+        """
+        Append rendered template to a file.
+
+        Note: If you need to *output* the rendered template to a file,
+        removing all previous content of this file, you should use
+        :meth:`create` instead.
+
+        """
         with open(self.destination, 'a') as file:
             file.write(self.render())
 
     def _add_rst_markup_to_context(self):
         if 'package' in self.context and 'name' in self.context['package']:
+            length = len(self.context['package']['name'])
             rst_markup = {
-                'header_hash': len(self.context['package']['name']) * '#',
-                'header_equal': len(self.context['package']['name']) * '=',
-                'header_minus': len(self.context['package']['name']) * '-',
-                'header_tilde': len(self.context['package']['name']) * '~',
+                'header_hash': length * '#',
+                'header_equal': length * '=',
+                'header_minus': length * '-',
+                'header_tilde': length * '~',
             }
             self.context['rst_markup'] = rst_markup

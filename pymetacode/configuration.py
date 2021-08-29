@@ -1,5 +1,15 @@
 """
-configuration module of the pymetacode package.
+Configuration handling of the pymetacode package.
+
+Key to the rather simplistic and user-friendly command-line interface (CLI)
+of the pymetacode package is a configuration stored mostly within the
+package root directory and read by all the code generators residing in the
+:mod:`pymetacode.coding` module.
+
+The :class:`Configuration` class provides the necessary functionality for
+creating a default configuration file as well as for reading the
+configuration from a file for use with the code generators.
+
 """
 import datetime
 
@@ -10,35 +20,44 @@ import pymetacode.utils as utils
 
 class Configuration(utils.ToDictMixin):
     """
-    One sentence (on one line) describing the class.
+    Configuration used for generating code.
 
-    More description comes here...
+    A necessary prerequisite for all the code generators is a minimal set of
+    configuration values that are persistently stored in a file within the
+    project root directory and read from there accordingly.
+
+    The class provides the unique place to structure this configuration.
 
 
     Attributes
     ----------
-    attr : :class:`None`
-        Short description
+    package : :class:`dict`
+        Configuration on the package level
+
+    documentation : :class:`dict`
+        Configuration regarding the documentation of the package
 
     Raises
     ------
-    exception
-        Short description when and why raised
+    ValueError
+        Raised if no dict is provided.
 
 
     Examples
     --------
 
-    It is always nice to give some examples how to use the class. Best to do
-    that with code examples:
+    The following examples demonstrate how to use the CLI from the terminal,
+    rather than how to use this class programmatically.
 
-    .. code-block::
+    The first step when creating a new package is to write a config file
+    that can be filled with sensible content afterwards:
 
-        obj = Configuration()
-        ...
+    .. code-block:: bash
 
+        pymeta write config to mypackage_config.yaml
 
-    .. versionadded:: 0.1
+    This would write the default configuration to "mypackage_config.yaml".
+    Change all values in this file according to your needs.
 
     """
     def __init__(self):
@@ -74,7 +93,7 @@ class Configuration(utils.ToDictMixin):
 
         Raises
         ------
-        aspecd.tasks.MissingDictError
+        ValueError
             Raised if no dict is provided.
 
         """
@@ -117,4 +136,3 @@ class Configuration(utils.ToDictMixin):
         with open(name, 'r') as file:
             dict_ = yaml.load(file, Loader=yaml.SafeLoader)
         self.from_dict(dict_)
-

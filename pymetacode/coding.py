@@ -1,5 +1,27 @@
 """
-coding module of the pymetacode package.
+The actual code generators of the pymetacode package.
+
+Currently, there are four types of code generators:
+
+* :class:`pymetacode.coding.PackageCreator`
+
+  Generates the basic package structure.
+
+* :class:`pymetacode.coding.ModuleCreator`
+
+  Adds a module to an existing package.
+
+* :class:`pymetacode.coding.ClassCreator`
+
+  Adds a class to an existing module, including a test class.
+
+* :class:`pymetacode.coding.FunctionCreator`
+
+  Adds a function to an existing module, including a test class.
+
+Each of these generators uses templates in the ``templates`` subdirectory of
+the pymetacode package.
+
 """
 import os
 import shutil
@@ -11,33 +33,65 @@ from pymetacode import configuration as configuration, utils as utils
 
 class PackageCreator:
     """
-    One sentence (on one line) describing the class.
+    Generate the basic package structure.
 
-    More description comes here...
+    The basic package structure follows Python best practices and has been
+    used in a number of packages by the author of this package. In short,
+    the modules reside in a subdirectory with the same name as the package,
+    and parallel to that are directories for tests and documentation (
+    "tests", "docs").
+
+    Furthermore, a "setup.py" file is created to have the package
+    installable using pip, and a license ("LICENSE") and readme ("README.rst")
+    file are present.
+
+    The package version is stored in the file "VERSION", a ".gitignore" file
+    exists as well in the package root, and depending on the configuration,
+    a git repository is initialised within the package root directory. In
+    this case, a pre-commit hook is installed as well incrementing the
+    version number for each commit, using the file "incrementVersion.sh"
+    from the "bin" directory.
 
 
     Attributes
     ----------
-    attr : :class:`None`
-        Short description
+    name : :class:`str`
+        Name of the package to be created.
 
-    Raises
-    ------
-    exception
-        Short description when and why raised
+        Will usually be read from the configuration.
+
+    subdirectories : :class:`list`
+        Directories and subdirectories created within the package root.
+
+    configuration : :class:`pymetacode.configuration.Configuration`
+        Configuration as usually read from the configuration file.
+
+    documentation : :class:`dict`
+        Settings for creating the documentation.
 
 
     Examples
     --------
 
-    It is always nice to give some examples how to use the class. Best to do
-    that with code examples:
+    The following examples demonstrate how to use the CLI from the terminal,
+    rather than how to use this class programmatically.
 
-    .. code-block::
+    The first step when creating a new package is to write a config file
+    that can be filled with sensible content afterwards:
 
-        obj = PackageCreator()
-        ...
+    .. code-block:: bash
 
+        pymeta write config to mypackage_config.yaml
+
+    This would write the default configuration to "mypackage_config.yaml".
+    Change all values in this file according to your needs. Afterwards,
+    you can create the basic structure of your new project:
+
+    .. code-block:: bash
+
+        pymeta create package from mypackage_config.yaml
+
+    Now, you have a complete package that is installable and deployable.
 
     """
 
@@ -54,6 +108,17 @@ class PackageCreator:
         }
 
     def create(self, name=''):
+        """
+        Generate the basic package structure.
+
+        Parameters
+        ----------
+        name : :class:`str`
+            Name of the package to create.
+
+            If provided, this will set the :attr:`name` attribute of the class.
+
+        """
         if name:
             self.name = name
         elif not self.name:
@@ -199,33 +264,46 @@ class PackageCreator:
 
 class ModuleCreator:
     """
-    One sentence (on one line) describing the class.
+    Add a module to an existing package.
 
-    More description comes here...
+    Actually, adding a module consists of creating three files: the module
+    itself, an accompanying test module, and the API documentation file. The
+    latter gets added to the API toctree directive as well.
 
 
     Attributes
     ----------
-    attr : :class:`None`
-        Short description
+    name : :class:`str`
+        Name of the module to be created.
+
+    configuration : :class:`pymetacode.configuration.Configuration`
+        Configuration as usually read from the configuration file.
 
     Raises
     ------
-    exception
-        Short description when and why raised
+    ValueError
+        Raised if no name is provided
 
 
     Examples
     --------
 
-    It is always nice to give some examples how to use the class. Best to do
-    that with code examples:
+    The following examples demonstrate how to use the CLI from the terminal,
+    rather than how to use this class programmatically.
 
-    .. code-block::
+    Prerequisite for using the CLI is to have the package configuration
+    stored within the package root directory in the file
+    ".project_configuration.yaml". This will be the case if the package has
+    been created by the CLI as well. Furthermore, all following commands
+    need to be issued from *within* the root directory of your package.
 
-        obj = ModuleCreator()
-        ...
+    .. code-block:: bash
 
+        pymeta add module mymodule
+
+    This will add a module "mymodule" to your package, together with a
+    "test_mymodule" module in the "tests" subdirectory. And even better,
+    the API documentation will be updated as well for you.
 
     """
 
@@ -234,6 +312,20 @@ class ModuleCreator:
         self.configuration = configuration.Configuration()
 
     def create(self, name=''):
+        """
+        Add a module to an existing package.
+
+        Parameters
+        ----------
+        name : :class:`str`
+            Name of the module to add.
+
+            If provided, this will set the :attr:`name` attribute of the class.
+
+        Returns
+        -------
+
+        """
         if name:
             self.name = name
         elif not self.name:
@@ -311,33 +403,53 @@ class ModuleCreator:
 
 class ClassCreator:
     """
-    One sentence (on one line) describing the class.
+    Add a class to an existing module, including a test class.
 
-    More description comes here...
+    When a class is added to a module, it will always be added to the bottom
+    of the module file, and at the same time a test class with a very basic
+    setup and a first test will be added to the corresponding test module.
 
 
     Attributes
     ----------
-    attr : :class:`None`
-        Short description
+    name : :class:`str`
+        Name of the class to be added to the module
+
+    module : :class:`str`
+        Name of the module the class should be added to
+
+    configuration : :class:`pymetacode.configuration.Configuration`
+        Configuration as usually read from the configuration file.
 
     Raises
     ------
-    exception
-        Short description when and why raised
+    ValueError
+        Raised if no class name is provided
+
+        Raised if no module name is provided
 
 
     Examples
     --------
 
-    It is always nice to give some examples how to use the class. Best to do
-    that with code examples:
+    The following examples demonstrate how to use the CLI from the terminal,
+    rather than how to use this class programmatically.
 
-    .. code-block::
+    Prerequisite for using the CLI is to have the package configuration
+    stored within the package root directory in the file
+    ".project_configuration.yaml". This will be the case if the package has
+    been created by the CLI as well. Furthermore, all following commands
+    need to be issued from *within* the root directory of your package.
 
-        obj = ClassCreator()
-        ...
+    .. code-block:: bash
 
+        pymeta add class MyClass to mymodule
+
+    This will add the class "MyClass" to the module "mymodule", together with a
+    test class in the "test_mymodule" module. The class will come with a
+    basic docstring, and the test class with a minimalistic setup and first
+    test (for implementation of the class) that gets you started with
+    writing further tests.
 
     """
     def __init__(self):
@@ -393,33 +505,52 @@ class ClassCreator:
 
 class FunctionCreator:
     """
-    One sentence (on one line) describing the class.
+    Add a function to an existing module, including a test class.
 
-    More description comes here...
+    When a function is added to a module, it will always be added to the bottom
+    of the module file, and at the same time a test class with a first test
+    will be added to the corresponding test module.
 
 
     Attributes
     ----------
-    attr : :class:`None`
-        Short description
+    name : :class:`str`
+        Name of the function to be added to the module
+
+    module : :class:`str`
+        Name of the module the function should be added to
+
+    configuration : :class:`pymetacode.configuration.Configuration`
+        Configuration as usually read from the configuration file.
 
     Raises
     ------
-    exception
-        Short description when and why raised
+    ValueError
+        Raised if no function name is provided
+
+        Raised if no module name is provided
 
 
     Examples
     --------
 
-    It is always nice to give some examples how to use the class. Best to do
-    that with code examples:
+    The following examples demonstrate how to use the CLI from the terminal,
+    rather than how to use this class programmatically.
 
-    .. code-block::
+    Prerequisite for using the CLI is to have the package configuration
+    stored within the package root directory in the file
+    ".project_configuration.yaml". This will be the case if the package has
+    been created by the CLI as well. Furthermore, all following commands
+    need to be issued from *within* the root directory of your package.
 
-        obj = FunctionCreator()
-        ...
+    .. code-block:: bash
 
+        pymeta add function my_function to mymodule
+
+    This will add the function "my_function" to the module "mymodule", together
+    with a test class in the "test_mymodule" module. The function will come
+    with a basic docstring, and the test class with a minimalistic first
+    test that gets you started with writing further tests.
 
     """
     def __init__(self):

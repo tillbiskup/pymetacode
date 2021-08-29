@@ -1,5 +1,56 @@
 """
-cli module of the pymetacode package.
+Command-line interface (CLI) module of the pymetacode package.
+
+While the actual code creating code is contained in the
+:mod:`pymetacode.coding` module, for most day-to-day business, programmers
+need a simple interface they can use without need to write code that writes
+code. Therefore, a key concept of the pymetacode package is an intuitive
+command-line interface (CLI) that gets used from within a terminal - the
+natural habitat of most programmers.
+
+
+General usage
+=============
+
+The package provides a command ``pymeta`` (by means of a console-script
+entry point) available from the command line given the pymetacode package is
+installed. This command comes with built-in help and follows a rather simple
+scheme:
+
+.. code-block:: bash
+
+    pymeta <command> <option1> ...
+
+The number of options available and required depends on the type of command
+used. The design goal is an intuitive and robust user interface with
+feedback and help built-in and a "grammar" that feels natural. For more
+details, see the "Examples" section of the :class:`pymetacode.cli.Cli` class
+documentation.
+
+
+A bit of background
+===================
+
+The first (and necessary) step for using the CLI is to create a
+configuration file, typically by issuing the following command on the terminal:
+
+.. code-block:: bash
+
+    pymeta write config to mypackage_config.yaml
+
+After having changed all values within this configuration file according to
+the specific needs, one can continue to create a package, or alternatively,
+if the package should exist already, move the configuration file to the root
+directory of this existing package and rename it to ``.package_config.yaml``
+(note the leading "."). This is the (only) way the CLI has access to
+necessary information, such as the package name, and this is as well the
+reason why each of the commands for adding modules, classes, and functions
+need to be issued from the *root directory* of your package.
+
+
+Module documentation
+====================
+
 """
 import os.path
 import shutil
@@ -10,42 +61,124 @@ from pymetacode import coding as coding, configuration as configuration
 
 class Cli:
     """
-    One sentence (on one line) describing the class.
+    The actual command-line interface (CLI) of the pymetacode package.
 
     More description comes here...
 
 
     Attributes
     ----------
-    attr : :class:`None`
-        Short description
+    command : :class:`str`
+        The actual command to be executed.
 
-    Raises
-    ------
-    exception
-        Short description when and why raised
+        In case of using the CLI from the terminal, the first argument.
+
+    options : :class:`list`
+        A list of options for the command.
+
+        In case of using the CLI from the terminal, all arguments from the
+        second argument on.
+
+    conf_file : :class:`str`
+        The name the config file gets written to using the ``write`` command.
+
+        Default: "package_config.yaml"
 
 
     Examples
     --------
 
-    It is always nice to give some examples how to use the class. Best to do
-    that with code examples:
+    The following examples demonstrate how to use the CLI from the terminal,
+    rather than how to use this class programmatically.
 
-    .. code-block::
+    The first step when creating a new package is to write a config file
+    that can be filled with sensible content afterwards:
 
-        obj = Cli()
-        ...
+    .. code-block:: bash
+
+        pymeta write config to mypackage_config.yaml
+
+    This would write the default configuration to "mypackage_config.yaml".
+    Change all values in this file according to your needs. Afterwards,
+    you can create the basic structure of your new project:
+
+    .. code-block:: bash
+
+        pymeta create package from mypackage_config.yaml
+
+    Now, you have a complete package that is installable and deployable.
+    Next is to add some modules to your newly created package. All following
+    commands need to be issued from *within* the root directory of your new
+    package.
+
+    .. code-block:: bash
+
+        pymeta add module mymodule
+
+    will add a module "mymodule" to your package, together with a
+    "test_mymodule" module in the "tests" subdirectory. And even better,
+    the API documentation will be updated as well for you.
+
+    Time to add a class to your new module:
+
+    .. code-block:: bash
+
+        pymeta add class MyClass to mymodule
+
+    Here, again, the class will be added to "mymodule" and a test class
+    added to "test_mymodule". Similarly, you can add a function:
+
+    .. code-block:: bash
+
+        pymeta add function my_function to mymodule
+
+    Again, function and test class will be added to your package.
+
+    And if you are in doubt how to use the ``pymeta`` command, we've got you
+    covered:
+
+    .. code-block:: bash
+
+        pymeta
+        pymeta help
+
+    are two equivalent commands that display some general help. Furthermore,
+    you can get help for particular commands, too:
+
+    .. code-block:: bash
+
+        pymeta help create
+
+    would provide you with help specifically for the "create" command.
+    Furthermore, if you make a mistake, usually, the context-specific help
+    will be displayed for you as well.
 
     """
 
     def __init__(self):
         self.command = ''
         self.options = []
-        self._command_name = 'pymeta'
         self.conf_file = 'package_config.yaml'
+        self._command_name = 'pymeta'
 
     def call(self, command='', options=None):
+        """
+        Execute a given command with the given options (if any).
+
+        Parameters
+        ----------
+        command : :class:`str`
+            The actual command to be executed.
+
+            In case of using the CLI from the terminal, the first argument.
+
+        options : :class:`list`
+            A list of options for the command.
+
+            In case of using the CLI from the terminal, all arguments from the
+            second argument on.
+
+        """
         self.command = command
         self.options = options
         if not self.command:
@@ -185,7 +318,7 @@ class Cli:
         help_text = """
         Usage for add command:
             command_name add <item>
-            command_name add <item> in <module>
+            command_name add <item> to <module>
 
         Possible items are:
             module
@@ -204,9 +337,12 @@ class Cli:
 
 def cli():
     """
-    One sentence (on one line) describing the function.
+    Console entry point for the command-line interface.
 
-    More description comes here...
+    The actual handling of the commands is entirely done within the
+    :class:`pymetacode.cli.Cli` class, but this function serves as entry
+    point for the console script, providing the ``pymeta`` command on the
+    command line.
 
     """
     cli_object = Cli()
@@ -216,4 +352,3 @@ def cli():
         cli_object.call(command=sys.argv[1])
     else:
         cli_object.call(command=sys.argv[1], options=sys.argv[2:])
-
