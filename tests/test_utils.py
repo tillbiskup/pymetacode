@@ -1,59 +1,352 @@
+import collections
+import copy
+import datetime
+import os
 import unittest
 
 import pymetacode.utils as utils
 
 
-
 class TestEnsureFileExists(unittest.TestCase):
+    def setUp(self):
+        self.filename = 'foo'
 
-    def test_ensure_file_exists(self):
-        pass
+    def tearDown(self):
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
+    def test_ensure_file_exists_without_name_raises(self):
+        with self.assertRaises(ValueError):
+            utils.ensure_file_exists()
+
+    def test_ensure_file_exists_creates_file(self):
+        utils.ensure_file_exists(self.filename)
+        self.assertTrue(os.path.exists(self.filename))
+
+    def test_ensure_file_exists_does_not_change_existing_file(self):
+        with open(self.filename, 'a') as file:
+            file.write('foo bar')
+        utils.ensure_file_exists(self.filename)
+        with open(self.filename) as file:
+            file_content = file.read()
+        self.assertEqual('foo bar', file_content)
 
 
 class TestGetDataFromPkgResources(unittest.TestCase):
+    def setUp(self):
+        self.filename = 'gitignore'
 
-    def test_get_data_from_pkg_resources(self):
-        pass
+    def test_get_data_from_pkg_resources_without_name_raises(self):
+        with self.assertRaises(ValueError):
+            utils.get_data_from_pkg_resources()
 
+    def test_get_data_from_pkg_resources_returns_content(self):
+        content = utils.get_data_from_pkg_resources(self.filename)
+        self.assertTrue(content)
 
 
 class TestToDictMixin(unittest.TestCase):
 
     def setUp(self):
-        self.to_dict_mixin = utils.ToDictMixin()
+        class MixedIn(utils.ToDictMixin):
+            pass
+
+        self.mixed_in = MixedIn()
+
+    @staticmethod
+    def set_properties_from_dict(obj=None, dict_=None):
+        dict_ = copy.deepcopy(dict_)
+        for key in dict_:
+            setattr(obj, key, dict_[key])
 
     def test_instantiate_class(self):
         pass
 
+    def test_string_property(self):
+        orig_dict = {"foo": "bar"}
+        self.set_properties_from_dict(obj=self.mixed_in, dict_=orig_dict)
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(orig_dict, obj_dict)
+
+    def test_only_public_properties(self):
+        orig_dict = {"foo": "bar"}
+        self.set_properties_from_dict(obj=self.mixed_in, dict_=orig_dict)
+        self.mixed_in._protected_property = None
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(orig_dict, obj_dict)
+
+    def test_dict_property(self):
+        orig_dict = {"foo": {"bar": "baz"}}
+        self.set_properties_from_dict(obj=self.mixed_in, dict_=orig_dict)
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(orig_dict, obj_dict)
+
+    def test_cascaded_dict_property(self):
+        orig_dict = {"foo": {"bar": {"baz": "baf"}}}
+        self.set_properties_from_dict(obj=self.mixed_in, dict_=orig_dict)
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(orig_dict, obj_dict)
+
+    def test_ordered_dict_property(self):
+        orig_dict = {"foo": collections.OrderedDict({"bar": "baz"})}
+        self.set_properties_from_dict(obj=self.mixed_in, dict_=orig_dict)
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(orig_dict, obj_dict)
+
+    def test_mixed_in_object_property(self):
+        orig_dict = {"foo": "bar"}
+        mixed_in = utils.ToDictMixin()
+        self.set_properties_from_dict(obj=mixed_in, dict_=orig_dict)
+        self.mixed_in.object = mixed_in
+        full_dict = {"object": {"foo": "bar"}}
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(full_dict, obj_dict)
+
+    def test_generic_object_property(self):
+        orig_dict = {"foo": "bar"}
+
+        class DummyClass:
+            pass
+
+        obj = DummyClass()
+        self.set_properties_from_dict(obj=obj, dict_=orig_dict)
+        self.mixed_in.object = obj
+        full_dict = {"object": {"foo": "bar"}}
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(full_dict, obj_dict)
+
+    def test_list_of_dicts_property(self):
+        orig_dict = {"foo": [{"foo": "bar"}, {"bar": "baz"}]}
+        self.set_properties_from_dict(obj=self.mixed_in, dict_=orig_dict)
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(orig_dict, obj_dict)
+
+    def test_list_of_dicts_containing_dicts_property(self):
+        orig_dict = {"foo": [{"foo": {"foobar": "bar"}}, {"bar": "baz"}]}
+        self.set_properties_from_dict(obj=self.mixed_in, dict_=orig_dict)
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(orig_dict, obj_dict)
+
+    def test_list_of_objects_property(self):
+        toobj_dict = {"foo": "bar"}
+        obj1 = utils.ToDictMixin()
+        obj2 = utils.ToDictMixin()
+        self.set_properties_from_dict(obj=obj1, dict_=toobj_dict)
+        self.set_properties_from_dict(obj=obj2, dict_=toobj_dict)
+        self.mixed_in.objects = [obj1, obj2]
+        orig_dict = {"objects": [toobj_dict, toobj_dict]}
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(orig_dict, obj_dict)
+
+    def test_list_of_dicts_containing_objects_property(self):
+        toobj_dict = {"foo": "bar"}
+        obj1 = utils.ToDictMixin()
+        obj2 = utils.ToDictMixin()
+        self.set_properties_from_dict(obj=obj1, dict_=toobj_dict)
+        self.set_properties_from_dict(obj=obj2, dict_=toobj_dict)
+        orig_dict = {"foo": [{"foo": toobj_dict}, {"bar": toobj_dict}]}
+        self.set_properties_from_dict(obj=self.mixed_in, dict_=orig_dict)
+        # noinspection PyUnresolvedReferences
+        self.mixed_in.foo[0]["foo"] = obj1
+        # noinspection PyUnresolvedReferences
+        self.mixed_in.foo[1]["bar"] = obj2
+        obj_dict = self.mixed_in.to_dict()
+        self.assertEqual(orig_dict["foo"], obj_dict["foo"])
+
+    def test_datetime_property(self):
+        date = datetime.datetime.now()
+        toobj_dict = {"date": date}
+        self.set_properties_from_dict(obj=self.mixed_in, dict_=toobj_dict)
+        orig_dict = {"date": str(date)}
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(orig_dict, obj_dict)
+
+    def test_date_property(self):
+        date = datetime.date.today()
+        toobj_dict = {"date": date}
+        self.set_properties_from_dict(obj=self.mixed_in, dict_=toobj_dict)
+        orig_dict = {"date": str(date)}
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(orig_dict, obj_dict)
+
+    def test_time_property(self):
+        date = datetime.time(12, 10, 30)
+        toobj_dict = {"date": date}
+        self.set_properties_from_dict(obj=self.mixed_in, dict_=toobj_dict)
+        orig_dict = {"date": str(date)}
+        obj_dict = self.mixed_in.to_dict()
+        self.assertDictEqual(orig_dict, obj_dict)
+
+    def test_has_odict_attribute(self):
+        self.assertTrue(hasattr(self.mixed_in, '__odict__'))
+
+    def test_odict_attribute_is_ordered_dict(self):
+        self.assertTrue(isinstance(self.mixed_in.__odict__,
+                                   collections.OrderedDict))
+
+    def test_odict_preserves_argument_definition_order(self):
+        arguments = ["purpose", "operator", "labbook"]
+
+        class Test(utils.ToDictMixin):
+            def __init__(self):
+                super().__init__()
+                self.purpose = ''
+                self.operator = ''
+                self.labbook = ''
+
+        obj = Test()
+        self.assertEqual(arguments, list(obj.to_dict().keys()))
+
+    def test_with_properties_to_exclude(self):
+        class Test(utils.ToDictMixin):
+            def __init__(self):
+                super().__init__()
+                self.purpose = ''
+                self.operator = ''
+                self._exclude_from_to_dict = ['operator']
+
+        obj = Test()
+        self.assertEqual(['purpose'], list(obj.to_dict().keys()))
+
+    def test_with_property_to_include(self):
+        class Test(utils.ToDictMixin):
+            def __init__(self):
+                super().__init__()
+                self.purpose = ''
+                self._foo = None
+                self._include_in_to_dict = ['_foo']
+
+        obj = Test()
+        self.assertEqual(['purpose', '_foo'], list(obj.to_dict().keys()))
+
+    def test_with_properties_to_include(self):
+        class Test(utils.ToDictMixin):
+            def __init__(self):
+                super().__init__()
+                self.purpose = ''
+                self._foo = None
+                self._bar = None
+                self._include_in_to_dict = ['_foo', '_bar']
+
+        obj = Test()
+        self.assertEqual(['purpose', '_foo', '_bar'],
+                         list(obj.to_dict().keys()))
 
 
 class TestChangeWorkingDir(unittest.TestCase):
 
-    def test_change_working_dir(self):
-        pass
-
+    def test_change_working_dir_returns_to_original_dir(self):
+        oldpwd = os.getcwd()
+        with utils.change_working_dir('..'):
+            pass
+        self.assertEqual(oldpwd, os.getcwd())
 
 
 class TestCamelCaseToUnderscore(unittest.TestCase):
 
-    def test_camel_case_to_underscore(self):
-        pass
-
+    def test_camel_case_to_underscore_converts_correctly(self):
+        result = utils.camel_case_to_underscore("FooBar")
+        self.assertEqual('foo_bar', result)
 
 
 class TestUnderscoreToCamelCase(unittest.TestCase):
 
-    def test_underscore_to_camel_case(self):
-        pass
-
+    def test_underscore_to_camel_case_converts_correctly(self):
+        result = utils.underscore_to_camel_case("foo_bar")
+        self.assertEqual('FooBar', result)
 
 
 class TestTemplate(unittest.TestCase):
 
     def setUp(self):
         self.template = utils.Template()
+        self.destination = 'foo.txt'
+
+    def tearDown(self):
+        if os.path.exists(self.destination):
+            os.remove(self.destination)
 
     def test_instantiate_class(self):
         pass
 
+    def test_package_path_sets_package_path_in_environment(self):
+        self.template.package_path = 'templates/licenses'
+        self.assertEqual(self.template.package_path,
+                         self.template.environment.loader.package_path)
+
+    def test_render_renders_template(self):
+        self.template.package_path = 'templates/licenses'
+        self.template.template = 'bsd-2clause.j2.txt'
+        self.template.context = {'package': {'year': '2021',
+                                             'author': 'John Doe'}}
+        rendered_template = self.template.render()
+        self.assertIn('Copyright (c) 2021 John Doe', rendered_template)
+
+    def test_render_adds_rst_header_markup_to_context(self):
+        self.template.package_path = 'templates/licenses'
+        self.template.template = 'bsd-2clause.j2.txt'
+        self.template.context = {'package': {'year': '2021',
+                                             'author': 'John Doe',
+                                             'name': 'foo'}}
+        self.template.render()
+        self.assertIn('rst_markup', self.template.context.keys())
+
+    def test_create_creates_file_at_destination(self):
+        self.template.package_path = 'templates/licenses'
+        self.template.template = 'bsd-2clause.j2.txt'
+        self.template.context = {'package': {'year': '2021',
+                                             'author': 'John Doe'}}
+        self.template.destination = self.destination
+        self.template.create()
+        self.assertTrue(os.path.exists(self.destination))
+
+    def test_create_fills_destination(self):
+        self.template.package_path = 'templates/licenses'
+        self.template.template = 'bsd-2clause.j2.txt'
+        self.template.context = {'package': {'year': '2021',
+                                             'author': 'John Doe'}}
+        self.template.destination = self.destination
+        self.template.create()
+        with open(self.destination) as file:
+            content = file.read()
+        self.assertIn('Copyright (c) 2021 John Doe', content)
+
+    def test_append_appends_template_content_to_destination(self):
+        test_content = 'foo bar bla blub\n\n'
+        with open(self.destination, 'w+') as file:
+            file.write(test_content)
+        self.template.package_path = 'templates/licenses'
+        self.template.template = 'bsd-2clause.j2.txt'
+        self.template.context = {'package': {'year': '2021',
+                                             'author': 'John Doe'}}
+        self.template.destination = self.destination
+        self.template.append()
+        with open(self.destination) as file:
+            content = file.read()
+        self.assertIn(test_content, content)
+
+    def test_append_appends_parsed_template_to_destination(self):
+        test_content = 'foo bar bla blub\n\n'
+        with open(self.destination, 'w+') as file:
+            file.write(test_content)
+        self.template.package_path = 'templates/licenses'
+        self.template.template = 'bsd-2clause.j2.txt'
+        self.template.context = {'package': {'year': '2021',
+                                             'author': 'John Doe'}}
+        self.template.destination = self.destination
+        self.template.append()
+        with open(self.destination) as file:
+            content = file.read()
+        self.assertIn('Copyright (c) 2021 John Doe', content)
+
+    def test_create_with_properties_set_on_instantiation(self):
+        template = utils.Template(
+            package_path='templates/licenses',
+            template='bsd-2clause.j2.txt',
+            context={'package': {'year': '2021', 'author': 'John Doe'}},
+            destination=self.destination
+        )
+        template.create()
+        with open(self.destination) as file:
+            content = file.read()
+        self.assertIn('Copyright (c) 2021 John Doe', content)
