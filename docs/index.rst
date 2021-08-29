@@ -4,7 +4,7 @@ pymetacode documentation
 
 Welcome! This is the documentation for pymetacode, a Python package helping to write and maintain Python packages.
 
-Code that writes code - yes, that's correct. Automating the boring stuff, one could say, or helping to focus on the creative part of programming. In any case, the idea for this package stems from experience with a couple of Python projects, and as such it is pretty opinionated, focussing on personal needs regarding structure and layout. Nevertheless, it tries to be as user-friendly as possible, coming with an intuitive command-line interface (CLI).
+**Code that writes code** - yes, that's correct. Automating the boring stuff, one could say, or helping to focus on the creative part of programming. In any case, the idea for this package stems from experience with a couple of Python projects, and as such it is pretty opinionated, focussing on personal needs regarding structure and layout. Nevertheless, it tries to be as user-friendly as possible, coming with an intuitive command-line interface (CLI).
 
 Want to get an idea? Here you go. Creating a new package would be a two-step process:
 
@@ -55,6 +55,14 @@ And to make it even more convenient for users and future-proof:
 
 .. warning::
   pymetacode is currently under active development and still considered in Beta development state. Therefore, expect frequent changes in features and public APIs that may break your own code. Nevertheless, feedback as well as feature requests are highly welcome.
+
+
+Where to start
+==============
+
+Users new to the pymetacode package should probably start :doc:`at the beginning <audience>`, those interested in more real-world examples may jump straight to the section explaining frequent :doc:`use cases <usecases>`.
+
+The :doc:`API documentation <api/index>` is the definite source of information for developers, besides having a look at the source code.
 
 
 Installation

@@ -12,5 +12,9 @@ Not yet released
 
 * First public release
 
-* ...
+* Create initial package structure (directory layout, files)
+
+* Add module, class, and function scaffolds to an existing project, including tests and API documentation
+
+* Intuitive command-line interface (CLI)
 
