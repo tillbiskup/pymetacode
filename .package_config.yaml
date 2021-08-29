@@ -1,0 +1,25 @@
+package:
+  name: 'pymetacode'
+  author: 'Till Biskup'
+  author_email: 'till@till-biskup.de'
+  year: '2021'
+  description: 'A Python package helping to write and maintain Python packages.'
+  urls:
+    main: 'https://www.meta-co.de/'
+    documentation: 'https://python.docs.meta-co.de/'
+    source: 'https://github.com/tillbiskup/pymetacode'
+  keywords: [
+    'metaprogramming',
+    'Python packages',
+    'automation',
+    'code generation',
+  ]
+  install_requires: [
+    'jinja2',
+    'oyaml',
+  ]
+  git: True
+documentation:
+  logo: ''
+  favicon: ''
+
