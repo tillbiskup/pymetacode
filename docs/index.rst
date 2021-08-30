@@ -6,7 +6,7 @@ Welcome! This is the documentation for pymetacode, a Python package helping to w
 
 **Code that writes code** - yes, that's correct. Automating the boring stuff, one could say, or helping to focus on the creative part of programming. In any case, the idea for this package stems from experience with a couple of Python projects, and as such it is pretty opinionated, focussing on personal needs regarding structure and layout. Nevertheless, it tries to be as user-friendly as possible, coming with an intuitive command-line interface (CLI).
 
-Want to get an idea? Here you go. Creating a new package would be a two-step process:
+Want to get an idea? Here you go. **Creating a new package** would be a two-step process:
 
 1) Write a configuration file for your new package (and afterwards fill it with sensible content)
 
@@ -20,7 +20,7 @@ Want to get an idea? Here you go. Creating a new package would be a two-step pro
 
     pymeta create package from mypackage_config.yaml
 
-Once you have your package structure, you can add modules, classes, and functions to your package from within the package's root directory any time:
+Once you have your package structure, you can **add modules, classes, and functions** to your package from within the package's root directory any time:
 
 .. code-block:: bash
 
@@ -41,6 +41,8 @@ A list of features:
 * Add module, class, and function scaffolds to an existing project, including tests and API documentation
 
 * Intuitive command-line interface (CLI)
+
+* Initialise git repository; automatically incrementing version number with each commit
 
 
 And to make it even more convenient for users and future-proof:

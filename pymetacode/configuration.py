@@ -2,7 +2,7 @@
 Configuration handling of the pymetacode package.
 
 Key to the rather simplistic and user-friendly command-line interface (CLI)
-of the pymetacode package is a configuration stored mostly within the
+of the pymetacode package is a configuration stored within the
 package root directory and read by all the code generators residing in the
 :mod:`pymetacode.coding` module.
 

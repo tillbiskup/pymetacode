@@ -8,3 +8,5 @@ The pymetacode package is developed by `Till Biskup <https://www.till-biskup.de/
 
 His main focus with these packages is on ensuring `reproducible research <https://www.reproducible-research.de/>`_, something still sadly not really taken seriously in the community nor worked towards.
 
+The pymetacode package was created to facilitate development of the own packages, and its first working version (0.1.0) including the design of the CLI is largely the result of a productive weekend. 
+

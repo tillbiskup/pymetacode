@@ -3,7 +3,54 @@ Auxiliary functionality used by other modules of the pymetacode package.
 
 To avoid circular dependencies, this module does *not* depend on any other
 modules of the pymetacode package, but it can be imported into every other
-module.
+module./home/till/Programmierung/Python/venvs/trepr/bin/python3.9
+
+As naturally, a utils module tends to be a bit messy, the different tools
+available are listed below according to more general categories.
+
+
+Files and I/O
+=============
+
+* :func:`ensure_file_exists`
+
+  Create an (empty) file if it does not exist already.
+
+* :func:`get_data_from_pkg_resources`
+
+  Obtain contents from a non-code file stored within the package.
+
+* :func:`change_working_dir`
+
+  Context manager for temporarily changing the working directory.
+
+
+String manipulation
+===================
+
+* :func:`camel_case_to_underscore`
+
+  Change string from camel case to using underscores.
+
+* :func:`underscore_to_camel_case`
+
+  Change string from underscores to using camel case.
+
+
+Helper classes
+==============
+
+* :class:`ToDictMixin`
+
+  Mixin class for returning all public attributes as dict.
+
+* :class:`Template`
+
+  Wrapper for using the template engine (Jinja2).
+
+
+Module documentation
+====================
 """
 import collections
 import contextlib
@@ -17,7 +64,7 @@ import jinja2
 
 def ensure_file_exists(name=''):
     """
-    Create an (empty) file if it not exists already.
+    Create an (empty) file if it does not exist already.
 
     This is similar to the "touch" command from unixoid operating systems,
     although it does *not* change the timestamp of the file.
@@ -77,7 +124,8 @@ def get_data_from_pkg_resources(name='', directory='templates'):
 
 
 class ToDictMixin:
-    """Mixin class for returning all public attributes as dict.
+    """
+    Mixin class for returning all public attributes as dict.
 
     Sometimes there is the need to either exclude public attributes (in case
     of infinite loops created by trying to apply ``to_dict`` in this case)
