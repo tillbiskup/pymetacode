@@ -3,7 +3,7 @@ Auxiliary functionality used by other modules of the pymetacode package.
 
 To avoid circular dependencies, this module does *not* depend on any other
 modules of the pymetacode package, but it can be imported into every other
-module./home/till/Programmierung/Python/venvs/trepr/bin/python3.9
+module.
 
 As naturally, a utils module tends to be a bit messy, the different tools
 available are listed below according to more general categories.
