@@ -24,9 +24,11 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=('tests', 'docs')),
     license='BSD',
     keywords=[
-        {%- if package.keywords %}{% for item in package.keywords %}
+        {%- if package.keywords %}
+        {%- for item in package.keywords %}
         "{{ item }}",
-        {% endfor %}{% endif -%}
+        {%- endfor %}
+        {%- endif %}
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -39,9 +41,11 @@ setuptools.setup(
         "Development Status :: 4 - Beta",
     ],
     install_requires=[
-        {%- if package.install_requires %}{% for item in package.install_requires %}
+        {%- if package.install_requires %}
+        {%- for item in package.install_requires %}
         "{{ item }}",
-        {% endfor %}{% endif -%}
+        {%- endfor %}
+        {%- endif %}
     ],
     extras_require={
         'dev': ['prospector'],

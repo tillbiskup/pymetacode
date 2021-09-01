@@ -12,6 +12,8 @@ For version 0.2
 
 * Automatic alphabetical sorting of modules in API index.
 
+* "versionadded" only if version > 0.1, and with correct version
+
 
 For later versions
 ==================
@@ -22,3 +24,4 @@ For later versions
 
 * Commands for releasing a package to PyPI
 
+* Update command (*e.g.*, for configuration)
