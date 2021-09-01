@@ -83,7 +83,7 @@ def ensure_file_exists(name=''):
     """
     if not name:
         raise ValueError('No filename given.')
-    with open(name, 'a'):
+    with open(name, 'a', encoding='utf8'):
         pass
 
 
@@ -254,7 +254,6 @@ def change_working_dir(path=''):
 
     Examples
     --------
-
     To temporarily change the working directory:
 
     .. code-block::
@@ -346,7 +345,6 @@ class Template:
 
     Examples
     --------
-
     Probably the best way to use the class is to instantiate an object
     providing all necessary parameters:
 
@@ -394,7 +392,7 @@ class Template:
         env = jinja2.Environment(
             loader=jinja2.PackageLoader(__package__,
                                         package_path=self.package_path),
-            autoescape=jinja2.select_autoescape(),
+            autoescape=True,
             keep_trailing_newline=True,
         )
         return env
@@ -407,6 +405,7 @@ class Template:
         -------
         content : :class:`str`
             Rendered template.
+
         """
         self._add_rst_markup_to_context()
         template = self.environment.get_template(self.template)
@@ -420,7 +419,7 @@ class Template:
         file, you should use :meth:`append` instead.
 
         """
-        with open(self.destination, 'w+') as file:
+        with open(self.destination, 'w+', encoding='utf8') as file:
             file.write(self.render())
 
     def append(self):
@@ -432,7 +431,7 @@ class Template:
         :meth:`create` instead.
 
         """
-        with open(self.destination, 'a') as file:
+        with open(self.destination, 'a', encoding='utf8') as file:
             file.write(self.render())
 
     def _add_rst_markup_to_context(self):

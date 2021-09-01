@@ -56,7 +56,7 @@ import os.path
 import shutil
 import sys
 
-from pymetacode import coding as coding, configuration as configuration
+from pymetacode import coding, configuration
 
 
 class Cli:
@@ -87,7 +87,6 @@ class Cli:
 
     Examples
     --------
-
     The following examples demonstrate how to use the CLI from the terminal,
     rather than how to use this class programmatically.
 

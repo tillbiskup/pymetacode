@@ -28,7 +28,7 @@ import shutil
 import subprocess
 import warnings
 
-from pymetacode import configuration as configuration, utils as utils
+from pymetacode import configuration, utils
 
 
 class PackageCreator:
@@ -72,7 +72,6 @@ class PackageCreator:
 
     Examples
     --------
-
     The following examples demonstrate how to use the CLI from the terminal,
     rather than how to use this class programmatically.
 
@@ -153,11 +152,13 @@ class PackageCreator:
 
     def _create_gitignore(self):
         contents = utils.get_data_from_pkg_resources('gitignore')
-        with open(os.path.join(self.name, '.gitignore'), 'w+') as file:
+        with open(os.path.join(self.name, '.gitignore'), 'w+', encoding='utf8')\
+                as file:
             file.write(contents.decode("utf-8"))
 
     def _create_version_file(self):
-        with open(os.path.join(self.name, 'VERSION'), 'w+') as file:
+        with open(os.path.join(self.name, 'VERSION'), 'w+', encoding='utf8') \
+                as file:
             file.write('0.1.0.dev0\n')
 
     def _create_license_file(self):
@@ -190,7 +191,7 @@ class PackageCreator:
     def _create_version_updater_file(self):
         contents = utils.get_data_from_pkg_resources('incrementVersion.sh')
         destination = os.path.join(self.name, 'bin', 'incrementVersion.sh')
-        with open(destination, 'w+') as file:
+        with open(destination, 'w+', encoding='utf8') as file:
             file.write(contents.decode("utf-8"))
 
     def _create_documentation_stub(self):
@@ -206,7 +207,7 @@ class PackageCreator:
             contents = \
                 utils.get_data_from_pkg_resources('/'.join(['docs', file]))
             destination = os.path.join(self.name, 'docs', file)
-            with open(destination, 'w+') as doc_file:
+            with open(destination, 'w+', encoding='utf8') as doc_file:
                 doc_file.write(contents.decode("utf-8"))
 
     def _create_documentation_index(self):
@@ -253,10 +254,10 @@ class PackageCreator:
 
     def _git_init(self):
         if self.configuration.package['git']:
-            subprocess.run(["git", "init"], cwd=self.name)
+            subprocess.run(["git", "init"], cwd=self.name, check=False)
             with utils.change_working_dir(os.path.join(self.name, '.git',
                                                        'hooks')):
-                with open('pre-commit', 'w+') as file:
+                with open('pre-commit', 'w+', encoding='utf8') as file:
                     file.write('#!/bin/sh\n')
                     file.write('./bin/incrementVersion.sh\n')
                 shutil.copymode('pre-commit.sample', 'pre-commit')
@@ -287,7 +288,6 @@ class ModuleCreator:
 
     Examples
     --------
-
     The following examples demonstrate how to use the CLI from the terminal,
     rather than how to use this class programmatically.
 
@@ -321,9 +321,6 @@ class ModuleCreator:
             Name of the module to add.
 
             If provided, this will set the :attr:`name` attribute of the class.
-
-        Returns
-        -------
 
         """
         if name:
@@ -389,7 +386,7 @@ class ModuleCreator:
         index_filename = os.path.join('docs', 'api', 'index.rst')
         if not os.path.exists(index_filename):
             return
-        with open(index_filename) as file:
+        with open(index_filename, encoding='utf8') as file:
             contents = file.read()
         lines = contents.split('\n')
         package = self.configuration.package['name']
@@ -397,7 +394,7 @@ class ModuleCreator:
         end_of_toctree = lines[start_of_toctree:].index('')
         lines.insert(start_of_toctree + end_of_toctree + 1,
                      '    {}.{}'.format(package, self.name))
-        with open(index_filename, "w+") as file:
+        with open(index_filename, "w+", encoding='utf8') as file:
             file.write('\n'.join(lines))
 
 
@@ -431,7 +428,6 @@ class ClassCreator:
 
     Examples
     --------
-
     The following examples demonstrate how to use the CLI from the terminal,
     rather than how to use this class programmatically.
 
@@ -452,12 +448,32 @@ class ClassCreator:
     writing further tests.
 
     """
+
     def __init__(self):
         self.name = ''
         self.module = ''
         self.configuration = configuration.Configuration()
 
     def create(self, name='', module=''):
+        """
+        Create actual code stub for the class.
+
+        Parameters
+        ----------
+        name : :class:`str`
+            Name of the function to be created
+
+        module : :class:`str`
+            Name of the module the function should be added to
+
+        Raises
+        ------
+        ValueError
+            Raised if function name is missing
+
+            Raised if module name is missing
+
+        """
         if name:
             self.name = name
         elif not self.name:
@@ -469,7 +485,7 @@ class ClassCreator:
         package = self.configuration.package['name']
         if not os.path.exists(os.path.join(package, '{}.py'.format(
                 self.module))):
-            raise ValueError('Module {} does not exist', self.module)
+            raise ValueError('Module {} does not exist'.format(self.module))
         self._create_class()
         self._create_test_class()
 
@@ -533,7 +549,6 @@ class FunctionCreator:
 
     Examples
     --------
-
     The following examples demonstrate how to use the CLI from the terminal,
     rather than how to use this class programmatically.
 
@@ -553,12 +568,32 @@ class FunctionCreator:
     test that gets you started with writing further tests.
 
     """
+
     def __init__(self):
         self.name = ''
         self.module = ''
         self.configuration = configuration.Configuration()
 
     def create(self, name='', module=''):
+        """
+        Create actual code stub for the function.
+
+        Parameters
+        ----------
+        name : :class:`str`
+            Name of the function to be created
+
+        module : :class:`str`
+            Name of the module the function should be added to
+
+        Raises
+        ------
+        ValueError
+            Raised if function name is missing
+
+            Raised if module name is missing
+
+        """
         if name:
             self.name = name
         elif not self.name:
@@ -570,7 +605,7 @@ class FunctionCreator:
         package = self.configuration.package['name']
         if not os.path.exists(os.path.join(package, '{}.py'.format(
                 self.module))):
-            raise ValueError('Module {} does not exist', self.module)
+            raise ValueError('Module {} does not exist'.format(self.module))
         self._create_function()
         self._create_test_class()
 

@@ -15,7 +15,7 @@ import datetime
 
 import oyaml as yaml
 
-import pymetacode.utils as utils
+from pymetacode import utils
 
 
 class Configuration(utils.ToDictMixin):
@@ -45,7 +45,6 @@ class Configuration(utils.ToDictMixin):
 
     Examples
     --------
-
     The following examples demonstrate how to use the CLI from the terminal,
     rather than how to use this class programmatically.
 
@@ -60,6 +59,7 @@ class Configuration(utils.ToDictMixin):
     Change all values in this file according to your needs.
 
     """
+
     def __init__(self):
         super().__init__()
         self.package = {
@@ -120,7 +120,7 @@ class Configuration(utils.ToDictMixin):
             Name of the YAML file to write to.
 
         """
-        with open(name, 'w+') as file:
+        with open(name, 'w+', encoding='utf8') as file:
             yaml.dump(self.to_dict(), file)
 
     def from_file(self, name=''):
@@ -133,6 +133,6 @@ class Configuration(utils.ToDictMixin):
             Name of the YAML file to read from.
 
         """
-        with open(name, 'r') as file:
+        with open(name, 'r', encoding='utf8') as file:
             dict_ = yaml.load(file, Loader=yaml.SafeLoader)
         self.from_dict(dict_)

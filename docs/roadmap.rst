@@ -8,12 +8,6 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.1
 ===============
 
-* Finish documentation
-
-  * More examples how the automatically created code looks like (?)
-
-  * Examples for help texts of CLI
-
 * Prepare for release (prospector, tox, ...)
 
 
