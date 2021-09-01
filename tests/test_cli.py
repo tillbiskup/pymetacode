@@ -5,9 +5,7 @@ import shutil
 import subprocess
 import unittest
 
-import pymetacode.cli as cli
-import pymetacode.configuration as configuration
-import pymetacode.utils as utils
+from pymetacode import cli,configuration,utils
 
 
 class TestCli(unittest.TestCase):

@@ -4,9 +4,8 @@ import shutil
 import unittest
 import warnings
 
-import pymetacode.coding as coding
+from pymetacode import coding, utils
 import pymetacode.configuration
-import pymetacode.utils as utils
 
 
 class TestPackageCreator(unittest.TestCase):
@@ -353,8 +352,7 @@ class TestModuleCreator(unittest.TestCase):
         self.creator.create(name=self.name)
         with open(filename) as file:
             contents = file.read()
-        content_line = \
-            'import {}.{} as {}'.format(self.package, self.name, self.name)
+        content_line = 'from {} import {}'.format(self.package, self.name)
         self.assertIn(content_line, contents)
 
     def test_create_creates_api_documentation(self):

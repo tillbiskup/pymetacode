@@ -1,4 +1,4 @@
 import unittest
 
-import {{ package.name }}.{{ module.name}} as {{ module.name }}
+from {{ package.name }} import {{ module.name }}
 

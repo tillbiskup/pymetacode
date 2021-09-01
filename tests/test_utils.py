@@ -4,7 +4,7 @@ import datetime
 import os
 import unittest
 
-import pymetacode.utils as utils
+from pymetacode import utils
 
 
 class TestEnsureFileExists(unittest.TestCase):

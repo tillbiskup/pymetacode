@@ -20,7 +20,6 @@ class {{ class.name }}:
 
     Examples
     --------
-
     It is always nice to give some examples how to use the class. Best to do
     that with code examples:
 
@@ -33,4 +32,5 @@ class {{ class.name }}:
     .. versionadded:: 0.1
 
     """
+
     pass
