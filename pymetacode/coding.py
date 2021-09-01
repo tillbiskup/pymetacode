@@ -25,6 +25,7 @@ the pymetacode package.
 """
 import os
 import shutil
+import stat
 import subprocess
 import warnings
 
@@ -193,6 +194,7 @@ class PackageCreator:
         destination = os.path.join(self.name, 'bin', 'incrementVersion.sh')
         with open(destination, 'w+', encoding='utf8') as file:
             file.write(contents.decode("utf-8"))
+        os.chmod(destination, os.stat(destination).st_mode | stat.S_IXUSR)
 
     def _create_documentation_stub(self):
         self._create_documentation_generator_files()

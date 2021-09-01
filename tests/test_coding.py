@@ -173,6 +173,11 @@ class TestPackageCreator(unittest.TestCase):
             contents = file.read()
         self.assertIn('Increment version number', contents)
 
+    def test_version_updater_is_executable(self):
+        self.creator.create(name=self.name)
+        file_path = os.path.join(self.name, 'bin', 'incrementVersion.sh')
+        self.assertTrue(os.access(file_path, os.X_OK))
+
     def test_create_populates_docs_subdirectory(self):
         self.creator.create(name=self.name)
         files = ['make.bat', 'Makefile', 'index.rst', 'conf.py']

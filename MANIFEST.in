@@ -7,5 +7,5 @@ include VERSION
 # Include the LICENSE
 include LICENSE*
 
-# Include resouces
-recursive-include aspecd_meta *
+# Include templates
+recursive-include pymetacode *
