@@ -1,0 +1,16 @@
+package:
+  name: ''
+  author: ''
+  author_email: ''
+  year: '2021'
+  description: ''
+  urls:
+    main: ''
+    documentation: ''
+    source: ''
+  keywords: []
+  install_requires: []
+  git: false
+documentation:
+  logo: ''
+  favicon: ''

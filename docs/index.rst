@@ -102,5 +102,7 @@ This program is free software: you can redistribute it and/or modify it under th
    developers
    changelog
    roadmap
+   configuration
+   directory-structure
    api/index
 

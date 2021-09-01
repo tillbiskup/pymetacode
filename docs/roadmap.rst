@@ -10,10 +10,6 @@ For version 0.1
 
 * Finish documentation
 
-  * Document configuration (YAML) - automatically created?
-
-  * Package directory structure (including explanation)
-
   * More examples how the automatically created code looks like (?)
 
   * Examples for help texts of CLI
