@@ -421,9 +421,7 @@ class ClassCreator:
     Raises
     ------
     ValueError
-        Raised if no class name is provided
-
-        Raised if no module name is provided
+        Raised if no class or module name is provided
 
 
     Examples
@@ -469,9 +467,7 @@ class ClassCreator:
         Raises
         ------
         ValueError
-            Raised if function name is missing
-
-            Raised if module name is missing
+            Raised if function or module name is missing
 
         """
         if name:
@@ -542,9 +538,7 @@ class FunctionCreator:
     Raises
     ------
     ValueError
-        Raised if no function name is provided
-
-        Raised if no module name is provided
+        Raised if no function or module name is provided
 
 
     Examples
@@ -589,9 +583,7 @@ class FunctionCreator:
         Raises
         ------
         ValueError
-            Raised if function name is missing
-
-            Raised if module name is missing
+            Raised if function or module name is missing
 
         """
         if name:
