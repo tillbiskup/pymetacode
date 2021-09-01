@@ -2,9 +2,9 @@ import os
 import setuptools
 
 
-def read(fname):
-    with open(os.path.join(os.path.dirname(__file__), fname)) as f:
-        content = f.read()
+def read(filename):
+    with open(os.path.join(os.path.dirname(__file__), filename)) as file:
+        content = file.read()
     return content
 
 
@@ -45,7 +45,7 @@ setuptools.setup(
     ],
     extras_require={
         'dev': ['prospector'],
-        'docs': ['sphinx', 'sphinx-rtd-theme'],
+        'docs': ['sphinx', 'sphinx-rtd-theme', 'sphinx_multiversion'],
     },
     python_requires='>=3.7',
 )

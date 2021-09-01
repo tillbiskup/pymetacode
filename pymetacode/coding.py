@@ -202,6 +202,7 @@ class PackageCreator:
         self._create_documentation_index()
         self._create_documentation_api_index()
         self._create_documentation_contents()
+        self._create_documentation_multiversion_templates()
 
     def _create_documentation_generator_files(self):
         make_files = ['make.bat', 'Makefile']
@@ -253,6 +254,17 @@ class PackageCreator:
                                          '{}.rst'.format(name)),
             )
             template.create()
+
+    def _create_documentation_multiversion_templates(self):
+        os.mkdir(os.path.join(self.name, 'docs', '_templates'))
+        make_files = ['page.html', 'versions.html']
+        for file in make_files:
+            contents = \
+                utils.get_data_from_pkg_resources(
+                    '/'.join(['docs', '_templates', file]))
+            destination = os.path.join(self.name, 'docs', '_templates', file)
+            with open(destination, 'w+', encoding='utf8') as doc_file:
+                doc_file.write(contents.decode("utf-8"))
 
     def _git_init(self):
         if self.configuration.package['git']:

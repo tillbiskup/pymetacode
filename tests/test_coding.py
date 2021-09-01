@@ -218,6 +218,14 @@ class TestPackageCreator(unittest.TestCase):
             contents = file.read()
         self.assertIn(self.name, contents)
 
+    def test_create_adds_templates_for_multiversion(self):
+        self.creator.create(name=self.name)
+        files = ['page.html', 'versions.html']
+        for file in files:
+            with self.subTest(file=file):
+                filename = os.path.join(self.name, 'docs', '_templates', file)
+                self.assertTrue(os.path.exists(filename))
+
     def test_create_with_git_true_creates_git_directory(self):
         configuration = pymetacode.configuration.Configuration()
         configuration.package['name'] = self.name

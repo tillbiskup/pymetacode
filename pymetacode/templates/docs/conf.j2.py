@@ -43,7 +43,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     # 'sphinx.ext.viewcode',
-    # 'sphinx_multiversion',
+    'sphinx_multiversion',
 ]
 
 # Add any paths that contain code here, relative to this directory.
