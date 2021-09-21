@@ -28,8 +28,9 @@ class {{ class.name }}:
         obj = {{ class.name }}()
         ...
 
-
-    .. versionadded:: 0.1
+    {% if package.version != '0.1' %}
+    .. versionadded:: {{ package.version }}
+    {% endif %}
 
     """
 

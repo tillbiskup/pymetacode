@@ -17,7 +17,9 @@ def {{ function.name }}():
         Short description
 
 
-    .. versionadded:: 0.1
+    {% if package.version != '0.1' %}
+    .. versionadded:: {{ package.version }}
+    {% endif %}
 
     """
     pass

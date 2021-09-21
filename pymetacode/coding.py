@@ -477,6 +477,8 @@ class ClassCreator:
         self.name = ''
         self.module = ''
         self.configuration = configuration.Configuration()
+        self._module_filename = ''
+        self._package_version = ''
 
     def create(self, name='', module=''):
         """
@@ -496,6 +498,11 @@ class ClassCreator:
             Raised if function or module name is missing
 
         """
+        self._check_prerequisites(module, name)
+        self._create_class()
+        self._create_test_class()
+
+    def _check_prerequisites(self, module, name):
         if name:
             self.name = name
         elif not self.name:
@@ -505,22 +512,23 @@ class ClassCreator:
         elif not self.module:
             raise ValueError('Module name missing')
         package = self.configuration.package['name']
-        if not os.path.exists(os.path.join(package, '{}.py'.format(
-                self.module))):
+        self._module_filename = os.path.join(package,
+                                             '{}.py'.format(self.module))
+        if not os.path.exists(self._module_filename):
             raise ValueError('Module {} does not exist'.format(self.module))
-        self._create_class()
-        self._create_test_class()
+        if not self._package_version:
+            version = utils.package_version_from_file()
+            self._package_version = '.'.join(version.split('.')[0:2])
 
     def _create_class(self):
         context = self.configuration.to_dict()
         context['class'] = {'name': self.name}
-        package = self.configuration.package['name']
-        filename = os.path.join(package, '{}.py'.format(self.module))
+        context['package'] = {'version': self._package_version}
         template = utils.Template(
             package_path='templates/code',
             template='class.j2.py',
             context=context,
-            destination=filename,
+            destination=self._module_filename,
         )
         template.append()
 
@@ -593,6 +601,8 @@ class FunctionCreator:
         self.name = ''
         self.module = ''
         self.configuration = configuration.Configuration()
+        self._module_filename = ''
+        self._package_version = ''
 
     def create(self, name='', module=''):
         """
@@ -612,6 +622,11 @@ class FunctionCreator:
             Raised if function or module name is missing
 
         """
+        self._check_prerequisites(module, name)
+        self._create_function()
+        self._create_test_class()
+
+    def _check_prerequisites(self, module, name):
         if name:
             self.name = name
         elif not self.name:
@@ -621,22 +636,20 @@ class FunctionCreator:
         elif not self.module:
             raise ValueError('Module name missing')
         package = self.configuration.package['name']
-        if not os.path.exists(os.path.join(package, '{}.py'.format(
-                self.module))):
+        self._module_filename = os.path.join(package,
+                                             '{}.py'.format(self.module))
+        if not os.path.exists(self._module_filename):
             raise ValueError('Module {} does not exist'.format(self.module))
-        self._create_function()
-        self._create_test_class()
 
     def _create_function(self):
         context = self.configuration.to_dict()
         context['function'] = {'name': self.name}
-        package = self.configuration.package['name']
-        filename = os.path.join(package, '{}.py'.format(self.module))
+        context['package'] = {'version': self._package_version}
         template = utils.Template(
             package_path='templates/code',
             template='function.j2.py',
             context=context,
-            destination=filename,
+            destination=self._module_filename,
         )
         template.append()
 

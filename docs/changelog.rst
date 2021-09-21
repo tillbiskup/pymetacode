@@ -20,6 +20,8 @@ New features
 
 * Alphabetical sorting of modules in API index.
 
+* Docstrings of classes and modules contain "versionadded" only if version > 0.1, and with correct version.
+
 
 Bug fixes
 ---------

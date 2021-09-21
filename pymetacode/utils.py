@@ -444,3 +444,22 @@ class Template:
                 'header_tilde': length * '~',
             }
             self.context['rst_markup'] = rst_markup
+
+
+def package_version_from_file():
+    """
+    Obtain version of the given package by reading file "VERSION".
+
+    The function attempts to read the version number from the file "VERSION"
+    in the current working directory. Therefore, if this file does not
+    exist, a FileNotFoundError will be raised.
+
+    Returns
+    -------
+    version : :class:`str`
+        Version string as contained in file "VERSION" in current directory
+
+    """
+    with open('VERSION', encoding='utf8') as file:
+        version = file.read()
+    return version

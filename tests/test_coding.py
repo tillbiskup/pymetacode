@@ -446,6 +446,8 @@ class TestClassCreator(unittest.TestCase):
 
     def setUp(self):
         self.creator = coding.ClassCreator()
+        with utils.change_working_dir('..'):
+            self.creator._package_version = utils.package_version_from_file()
         self.package = 'bar'
         self.module = 'foo'
         self.name = 'FooBar'
@@ -500,6 +502,22 @@ class TestClassCreator(unittest.TestCase):
             contents = file.read()
         self.assertIn('class {}:\n    """'.format(self.name), contents)
 
+    def test_create_adds_version_added(self):
+        self.creator._package_version = '0.2'
+        self.creator.create(name=self.name, module=self.module)
+        path = os.path.join(self.package, self.module + '.py')
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn('.. versionadded:: 0.2', contents)
+
+    def test_create_adds_version_added_only_if_not_initial_version(self):
+        self.creator._package_version = '0.1'
+        self.creator.create(name=self.name, module=self.module)
+        path = os.path.join(self.package, self.module + '.py')
+        with open(path) as file:
+            contents = file.read()
+        self.assertNotIn('.. versionadded:: ', contents)
+
     def test_create_creates_test_class_in_test_module(self):
         self.creator.create(name=self.name, module=self.module)
         path = os.path.join('tests', 'test_{}.py'.format(self.module))
@@ -513,6 +531,8 @@ class TestFunctionCreator(unittest.TestCase):
 
     def setUp(self):
         self.creator = coding.FunctionCreator()
+        with utils.change_working_dir('..'):
+            self.creator._package_version = utils.package_version_from_file()
         self.package = 'bar'
         self.module = 'foo'
         self.name = 'foo_bar'
@@ -566,6 +586,22 @@ class TestFunctionCreator(unittest.TestCase):
         with open(path) as file:
             contents = file.read()
         self.assertIn('def {}():\n    """'.format(self.name), contents)
+
+    def test_create_adds_version_added(self):
+        self.creator._package_version = '0.2'
+        self.creator.create(name=self.name, module=self.module)
+        path = os.path.join(self.package, self.module + '.py')
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn('.. versionadded:: 0.2', contents)
+
+    def test_create_adds_version_added_only_if_not_initial_version(self):
+        self.creator._package_version = '0.1'
+        self.creator.create(name=self.name, module=self.module)
+        path = os.path.join(self.package, self.module + '.py')
+        with open(path) as file:
+            contents = file.read()
+        self.assertNotIn('.. versionadded:: ', contents)
 
     def test_create_creates_test_class_in_test_module(self):
         self.creator.create(name=self.name, module=self.module)
