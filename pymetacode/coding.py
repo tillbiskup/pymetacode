@@ -640,6 +640,9 @@ class FunctionCreator:
                                              '{}.py'.format(self.module))
         if not os.path.exists(self._module_filename):
             raise ValueError('Module {} does not exist'.format(self.module))
+        if not self._package_version:
+            version = utils.package_version_from_file()
+            self._package_version = '.'.join(version.split('.')[0:2])
 
     def _create_function(self):
         context = self.configuration.to_dict()
