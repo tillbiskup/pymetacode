@@ -153,16 +153,16 @@ class PackageCreator:
             utils.ensure_file_exists(init_filename)
 
     def _create_gitignore(self):
-        contents = utils.get_data_from_pkg_resources('gitignore')
+        contents = utils.get_package_data('gitignore')
         with open(os.path.join(self.name, '.gitignore'), 'w+', encoding='utf8')\
                 as file:
-            file.write(contents.decode("utf-8"))
+            file.write(contents)
 
     def _create_prospector_profile(self):
-        contents = utils.get_data_from_pkg_resources('prospector.yaml')
+        contents = utils.get_package_data('prospector.yaml')
         with open(os.path.join(self.name, '.prospector.yaml'), 'w+',
                   encoding='utf8') as file:
-            file.write(contents.decode("utf-8"))
+            file.write(contents)
 
     def _create_version_file(self):
         with open(os.path.join(self.name, 'VERSION'), 'w+', encoding='utf8') \
@@ -171,7 +171,7 @@ class PackageCreator:
 
     def _create_license_file(self):
         template = utils.Template(
-            package_path='templates/licenses',
+            package_path='licenses',
             template='bsd-2clause.j2.txt',
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'LICENSE'),
@@ -180,7 +180,7 @@ class PackageCreator:
 
     def _create_setup_py_file(self):
         template = utils.Template(
-            package_path='templates',
+            package_path='',
             template='setup.j2.py',
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'setup.py'),
@@ -189,7 +189,7 @@ class PackageCreator:
 
     def _create_readme_file(self):
         template = utils.Template(
-            package_path='templates',
+            package_path='',
             template='README.j2.rst',
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'README.rst'),
@@ -197,10 +197,10 @@ class PackageCreator:
         template.create()
 
     def _create_version_updater_file(self):
-        contents = utils.get_data_from_pkg_resources('incrementVersion.sh')
+        contents = utils.get_package_data('incrementVersion.sh')
         destination = os.path.join(self.name, 'bin', 'incrementVersion.sh')
         with open(destination, 'w+', encoding='utf8') as file:
-            file.write(contents.decode("utf-8"))
+            file.write(contents)
         os.chmod(destination, os.stat(destination).st_mode | stat.S_IXUSR)
 
     def _create_documentation_stub(self):
@@ -215,10 +215,10 @@ class PackageCreator:
         make_files = ['make.bat', 'Makefile']
         for file in make_files:
             contents = \
-                utils.get_data_from_pkg_resources('/'.join(['docs', file]))
+                utils.get_package_data('/'.join(['docs', file]))
             destination = os.path.join(self.name, 'docs', file)
             with open(destination, 'w+', encoding='utf8') as doc_file:
-                doc_file.write(contents.decode("utf-8"))
+                doc_file.write(contents)
 
     def _create_documentation_index(self):
         shutil.copyfile(
@@ -226,7 +226,7 @@ class PackageCreator:
             os.path.join(self.name, 'docs', 'index.rst')
         )
         template = utils.Template(
-            package_path='templates/docs',
+            package_path='docs',
             template='main-toctree.j2.rst',
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'docs', 'index.rst'),
@@ -235,7 +235,7 @@ class PackageCreator:
 
     def _create_documentation_config(self):
         template = utils.Template(
-            package_path='templates/docs',
+            package_path='docs',
             template='conf.j2.py',
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'docs', 'conf.py'),
@@ -244,7 +244,7 @@ class PackageCreator:
 
     def _create_documentation_api_index(self):
         template = utils.Template(
-            package_path='templates/docs',
+            package_path='docs',
             template='api_index.j2.rst',
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'docs', 'api', 'index.rst'),
@@ -254,7 +254,7 @@ class PackageCreator:
     def _create_documentation_contents(self):
         for name in self.documentation['pages']:
             template = utils.Template(
-                package_path='templates/docs',
+                package_path='docs',
                 template='{}.j2.rst'.format(name),
                 context=self.configuration.to_dict(),
                 destination=os.path.join(self.name, 'docs',
@@ -267,11 +267,11 @@ class PackageCreator:
         make_files = ['page.html', 'versions.html']
         for file in make_files:
             contents = \
-                utils.get_data_from_pkg_resources(
+                utils.get_package_data(
                     '/'.join(['docs', '_templates', file]))
             destination = os.path.join(self.name, 'docs', '_templates', file)
             with open(destination, 'w+', encoding='utf8') as doc_file:
-                doc_file.write(contents.decode("utf-8"))
+                doc_file.write(contents)
 
     def _git_init(self):
         if self.configuration.package['git']:
@@ -362,7 +362,7 @@ class ModuleCreator:
         context = self.configuration.to_dict()
         context['module'] = {'name': self.name}
         template = utils.Template(
-            package_path='templates/code',
+            package_path='code',
             template='module.j2.py',
             context=context,
             destination=filename,
@@ -377,7 +377,7 @@ class ModuleCreator:
         context = self.configuration.to_dict()
         context['module'] = {'name': self.name}
         template = utils.Template(
-            package_path='templates/code',
+            package_path='code',
             template='test_module.j2.py',
             context=context,
             destination=filename,
@@ -396,7 +396,7 @@ class ModuleCreator:
         context['header_extension'] = \
             (len(package) + len(self.name) + 1) * '='
         template = utils.Template(
-            package_path='templates/docs',
+            package_path='docs',
             template='api_module.j2.rst',
             context=context,
             destination=filename,
@@ -525,7 +525,7 @@ class ClassCreator:
         context['class'] = {'name': self.name}
         context['package'] = {'version': self._package_version}
         template = utils.Template(
-            package_path='templates/code',
+            package_path='code',
             template='class.j2.py',
             context=context,
             destination=self._module_filename,
@@ -541,7 +541,7 @@ class ClassCreator:
         context['module'] = {'name': self.module}
         filename = os.path.join('tests', 'test_{}.py'.format(self.module))
         template = utils.Template(
-            package_path='templates/code',
+            package_path='code',
             template='test_class.j2.py',
             context=context,
             destination=filename,
@@ -649,7 +649,7 @@ class FunctionCreator:
         context['function'] = {'name': self.name}
         context['package'] = {'version': self._package_version}
         template = utils.Template(
-            package_path='templates/code',
+            package_path='code',
             template='function.j2.py',
             context=context,
             destination=self._module_filename,
@@ -665,7 +665,7 @@ class FunctionCreator:
         context['module'] = {'name': self.module}
         filename = os.path.join('tests', 'test_{}.py'.format(self.module))
         template = utils.Template(
-            package_path='templates/code',
+            package_path='code',
             template='test_function.j2.py',
             context=context,
             destination=filename,

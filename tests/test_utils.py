@@ -2,7 +2,11 @@ import collections
 import copy
 import datetime
 import os
+import shutil
 import unittest
+from unittest.mock import patch
+
+import appdirs
 
 from pymetacode import utils
 
@@ -32,16 +36,39 @@ class TestEnsureFileExists(unittest.TestCase):
         self.assertEqual('foo bar', file_content)
 
 
-class TestGetDataFromPkgResources(unittest.TestCase):
+class TestGetPackageData(unittest.TestCase):
     def setUp(self):
-        self.filename = 'gitignore'
+        self.filename = 'bar'
+        self.data_dir = 'foo'
 
-    def test_get_data_from_pkg_resources_without_name_raises(self):
+    def tearDown(self):
+        if os.path.exists(self.data_dir):
+            shutil.rmtree(self.data_dir)
+
+    def create_data_dir_and_contents(self):
+        os.mkdir(self.data_dir)
+        with open(os.path.join(self.data_dir, self.filename), 'w+') as file:
+            file.write('foo')
+
+    def test_get_package_data_without_name_raises(self):
         with self.assertRaises(ValueError):
-            utils.get_data_from_pkg_resources()
+            utils.get_package_data()
 
-    def test_get_data_from_pkg_resources_returns_content(self):
-        content = utils.get_data_from_pkg_resources(self.filename)
+    def test_get_package_data_returns_content(self):
+        with patch('pkgutil.get_data', return_value="foo".encode()):
+            content = utils.get_package_data(self.filename)
+        self.assertTrue(content)
+
+    def test_get_package_data_with_user_data_returns_content(self):
+        self.create_data_dir_and_contents()
+        with patch('appdirs.user_data_dir', return_value=self.data_dir):
+            content = utils.get_package_data(self.filename, directory='')
+        self.assertTrue(content)
+
+    def test_get_package_data_with_site_data_returns_content(self):
+        self.create_data_dir_and_contents()
+        with patch('appdirs.site_data_dir', return_value=self.data_dir):
+            content = utils.get_package_data(self.filename, directory='')
         self.assertTrue(content)
 
 
@@ -269,13 +296,8 @@ class TestTemplate(unittest.TestCase):
     def test_instantiate_class(self):
         pass
 
-    def test_package_path_sets_package_path_in_environment(self):
-        self.template.package_path = 'templates/licenses'
-        self.assertEqual(self.template.package_path,
-                         self.template.environment.loader.package_path)
-
     def test_render_renders_template(self):
-        self.template.package_path = 'templates/licenses'
+        self.template.path = 'licenses'
         self.template.template = 'bsd-2clause.j2.txt'
         self.template.context = {'package': {'year': '2021',
                                              'author': 'John Doe'}}
@@ -283,7 +305,7 @@ class TestTemplate(unittest.TestCase):
         self.assertIn('Copyright (c) 2021 John Doe', rendered_template)
 
     def test_render_adds_rst_header_markup_to_context(self):
-        self.template.package_path = 'templates/licenses'
+        self.template.path = 'licenses'
         self.template.template = 'bsd-2clause.j2.txt'
         self.template.context = {'package': {'year': '2021',
                                              'author': 'John Doe',
@@ -292,7 +314,7 @@ class TestTemplate(unittest.TestCase):
         self.assertIn('rst_markup', self.template.context.keys())
 
     def test_create_creates_file_at_destination(self):
-        self.template.package_path = 'templates/licenses'
+        self.template.path = 'licenses'
         self.template.template = 'bsd-2clause.j2.txt'
         self.template.context = {'package': {'year': '2021',
                                              'author': 'John Doe'}}
@@ -301,7 +323,7 @@ class TestTemplate(unittest.TestCase):
         self.assertTrue(os.path.exists(self.destination))
 
     def test_create_fills_destination(self):
-        self.template.package_path = 'templates/licenses'
+        self.template.path = 'licenses'
         self.template.template = 'bsd-2clause.j2.txt'
         self.template.context = {'package': {'year': '2021',
                                              'author': 'John Doe'}}
@@ -315,7 +337,7 @@ class TestTemplate(unittest.TestCase):
         test_content = 'foo bar bla blub\n\n'
         with open(self.destination, 'w+') as file:
             file.write(test_content)
-        self.template.package_path = 'templates/licenses'
+        self.template.path = 'licenses'
         self.template.template = 'bsd-2clause.j2.txt'
         self.template.context = {'package': {'year': '2021',
                                              'author': 'John Doe'}}
@@ -329,7 +351,7 @@ class TestTemplate(unittest.TestCase):
         test_content = 'foo bar bla blub\n\n'
         with open(self.destination, 'w+') as file:
             file.write(test_content)
-        self.template.package_path = 'templates/licenses'
+        self.template.path = 'licenses'
         self.template.template = 'bsd-2clause.j2.txt'
         self.template.context = {'package': {'year': '2021',
                                              'author': 'John Doe'}}
@@ -341,7 +363,7 @@ class TestTemplate(unittest.TestCase):
 
     def test_create_with_properties_set_on_instantiation(self):
         template = utils.Template(
-            package_path='templates/licenses',
+            package_path='licenses',
             template='bsd-2clause.j2.txt',
             context={'package': {'year': '2021', 'author': 'John Doe'}},
             destination=self.destination

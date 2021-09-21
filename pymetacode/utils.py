@@ -59,6 +59,7 @@ import os
 import pkgutil
 import re
 
+import appdirs
 import jinja2
 
 
@@ -87,13 +88,32 @@ def ensure_file_exists(name=''):
         pass
 
 
-def get_data_from_pkg_resources(name='', directory='templates'):
+def get_package_data(name='', directory='templates'):
     """
-    Obtain contents from a non-code file stored within the package.
+    Obtain contents from a non-code file ("package data").
 
-    Rather than manually playing around with paths relative to the package
-    root directory, contents non-code files need to be obtained in a way
-    that works with different kinds of package installation.
+    There are generally three places where package data can be stored:
+
+    #. Within the package,
+
+    #. In the site-wide data directory,
+
+    #. In the user-specific data directory.
+
+    The location of the latter two is specific to the operating system used.
+    Here, the `appdirs package <https://pypi.org/project/appdirs/>`_ is
+    used, providing paths for all major platforms (Windows, macOS, Linux/Unix).
+
+    The given file is searched for in the user-specific data directory
+    first, followed by the site-wide data directory. Only if it cannot be
+    found in either place, as a fallback the package itself is queried.
+    Thus, files under control of the individual user take precedence over
+    site-wide files and files distributed with the package.
+
+    A note to obtaining data from the distributed package: Rather than
+    manually playing around with paths relative to the package root
+    directory, contents of non-code files need to be obtained in a way that
+    works with different kinds of package installation.
 
     Note that in Python, only files within the package, *i.e.* within the
     directory where all the modules are located, can be accessed, not files
@@ -111,15 +131,23 @@ def get_data_from_pkg_resources(name='', directory='templates'):
 
     Returns
     -------
-    contents : :class:`bytes`
-        Bytes array containing the contents of the non-code file.
-
-        To convert this into a string, use the :func:`decode` function.
+    contents : :class:`str`
+        String containing the contents of the non-code file.
 
     """
     if not name:
         raise ValueError('No filename given.')
-    contents = pkgutil.get_data(__package__, '/'.join([directory, name]))
+    if os.path.exists(os.path.join(appdirs.user_data_dir(), directory, name)):
+        with open(os.path.join(appdirs.user_data_dir(), directory, name)) as \
+                file:
+            contents = file.read()
+    elif os.path.exists(os.path.join(appdirs.site_data_dir(), directory, name)):
+        with open(os.path.join(appdirs.site_data_dir(), directory, name)) as \
+                file:
+            contents = file.read()
+    else:
+        contents = \
+            pkgutil.get_data(__package__, '/'.join([directory, name])).decode()
     return contents
 
 
@@ -325,11 +353,19 @@ class Template:
     the dictionary containing the variables to be replaced within the
     template), and the destination the rendered template should be output to.
 
+    .. note::
+
+        Regarding the path of a template, three different places are looked
+        up, using the function :func:`get_package_data`: first in the user
+        data directory, then in the site data directory, and finally within
+        the package (distribution). For details see the description of the
+        function :func:`get_package_data`.
+
 
     Attributes
     ----------
-    package_path : :class:`str`
-        Location within the package where the template resides.
+    path : :class:`str`
+        Location where the template resides (see note above).
 
     template : :class:`str`
         Name of the template to be used.
@@ -351,7 +387,7 @@ class Template:
     .. code-block::
 
         template = Template(
-            package_path='some/relative/path/to/the/template',
+            path='some/relative/path/to/the/template',
             template='name_of_the_template',
             context=dict(),
             destination='name_of_the_file_to_output_rendered_template_to',
@@ -370,7 +406,7 @@ class Template:
 
     def __init__(self, package_path='', template='', context=None,
                  destination=''):
-        self.package_path = package_path
+        self.path = package_path
         self.template = template
         self.context = context
         self.destination = destination
@@ -390,8 +426,7 @@ class Template:
 
         """
         env = jinja2.Environment(
-            loader=jinja2.PackageLoader(__package__,
-                                        package_path=self.package_path),
+            loader=jinja2.FunctionLoader(get_package_data),
             autoescape=True,
             keep_trailing_newline=True,
         )
@@ -408,7 +443,8 @@ class Template:
 
         """
         self._add_rst_markup_to_context()
-        template = self.environment.get_template(self.template)
+        template = self.environment.get_template(
+            os.path.join(self.path, self.template))
         return template.render(self.context)
 
     def create(self):
