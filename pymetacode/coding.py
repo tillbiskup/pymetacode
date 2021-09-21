@@ -126,6 +126,7 @@ class PackageCreator:
         self._create_subdirectories()
         self._create_init_files()
         self._create_gitignore()
+        self._create_prospector_profile()
         self._create_version_file()
         self._create_license_file()
         self._create_setup_py_file()
@@ -155,6 +156,12 @@ class PackageCreator:
         contents = utils.get_data_from_pkg_resources('gitignore')
         with open(os.path.join(self.name, '.gitignore'), 'w+', encoding='utf8')\
                 as file:
+            file.write(contents.decode("utf-8"))
+
+    def _create_prospector_profile(self):
+        contents = utils.get_data_from_pkg_resources('prospector.yaml')
+        with open(os.path.join(self.name, '.prospector.yaml'), 'w+',
+                  encoding='utf8') as file:
             file.write(contents.decode("utf-8"))
 
     def _create_version_file(self):

@@ -8,8 +8,6 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.2
 ===============
 
-* Add prospector configuration.
-
 * Automatic alphabetical sorting of modules in API index.
 
 * "versionadded" only if version > 0.1, and with correct version

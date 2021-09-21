@@ -79,6 +79,11 @@ class TestPackageCreator(unittest.TestCase):
         self.creator.create(name=self.name)
         self.assertTrue(os.path.exists(os.path.join(self.name, '.gitignore')))
 
+    def test_create_copies_prospector_file(self):
+        self.creator.create(name=self.name)
+        self.assertTrue(os.path.exists(os.path.join(self.name,
+                                                    '.prospector.yaml')))
+
     def test_create_creates_version_file(self):
         self.creator.create(name=self.name)
         self.assertTrue(os.path.exists(os.path.join(self.name, 'VERSION')))

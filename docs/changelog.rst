@@ -16,6 +16,14 @@ New features
 
 * Full sphinx-multiversion support (including version switcher and banner)
 
+* Prospector profile gets added to project.
+
+
+Bug fixes
+---------
+
+* Whitespace in setup.py (spurious empty lines)
+
 
 Version 0.1.1
 =============
