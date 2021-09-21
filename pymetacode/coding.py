@@ -413,8 +413,13 @@ class ModuleCreator:
         package = self.configuration.package['name']
         start_of_toctree = lines.index('.. toctree::')
         end_of_toctree = lines[start_of_toctree:].index('')
-        lines.insert(start_of_toctree + end_of_toctree + 1,
+        lines.insert(start_of_toctree + end_of_toctree - 1,
                      '    {}.{}'.format(package, self.name))
+        # Sort entries
+        new_end_of_toctree = lines[start_of_toctree:].index('')
+        start_sort = start_of_toctree + end_of_toctree - 1
+        end_sort = start_of_toctree + new_end_of_toctree
+        lines[start_sort:end_sort] = sorted(lines[start_sort:end_sort])
         with open(index_filename, "w+", encoding='utf8') as file:
             file.write('\n'.join(lines))
 

@@ -18,6 +18,8 @@ New features
 
 * Prospector profile gets added to project.
 
+* Alphabetical sorting of modules in API index.
+
 
 Bug fixes
 ---------

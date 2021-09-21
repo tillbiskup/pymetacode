@@ -405,7 +405,7 @@ class TestModuleCreator(unittest.TestCase):
 
         .. toctree::
             :maxdepth: 1
-
+            
 
 
         Index
@@ -418,6 +418,28 @@ class TestModuleCreator(unittest.TestCase):
         with open(index_filename) as file:
             contents = file.read()
         self.assertIn(toctree_entry, contents)
+
+    def test_create_sorts_api_toctree_alphabetically(self):
+        index_filename = os.path.join('docs', 'api', 'index.rst')
+        index_contents = """
+
+        .. toctree::
+            :maxdepth: 1
+            
+
+        Index
+        -----
+        """.replace('        ', '')
+        with open(index_filename, 'w+') as file:
+            file.write(index_contents)
+        self.creator.create(name="zzz")
+        self.creator.create(name=self.name)
+        new_toctree_entry = '    {}.{}'.format(self.package, self.name)
+        old_toctree_entry = '    {}.{}'.format(self.package, "zzz")
+        with open(index_filename) as file:
+            contents = file.read()
+        self.assertLess(contents.index(new_toctree_entry),
+                        contents.index(old_toctree_entry))
 
 
 class TestClassCreator(unittest.TestCase):
