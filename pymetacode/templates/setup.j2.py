@@ -2,9 +2,9 @@ import os
 import setuptools
 
 
-def read(fname):
-    with open(os.path.join(os.path.dirname(__file__), fname)) as f:
-        content = f.read()
+def read(filename):
+    with open(os.path.join(os.path.dirname(__file__), filename)) as file:
+        content = file.read()
     return content
 
 
@@ -24,9 +24,11 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=('tests', 'docs')),
     license='BSD',
     keywords=[
-        {%- if package.keywords %}{% for item in package.keywords %}
+        {%- if package.keywords %}
+        {%- for item in package.keywords %}
         "{{ item }}",
-        {% endfor %}{% endif -%}
+        {%- endfor %}
+        {%- endif %}
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -39,13 +41,15 @@ setuptools.setup(
         "Development Status :: 4 - Beta",
     ],
     install_requires=[
-        {%- if package.install_requires %}{% for item in package.install_requires %}
+        {%- if package.install_requires %}
+        {%- for item in package.install_requires %}
         "{{ item }}",
-        {% endfor %}{% endif -%}
+        {%- endfor %}
+        {%- endif %}
     ],
     extras_require={
         'dev': ['prospector'],
-        'docs': ['sphinx', 'sphinx-rtd-theme'],
+        'docs': ['sphinx', 'sphinx-rtd-theme', 'sphinx_multiversion'],
     },
     python_requires='>=3.7',
 )

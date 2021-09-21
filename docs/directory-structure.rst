@@ -24,16 +24,19 @@ As there are different ways of how to eventually structure your package director
     │   ├── Makefile
     │   ├── people.rst
     │   ├── roadmap.rst
+    │   ├── _templates
+    │   │   ├── page.html
+    │   │   └── versions.html
     │   └── usecases.rst
-    ├── .gitignore
-    ├── LICENSE
     ├── mypackage
     │   └── __init__.py
+    ├── tests
+    │   └── __init__.py
+    ├── .gitignore
+    ├── LICENSE
     ├── .package_config.yaml
     ├── README.rst
     ├── setup.py
-    ├── tests
-    │   └── __init__.py
     └── VERSION
 
 

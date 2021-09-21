@@ -98,6 +98,17 @@ This would write the default configuration to "mypackage_config.yaml". You may w
 Now, you have a complete package that is installable and deployable. If you would like to know what directories and files have been created, have a look at the :doc:`package directory structure <directory-structure>`. Next is to add some modules to your newly created package.
 
 
+.. hint::
+
+    You can even use a lazy form of the first command, namely
+
+    .. code-block:: bash
+
+        pymeta write config
+
+    This will result in a configuration file with the default name ``package_config.yaml``.
+
+
 Adding modules, classes, functions
 ==================================
 

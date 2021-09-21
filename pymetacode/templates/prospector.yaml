@@ -3,7 +3,6 @@
 
 ignore-paths:
   - templates
-  - build
 
 inherits:
   - strictness_high

@@ -79,6 +79,11 @@ class TestPackageCreator(unittest.TestCase):
         self.creator.create(name=self.name)
         self.assertTrue(os.path.exists(os.path.join(self.name, '.gitignore')))
 
+    def test_create_copies_prospector_file(self):
+        self.creator.create(name=self.name)
+        self.assertTrue(os.path.exists(os.path.join(self.name,
+                                                    '.prospector.yaml')))
+
     def test_create_creates_version_file(self):
         self.creator.create(name=self.name)
         self.assertTrue(os.path.exists(os.path.join(self.name, 'VERSION')))
@@ -217,6 +222,14 @@ class TestPackageCreator(unittest.TestCase):
         with open(os.path.join(self.name, 'docs', 'conf.py')) as file:
             contents = file.read()
         self.assertIn(self.name, contents)
+
+    def test_create_adds_templates_for_multiversion(self):
+        self.creator.create(name=self.name)
+        files = ['page.html', 'versions.html']
+        for file in files:
+            with self.subTest(file=file):
+                filename = os.path.join(self.name, 'docs', '_templates', file)
+                self.assertTrue(os.path.exists(filename))
 
     def test_create_with_git_true_creates_git_directory(self):
         configuration = pymetacode.configuration.Configuration()
@@ -392,7 +405,7 @@ class TestModuleCreator(unittest.TestCase):
 
         .. toctree::
             :maxdepth: 1
-
+            
 
 
         Index
@@ -406,11 +419,35 @@ class TestModuleCreator(unittest.TestCase):
             contents = file.read()
         self.assertIn(toctree_entry, contents)
 
+    def test_create_sorts_api_toctree_alphabetically(self):
+        index_filename = os.path.join('docs', 'api', 'index.rst')
+        index_contents = """
+
+        .. toctree::
+            :maxdepth: 1
+            
+
+        Index
+        -----
+        """.replace('        ', '')
+        with open(index_filename, 'w+') as file:
+            file.write(index_contents)
+        self.creator.create(name="zzz")
+        self.creator.create(name=self.name)
+        new_toctree_entry = '    {}.{}'.format(self.package, self.name)
+        old_toctree_entry = '    {}.{}'.format(self.package, "zzz")
+        with open(index_filename) as file:
+            contents = file.read()
+        self.assertLess(contents.index(new_toctree_entry),
+                        contents.index(old_toctree_entry))
+
 
 class TestClassCreator(unittest.TestCase):
 
     def setUp(self):
         self.creator = coding.ClassCreator()
+        with utils.change_working_dir('..'):
+            self.creator._package_version = utils.package_version_from_file()
         self.package = 'bar'
         self.module = 'foo'
         self.name = 'FooBar'
@@ -465,6 +502,22 @@ class TestClassCreator(unittest.TestCase):
             contents = file.read()
         self.assertIn('class {}:\n    """'.format(self.name), contents)
 
+    def test_create_adds_version_added(self):
+        self.creator._package_version = '0.2'
+        self.creator.create(name=self.name, module=self.module)
+        path = os.path.join(self.package, self.module + '.py')
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn('.. versionadded:: 0.2', contents)
+
+    def test_create_adds_version_added_only_if_not_initial_version(self):
+        self.creator._package_version = '0.1'
+        self.creator.create(name=self.name, module=self.module)
+        path = os.path.join(self.package, self.module + '.py')
+        with open(path) as file:
+            contents = file.read()
+        self.assertNotIn('.. versionadded:: ', contents)
+
     def test_create_creates_test_class_in_test_module(self):
         self.creator.create(name=self.name, module=self.module)
         path = os.path.join('tests', 'test_{}.py'.format(self.module))
@@ -478,6 +531,8 @@ class TestFunctionCreator(unittest.TestCase):
 
     def setUp(self):
         self.creator = coding.FunctionCreator()
+        with utils.change_working_dir('..'):
+            self.creator._package_version = utils.package_version_from_file()
         self.package = 'bar'
         self.module = 'foo'
         self.name = 'foo_bar'
@@ -531,6 +586,22 @@ class TestFunctionCreator(unittest.TestCase):
         with open(path) as file:
             contents = file.read()
         self.assertIn('def {}():\n    """'.format(self.name), contents)
+
+    def test_create_adds_version_added(self):
+        self.creator._package_version = '0.2'
+        self.creator.create(name=self.name, module=self.module)
+        path = os.path.join(self.package, self.module + '.py')
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn('.. versionadded:: 0.2', contents)
+
+    def test_create_adds_version_added_only_if_not_initial_version(self):
+        self.creator._package_version = '0.1'
+        self.creator.create(name=self.name, module=self.module)
+        path = os.path.join(self.package, self.module + '.py')
+        with open(path) as file:
+            contents = file.read()
+        self.assertNotIn('.. versionadded:: ', contents)
 
     def test_create_creates_test_class_in_test_module(self):
         self.creator.create(name=self.name, module=self.module)

@@ -126,6 +126,7 @@ class PackageCreator:
         self._create_subdirectories()
         self._create_init_files()
         self._create_gitignore()
+        self._create_prospector_profile()
         self._create_version_file()
         self._create_license_file()
         self._create_setup_py_file()
@@ -155,6 +156,12 @@ class PackageCreator:
         contents = utils.get_data_from_pkg_resources('gitignore')
         with open(os.path.join(self.name, '.gitignore'), 'w+', encoding='utf8')\
                 as file:
+            file.write(contents.decode("utf-8"))
+
+    def _create_prospector_profile(self):
+        contents = utils.get_data_from_pkg_resources('prospector.yaml')
+        with open(os.path.join(self.name, '.prospector.yaml'), 'w+',
+                  encoding='utf8') as file:
             file.write(contents.decode("utf-8"))
 
     def _create_version_file(self):
@@ -202,6 +209,7 @@ class PackageCreator:
         self._create_documentation_index()
         self._create_documentation_api_index()
         self._create_documentation_contents()
+        self._create_documentation_multiversion_templates()
 
     def _create_documentation_generator_files(self):
         make_files = ['make.bat', 'Makefile']
@@ -253,6 +261,17 @@ class PackageCreator:
                                          '{}.rst'.format(name)),
             )
             template.create()
+
+    def _create_documentation_multiversion_templates(self):
+        os.mkdir(os.path.join(self.name, 'docs', '_templates'))
+        make_files = ['page.html', 'versions.html']
+        for file in make_files:
+            contents = \
+                utils.get_data_from_pkg_resources(
+                    '/'.join(['docs', '_templates', file]))
+            destination = os.path.join(self.name, 'docs', '_templates', file)
+            with open(destination, 'w+', encoding='utf8') as doc_file:
+                doc_file.write(contents.decode("utf-8"))
 
     def _git_init(self):
         if self.configuration.package['git']:
@@ -394,8 +413,13 @@ class ModuleCreator:
         package = self.configuration.package['name']
         start_of_toctree = lines.index('.. toctree::')
         end_of_toctree = lines[start_of_toctree:].index('')
-        lines.insert(start_of_toctree + end_of_toctree + 1,
+        lines.insert(start_of_toctree + end_of_toctree - 1,
                      '    {}.{}'.format(package, self.name))
+        # Sort entries
+        new_end_of_toctree = lines[start_of_toctree:].index('')
+        start_sort = start_of_toctree + end_of_toctree - 1
+        end_sort = start_of_toctree + new_end_of_toctree
+        lines[start_sort:end_sort] = sorted(lines[start_sort:end_sort])
         with open(index_filename, "w+", encoding='utf8') as file:
             file.write('\n'.join(lines))
 
@@ -453,6 +477,8 @@ class ClassCreator:
         self.name = ''
         self.module = ''
         self.configuration = configuration.Configuration()
+        self._module_filename = ''
+        self._package_version = ''
 
     def create(self, name='', module=''):
         """
@@ -472,6 +498,11 @@ class ClassCreator:
             Raised if function or module name is missing
 
         """
+        self._check_prerequisites(module, name)
+        self._create_class()
+        self._create_test_class()
+
+    def _check_prerequisites(self, module, name):
         if name:
             self.name = name
         elif not self.name:
@@ -481,22 +512,23 @@ class ClassCreator:
         elif not self.module:
             raise ValueError('Module name missing')
         package = self.configuration.package['name']
-        if not os.path.exists(os.path.join(package, '{}.py'.format(
-                self.module))):
+        self._module_filename = os.path.join(package,
+                                             '{}.py'.format(self.module))
+        if not os.path.exists(self._module_filename):
             raise ValueError('Module {} does not exist'.format(self.module))
-        self._create_class()
-        self._create_test_class()
+        if not self._package_version:
+            version = utils.package_version_from_file()
+            self._package_version = '.'.join(version.split('.')[0:2])
 
     def _create_class(self):
         context = self.configuration.to_dict()
         context['class'] = {'name': self.name}
-        package = self.configuration.package['name']
-        filename = os.path.join(package, '{}.py'.format(self.module))
+        context['package'] = {'version': self._package_version}
         template = utils.Template(
             package_path='templates/code',
             template='class.j2.py',
             context=context,
-            destination=filename,
+            destination=self._module_filename,
         )
         template.append()
 
@@ -569,6 +601,8 @@ class FunctionCreator:
         self.name = ''
         self.module = ''
         self.configuration = configuration.Configuration()
+        self._module_filename = ''
+        self._package_version = ''
 
     def create(self, name='', module=''):
         """
@@ -588,6 +622,11 @@ class FunctionCreator:
             Raised if function or module name is missing
 
         """
+        self._check_prerequisites(module, name)
+        self._create_function()
+        self._create_test_class()
+
+    def _check_prerequisites(self, module, name):
         if name:
             self.name = name
         elif not self.name:
@@ -597,22 +636,23 @@ class FunctionCreator:
         elif not self.module:
             raise ValueError('Module name missing')
         package = self.configuration.package['name']
-        if not os.path.exists(os.path.join(package, '{}.py'.format(
-                self.module))):
+        self._module_filename = os.path.join(package,
+                                             '{}.py'.format(self.module))
+        if not os.path.exists(self._module_filename):
             raise ValueError('Module {} does not exist'.format(self.module))
-        self._create_function()
-        self._create_test_class()
+        if not self._package_version:
+            version = utils.package_version_from_file()
+            self._package_version = '.'.join(version.split('.')[0:2])
 
     def _create_function(self):
         context = self.configuration.to_dict()
         context['function'] = {'name': self.name}
-        package = self.configuration.package['name']
-        filename = os.path.join(package, '{}.py'.format(self.module))
+        context['package'] = {'version': self._package_version}
         template = utils.Template(
             package_path='templates/code',
             template='function.j2.py',
             context=context,
-            destination=filename,
+            destination=self._module_filename,
         )
         template.append()
 

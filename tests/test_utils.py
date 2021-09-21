@@ -350,3 +350,13 @@ class TestTemplate(unittest.TestCase):
         with open(self.destination) as file:
             content = file.read()
         self.assertIn('Copyright (c) 2021 John Doe', content)
+
+
+class TestPackageVersionFromFile(unittest.TestCase):
+
+    def test_package_version_from_file_returns_version(self):
+        with utils.change_working_dir('..'):
+            result = utils.package_version_from_file()
+        with open(os.path.join('..', 'VERSION')) as file:
+            version = file.read()
+        self.assertEqual(version, result)

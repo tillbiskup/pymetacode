@@ -16,7 +16,6 @@ import datetime
 import oyaml as yaml
 
 from pymetacode import utils
-from pymetacode import utils
 
 
 class Configuration(utils.ToDictMixin):
