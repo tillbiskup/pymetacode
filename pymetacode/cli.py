@@ -52,11 +52,15 @@ Module documentation
 ====================
 
 """
+import logging
 import os.path
 import shutil
 import sys
 
 from pymetacode import coding, configuration
+
+
+logger = logging.getLogger(__name__)
 
 
 class Cli:
@@ -198,6 +202,7 @@ class Cli:
         if len(self.options) == 3:
             self.conf_file = self.options[2]
         conf.to_file(self.conf_file)
+        logger.info('Wrote configuration to file "%s"', self.conf_file)
 
     def _command_create(self):
         if not self.options or not self.options[0] == "package" \
@@ -214,8 +219,8 @@ class Cli:
         shutil.copyfile(conf_file,
                         os.path.join(conf.package['name'],
                                      '.package_config.yaml'))
-        print('Created package "{}" in directory "{}"'.format(
-            conf.package['name'], conf.package['name']))
+        logger.info('Created package "%s" in directory "%s"',
+                    conf.package['name'], conf.package['name'])
 
     def _command_add(self):
         if not self.options:
@@ -235,7 +240,7 @@ class Cli:
         creator.configuration = conf
         creator.name = self.options[1]
         creator.create()
-        print('Added module "{}"'.format(creator.name))
+        logger.info('Added module "%s"', creator.name)
 
     def _command_add_class(self, conf):
         creator = coding.ClassCreator()
@@ -243,8 +248,8 @@ class Cli:
         creator.name = self.options[1]
         creator.module = self.options[3]
         creator.create()
-        print('Added class "{}" to module "{}"'.format(creator.name,
-                                                       creator.module))
+        logger.info('Added class "%s" to module "%s"', creator.name,
+                    creator.module)
 
     def _command_add_function(self, conf):
         creator = coding.FunctionCreator()
@@ -252,8 +257,8 @@ class Cli:
         creator.name = self.options[1]
         creator.module = self.options[3]
         creator.create()
-        print('Added function "{}" to module "{}"'.format(creator.name,
-                                                          creator.module))
+        logger.info('Added function "%s" to module "%s"', creator.name,
+                    creator.module)
 
     def _command_help(self):
         if not self.options:
@@ -344,6 +349,8 @@ def cli():
     command line.
 
     """
+    logger.setLevel(logging.INFO)
+    logger.addHandler(logging.StreamHandler(stream=sys.stdout))
     cli_object = Cli()
     if len(sys.argv) == 1:
         cli_object.call()

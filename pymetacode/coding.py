@@ -171,7 +171,7 @@ class PackageCreator:
 
     def _create_license_file(self):
         template = utils.Template(
-            package_path='licenses',
+            path='licenses',
             template='bsd-2clause.j2.txt',
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'LICENSE'),
@@ -180,7 +180,7 @@ class PackageCreator:
 
     def _create_setup_py_file(self):
         template = utils.Template(
-            package_path='',
+            path='',
             template='setup.j2.py',
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'setup.py'),
@@ -189,7 +189,7 @@ class PackageCreator:
 
     def _create_readme_file(self):
         template = utils.Template(
-            package_path='',
+            path='',
             template='README.j2.rst',
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'README.rst'),
@@ -226,7 +226,7 @@ class PackageCreator:
             os.path.join(self.name, 'docs', 'index.rst')
         )
         template = utils.Template(
-            package_path='docs',
+            path='docs',
             template='main-toctree.j2.rst',
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'docs', 'index.rst'),
@@ -235,7 +235,7 @@ class PackageCreator:
 
     def _create_documentation_config(self):
         template = utils.Template(
-            package_path='docs',
+            path='docs',
             template='conf.j2.py',
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'docs', 'conf.py'),
@@ -244,7 +244,7 @@ class PackageCreator:
 
     def _create_documentation_api_index(self):
         template = utils.Template(
-            package_path='docs',
+            path='docs',
             template='api_index.j2.rst',
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'docs', 'api', 'index.rst'),
@@ -254,7 +254,7 @@ class PackageCreator:
     def _create_documentation_contents(self):
         for name in self.documentation['pages']:
             template = utils.Template(
-                package_path='docs',
+                path='docs',
                 template='{}.j2.rst'.format(name),
                 context=self.configuration.to_dict(),
                 destination=os.path.join(self.name, 'docs',
@@ -362,7 +362,7 @@ class ModuleCreator:
         context = self.configuration.to_dict()
         context['module'] = {'name': self.name}
         template = utils.Template(
-            package_path='code',
+            path='code',
             template='module.j2.py',
             context=context,
             destination=filename,
@@ -377,7 +377,7 @@ class ModuleCreator:
         context = self.configuration.to_dict()
         context['module'] = {'name': self.name}
         template = utils.Template(
-            package_path='code',
+            path='code',
             template='test_module.j2.py',
             context=context,
             destination=filename,
@@ -396,7 +396,7 @@ class ModuleCreator:
         context['header_extension'] = \
             (len(package) + len(self.name) + 1) * '='
         template = utils.Template(
-            package_path='docs',
+            path='docs',
             template='api_module.j2.rst',
             context=context,
             destination=filename,
@@ -525,7 +525,7 @@ class ClassCreator:
         context['class'] = {'name': self.name}
         context['package'] = {'version': self._package_version}
         template = utils.Template(
-            package_path='code',
+            path='code',
             template='class.j2.py',
             context=context,
             destination=self._module_filename,
@@ -541,7 +541,7 @@ class ClassCreator:
         context['module'] = {'name': self.module}
         filename = os.path.join('tests', 'test_{}.py'.format(self.module))
         template = utils.Template(
-            package_path='code',
+            path='code',
             template='test_class.j2.py',
             context=context,
             destination=filename,
@@ -649,7 +649,7 @@ class FunctionCreator:
         context['function'] = {'name': self.name}
         context['package'] = {'version': self._package_version}
         template = utils.Template(
-            package_path='code',
+            path='code',
             template='function.j2.py',
             context=context,
             destination=self._module_filename,
@@ -665,7 +665,7 @@ class FunctionCreator:
         context['module'] = {'name': self.module}
         filename = os.path.join('tests', 'test_{}.py'.format(self.module))
         template = utils.Template(
-            package_path='code',
+            path='code',
             template='test_function.j2.py',
             context=context,
             destination=filename,
