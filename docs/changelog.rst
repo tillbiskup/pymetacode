@@ -11,6 +11,12 @@ Version 0.3.0
 Not yet released
 
 
+New features
+------------
+
+* Templates adjustable by user (local install)
+
+
 Version 0.2.0
 =============
 

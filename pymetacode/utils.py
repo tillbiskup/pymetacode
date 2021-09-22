@@ -404,9 +404,9 @@ class Template:
 
     """
 
-    def __init__(self, package_path='', template='', context=None,
+    def __init__(self, path='', template='', context=None,
                  destination=''):
-        self.path = package_path
+        self.path = path
         self.template = template
         self.context = context
         self.destination = destination
