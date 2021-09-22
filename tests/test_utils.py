@@ -46,8 +46,10 @@ class TestGetPackageData(unittest.TestCase):
             shutil.rmtree(self.data_dir)
 
     def create_data_dir_and_contents(self):
-        os.mkdir(self.data_dir)
-        with open(os.path.join(self.data_dir, self.filename), 'w+') as file:
+        data_dir = os.path.join(self.data_dir, 'pymetacode')
+        os.makedirs(data_dir)
+        with open(os.path.join(data_dir, self.filename),
+                  'w+', encoding='utf8') as file:
             file.write('foo')
 
     def test_get_package_data_without_name_raises(self):
@@ -363,7 +365,7 @@ class TestTemplate(unittest.TestCase):
 
     def test_create_with_properties_set_on_instantiation(self):
         template = utils.Template(
-            package_path='licenses',
+            path='licenses',
             template='bsd-2clause.j2.txt',
             context={'package': {'year': '2021', 'author': 'John Doe'}},
             destination=self.destination
