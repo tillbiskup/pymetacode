@@ -523,7 +523,7 @@ class ClassCreator:
     def _create_class(self):
         context = self.configuration.to_dict()
         context['class'] = {'name': self.name}
-        context['package'] = {'version': self._package_version}
+        context['package']['version'] = self._package_version
         template = utils.Template(
             path='code',
             template='class.j2.py',
@@ -647,7 +647,7 @@ class FunctionCreator:
     def _create_function(self):
         context = self.configuration.to_dict()
         context['function'] = {'name': self.name}
-        context['package'] = {'version': self._package_version}
+        context['package']['version'] = self._package_version
         template = utils.Template(
             path='code',
             template='function.j2.py',
