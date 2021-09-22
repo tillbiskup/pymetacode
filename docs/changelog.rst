@@ -16,6 +16,20 @@ New features
 
 * Templates adjustable by user (local install)
 
+* Logging added in modules on request in config file
+
+
+Changes
+-------
+
+* :class:`pymetacode.configuration.Configuration` with new property ``options``
+
+
+Fixes
+-----
+
+* Whitespace in apidoc index preventing proper sphinx build
+
 
 Version 0.2.0
 =============

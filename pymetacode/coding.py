@@ -274,7 +274,7 @@ class PackageCreator:
                 doc_file.write(contents)
 
     def _git_init(self):
-        if self.configuration.package['git']:
+        if self.configuration.options['git']:
             subprocess.run(["git", "init"], cwd=self.name, check=False)
             with utils.change_working_dir(os.path.join(self.name, '.git',
                                                        'hooks')):

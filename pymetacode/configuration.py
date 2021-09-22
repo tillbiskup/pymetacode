@@ -37,6 +37,9 @@ class Configuration(utils.ToDictMixin):
     documentation : :class:`dict`
         Configuration regarding the documentation of the package
 
+    options : :class:`dict`
+        Configuration regarding the metacode
+
     Raises
     ------
     ValueError
@@ -58,6 +61,13 @@ class Configuration(utils.ToDictMixin):
     This would write the default configuration to "mypackage_config.yaml".
     Change all values in this file according to your needs.
 
+
+    .. versionadded:: 0.3
+        New property "options"
+
+    .. versionchanged:: 0.3
+        Moved key "git" to property "options"
+
     """
 
     def __init__(self):
@@ -75,11 +85,14 @@ class Configuration(utils.ToDictMixin):
             },
             'keywords': [],
             'install_requires': [],
-            'git': False,
         }
         self.documentation = {
             'logo': '',
             'favicon': '',
+        }
+        self.options = {
+            'logging': False,
+            'git': False,
         }
 
     def from_dict(self, dict_=None):

@@ -23,7 +23,7 @@ class TestConfiguration(unittest.TestCase):
     def test_package_property_has_keys(self):
         self.assertListEqual(['name', 'author', 'author_email', 'year',
                               'description', 'urls', 'keywords',
-                              'install_requires', 'git'],
+                              'install_requires'],
                              list(self.configuration.package.keys()))
 
     def test_package_property_year_is_set_to_current_year(self):
@@ -36,6 +36,13 @@ class TestConfiguration(unittest.TestCase):
     def test_documentation_property_has_keys(self):
         self.assertListEqual(['logo', 'favicon'],
                              list(self.configuration.documentation.keys()))
+
+    def test_has_options_property(self):
+        self.assertTrue(hasattr(self.configuration, 'options'))
+
+    def test_documentation_property_has_keys(self):
+        self.assertListEqual(['logging', 'git'],
+                             list(self.configuration.options.keys()))
 
     def test_to_dict_returns_dict(self):
         result = self.configuration.to_dict()
