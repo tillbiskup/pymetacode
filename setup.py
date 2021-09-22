@@ -43,6 +43,7 @@ setuptools.setup(
     install_requires=[
         "jinja2",
         "oyaml",
+        "appdirs",
         ],
     extras_require={
         'dev': ['prospector'],

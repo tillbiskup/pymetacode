@@ -138,12 +138,12 @@ def get_package_data(name='', directory='templates'):
     if not name:
         raise ValueError('No filename given.')
     if os.path.exists(os.path.join(appdirs.user_data_dir(), directory, name)):
-        with open(os.path.join(appdirs.user_data_dir(), directory, name)) as \
-                file:
+        with open(os.path.join(appdirs.user_data_dir(), directory, name),
+                  encoding='utf8') as file:
             contents = file.read()
     elif os.path.exists(os.path.join(appdirs.site_data_dir(), directory, name)):
-        with open(os.path.join(appdirs.site_data_dir(), directory, name)) as \
-                file:
+        with open(os.path.join(appdirs.site_data_dir(), directory, name),
+                  encoding='utf8') as file:
             contents = file.read()
     else:
         contents = \
