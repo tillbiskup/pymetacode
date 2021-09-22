@@ -18,6 +18,8 @@ New features
 
 * Logging added in modules on request in config file
 
+* Templates can be retrieved for other package, prefixing the template name with the package name (see :func:`pymetacode.utils.get_package_data` for details)
+
 
 Changes
 -------

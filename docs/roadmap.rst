@@ -8,9 +8,7 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.3
 ===============
 
-* Templates adjustable by other package.
-
-* Update command (*e.g.*, for configuration)
+* Update command (*e.g.*, for configuration, setup.py)
 
 
 For later versions

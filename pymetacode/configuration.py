@@ -62,11 +62,8 @@ class Configuration(utils.ToDictMixin):
     Change all values in this file according to your needs.
 
 
-    .. versionadded:: 0.3
-        New property "options"
-
     .. versionchanged:: 0.3
-        Moved key "git" to property "options"
+        New property "options", moved key "git" to property "options"
 
     """
 

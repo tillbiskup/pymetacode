@@ -61,6 +61,14 @@ class TestGetPackageData(unittest.TestCase):
             content = utils.get_package_data(self.filename)
         self.assertTrue(content)
 
+    def test_get_package_data_with_prefixed_package_returns_content(self):
+        content = utils.get_package_data('pymetacode@gitignore')
+        self.assertTrue(content)
+
+    def test_get_package_data_with_foreign_package_returns_content(self):
+        content = utils.get_package_data('pip@__main__.py', directory='')
+        self.assertTrue(content)
+
     def test_get_package_data_with_user_data_returns_content(self):
         self.create_data_dir_and_contents()
         with patch('appdirs.user_data_dir', return_value=self.data_dir):
@@ -300,6 +308,14 @@ class TestTemplate(unittest.TestCase):
 
     def test_render_renders_template(self):
         self.template.path = 'licenses'
+        self.template.template = 'bsd-2clause.j2.txt'
+        self.template.context = {'package': {'year': '2021',
+                                             'author': 'John Doe'}}
+        rendered_template = self.template.render()
+        self.assertIn('Copyright (c) 2021 John Doe', rendered_template)
+
+    def test_render_with_package_prefix_renders_template(self):
+        self.template.path = 'pymetacode@licenses'
         self.template.template = 'bsd-2clause.j2.txt'
         self.template.context = {'package': {'year': '2021',
                                              'author': 'John Doe'}}

@@ -96,9 +96,10 @@ def get_package_data(name='', directory='templates'):
 
     #. Within the package,
 
-    #. In the site-wide data directory,
+    #. In the site-wide data directory (with the package name as subdirectory),
 
-    #. In the user-specific data directory.
+    #. In the user-specific data directory
+       (with the package name as subdirectory).
 
     The location of the latter two is specific to the operating system used.
     Here, the `appdirs package <https://pypi.org/project/appdirs/>`_ is
@@ -119,10 +120,31 @@ def get_package_data(name='', directory='templates'):
     directory where all the modules are located, can be accessed, not files
     that reside on the root directory of the package.
 
+    .. note::
+
+        In case you would want to get package data from a package different
+        than pymetacode, you can prefix the name of the file to retrieve with
+        the package name, using the '@' as a separator.
+
+        Suppose you would want to retrieve the file ``__main__.py`` file
+        from the "pip" package (why should you?):
+
+        .. code-block::
+
+            get_package_data('pip@__main__.py', directory='')
+
+        This would return the contents of this file. Of course, the sequence
+        of directories as described above is used here as well (user data
+        directory, site data directory, package directory).
+
+
     Parameters
     ----------
     name : :class:`str`
         Name of the file whose contents should be accessed.
+
+        In case the file should be retrieved from a different package,
+        the package name can be prefixed, using '@' as a separator.
 
     directory : :class:`str`
         Directory within the package where the files are located.
@@ -134,11 +156,18 @@ def get_package_data(name='', directory='templates'):
     contents : :class:`str`
         String containing the contents of the non-code file.
 
+
+    .. versionchanged:: 0.3
+        Name can be prefixed with package using '@' as separator
+
     """
     if not name:
         raise ValueError('No filename given.')
+    package = __package__
+    if '@' in name:
+        package, name = name.split('@')
     path = \
-        os.path.join(__package__, os.path.sep.join(directory.split('/')), name)
+        os.path.join(package, os.path.sep.join(directory.split('/')), name)
     if os.path.exists(os.path.join(appdirs.user_data_dir(), path)):
         with open(os.path.join(appdirs.user_data_dir(), path),
                   encoding='utf8') as file:
@@ -149,7 +178,7 @@ def get_package_data(name='', directory='templates'):
             contents = file.read()
     else:
         contents = \
-            pkgutil.get_data(__package__, '/'.join([directory, name])).decode()
+            pkgutil.get_data(package, '/'.join([directory, name])).decode()
     return contents
 
 
@@ -373,6 +402,10 @@ class Template:
         Name of the template to be used.
 
         Relative to the :attr:`package_path`.
+
+        In case you want to retrieve a template for a package different than
+        pymetacode, prefix the template name with the package name,
+        using '@' as a separator. See :func:`get_package_data` for details.
 
     context : :class:`dict`
         Key-value store of variables to be replaced within the template.
