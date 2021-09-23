@@ -26,6 +26,8 @@ Changes
 
 * :class:`pymetacode.configuration.Configuration` with new property ``options``
 
+  (**Important:** Requires updating existing configuration files)
+
 
 Fixes
 -----
