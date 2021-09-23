@@ -10,7 +10,9 @@ package:
     source: ''
   keywords: []
   install_requires: []
-  git: false
 documentation:
   logo: ''
   favicon: ''
+options:
+  logging: false
+  git: false

@@ -37,12 +37,17 @@ setuptools.setup(
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
+        "Topic :: Software Development",
+        "Topic :: Software Development :: Code Generators",
         "Development Status :: 4 - Beta",
     ],
     install_requires=[
         "jinja2",
         "oyaml",
+        "appdirs",
         ],
     extras_require={
         'dev': ['prospector'],

@@ -5,6 +5,36 @@ Changelog
 This page contains a summary of changes between the official pymetacode releases. Only the biggest changes are listed here. A complete and detailed log of all changes is available through the `GitHub Repository Browser <https://github.com/tillbiskup/pymetacode>`_.
 
 
+Version 0.3.0
+=============
+
+Released 2021-09-23
+
+
+New features
+------------
+
+* Templates adjustable by user (local install)
+
+* Logging added in modules on request in config file
+
+* Templates can be retrieved for other package, prefixing the template name with the package name (see :func:`pymetacode.utils.get_package_data` for details)
+
+
+Changes
+-------
+
+* :class:`pymetacode.configuration.Configuration` with new property ``options``
+
+  (**Important:** Requires updating existing configuration files)
+
+
+Fixes
+-----
+
+* Whitespace in apidoc index preventing proper sphinx build
+
+
 Version 0.2.0
 =============
 

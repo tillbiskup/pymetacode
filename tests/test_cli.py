@@ -107,6 +107,13 @@ class TestCli(unittest.TestCase):
                       options=["config"])
         self.assertTrue(os.path.exists(self.config_filename))
 
+    def test_call_write_logs_success_message(self):
+        with self.assertLogs(__package__, level='INFO') as cm:
+            self.cli.call(command="write",
+                          options=["config"])
+        self.assertIn('Wrote configuration to file "{}"'.format(
+            self.cli.conf_file), cm.output[0])
+
     def test_call_create_creates_package(self):
         conf = configuration.Configuration()
         conf.package['name'] = self.package_name
@@ -148,17 +155,15 @@ class TestCli(unittest.TestCase):
         self.assertFalse(os.path.exists(
             os.path.join(self.package_name, self.package_name)))
 
-    def test_call_create_prints_success_message(self):
-        stdout = io.StringIO()
-        with contextlib.redirect_stdout(stdout):
+    def test_call_create_logs_success_message(self):
+        with self.assertLogs(__package__, level='INFO') as cm:
             conf = configuration.Configuration()
             conf.package['name'] = self.package_name
             conf.to_file(self.config_filename)
             self.cli.call(command="create",
                           options=["package", "from", self.config_filename])
-        content = stdout.getvalue()
         self.assertIn('Created package "{}" in directory "{}"'.format(
-            self.package_name, self.package_name), content)
+            self.package_name, self.package_name), cm.output[0])
 
     def test_call_add_module_adds_module(self):
         conf = configuration.Configuration()
@@ -176,7 +181,7 @@ class TestCli(unittest.TestCase):
             self.assertTrue(os.path.exists(
                 os.path.join(self.package_name, module_name + '.py')))
 
-    def test_call_add_module_prints_success_message(self):
+    def test_call_add_module_logs_success_message(self):
         conf = configuration.Configuration()
         conf.package['name'] = self.package_name
         conf.to_file(self.config_filename)
@@ -185,12 +190,10 @@ class TestCli(unittest.TestCase):
                           options=["package", "from", self.config_filename])
         with utils.change_working_dir(self.package_name):
             module_name = "bar"
-            stdout = io.StringIO()
-            with contextlib.redirect_stdout(stdout):
+            with self.assertLogs(__package__, level='INFO') as cm:
                 self.cli.call(command="add",
                               options=["module", module_name])
-        content = stdout.getvalue()
-        self.assertIn('Added module "{}"'.format(module_name), content)
+        self.assertIn('Added module "{}"'.format(module_name), cm.output[0])
 
     def test_call_add_with_wrong_options_prints_help(self):
         stdout = io.StringIO()
@@ -227,7 +230,7 @@ class TestCli(unittest.TestCase):
                 contents = file.read()
             self.assertIn('class {}:\n'.format(class_name), contents)
 
-    def test_call_add_class_prints_success_message(self):
+    def test_call_add_class_logs_success_message(self):
         conf = configuration.Configuration()
         conf.package['name'] = self.package_name
         conf.to_file(self.config_filename)
@@ -240,13 +243,12 @@ class TestCli(unittest.TestCase):
             with contextlib.redirect_stdout(io.StringIO()):
                 self.cli.call(command="add",
                               options=["module", module_name])
-            stdout = io.StringIO()
-            with contextlib.redirect_stdout(stdout):
+            with self.assertLogs(__package__, level='INFO') as cm:
                 self.cli.call(command="add",
-                              options=["class", class_name, "to", module_name])
-        content = stdout.getvalue()
+                              options=["class", class_name, "to",
+                                       module_name])
         self.assertIn('Added class "{}" to module "{}"'.format(
-            class_name, module_name), content)
+            class_name, module_name), cm.output[0])
 
     def test_call_add_function_adds_function(self):
         conf = configuration.Configuration()
@@ -269,7 +271,7 @@ class TestCli(unittest.TestCase):
                 contents = file.read()
             self.assertIn('def {}():\n    """'.format(function_name), contents)
 
-    def test_call_add_function_prints_success_message(self):
+    def test_call_add_function_logs_success_message(self):
         conf = configuration.Configuration()
         conf.package['name'] = self.package_name
         conf.to_file(self.config_filename)
@@ -282,17 +284,19 @@ class TestCli(unittest.TestCase):
             with contextlib.redirect_stdout(io.StringIO()):
                 self.cli.call(command="add",
                               options=["module", module_name])
-            stdout = io.StringIO()
-            with contextlib.redirect_stdout(stdout):
+            with self.assertLogs(__package__, level='INFO') as cm:
                 self.cli.call(command="add",
                               options=["function", function_name, "to",
                                        module_name])
-        content = stdout.getvalue()
         self.assertIn('Added function "{}" to module "{}"'.format(
-            function_name, module_name), content)
+            function_name, module_name), cm.output[0])
 
 
 class TestConsoleEntryPoint(unittest.TestCase):
+
+    def tearDown(self):
+        if os.path.exists(cli.Cli().conf_file):
+            os.remove(cli.Cli().conf_file)
 
     def test_call_without_command_prints_help(self):
         result = subprocess.run(["pymeta"], capture_output=True, text=True)
@@ -307,3 +311,8 @@ class TestConsoleEntryPoint(unittest.TestCase):
         result = subprocess.run(["pymeta", "help", "write"],
                                 capture_output=True, text=True)
         self.assertIn('Usage for write command:', result.stdout)
+
+    def test_call_write_prints_log_info(self):
+        result = subprocess.run(["pymeta", "write", "config"],
+                                capture_output=True, text=True)
+        self.assertIn('Wrote configuration to file', result.stdout)

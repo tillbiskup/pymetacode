@@ -234,7 +234,7 @@ class TestPackageCreator(unittest.TestCase):
     def test_create_with_git_true_creates_git_directory(self):
         configuration = pymetacode.configuration.Configuration()
         configuration.package['name'] = self.name
-        configuration.package['git'] = True
+        configuration.options['git'] = True
         self.creator.configuration = configuration
         self.creator.create(name=self.name)
         self.assertTrue(os.path.exists(os.path.join(self.name, '.git')))
@@ -242,7 +242,7 @@ class TestPackageCreator(unittest.TestCase):
     def test_create_with_git_true_creates_pre_commit_hook(self):
         configuration = pymetacode.configuration.Configuration()
         configuration.package['name'] = self.name
-        configuration.package['git'] = True
+        configuration.options['git'] = True
         self.creator.configuration = configuration
         self.creator.create(name=self.name)
         with open(os.path.join(self.name, '.git', 'hooks', 'pre-commit')) as \
@@ -335,6 +335,15 @@ class TestModuleCreator(unittest.TestCase):
         content_line = \
             '{} module of the {} package.'.format(self.name, self.package)
         self.assertIn(content_line, contents)
+
+    def test_create_with_logging_adds_logger(self):
+        self.creator.configuration.options['logging'] = True
+        filename = os.path.join(self.package, self.name + '.py')
+        self.creator.create(name=self.name)
+        with open(filename) as file:
+            contents = file.read()
+        self.assertIn('import logging', contents)
+        self.assertIn('logger = logging.getLogger(__name__)', contents)
 
     def test_create_creates_test_module(self):
         self.creator.create(name=self.name)
