@@ -12,6 +12,8 @@ For version 0.4
 
 * Command for copying templates to user-specific/site-wide directory
 
+* Check for existence of class/function and issue warning if already present instead of adding it again.
+
 
 For later versions
 ==================
