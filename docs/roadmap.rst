@@ -8,8 +8,6 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.4
 ===============
 
-* Write MANIFEST.in file (for README, LICENSE, VERSION)
-
 * Directory structure for GUIs (created with PySide6)
 
 * Update command (*e.g.*, for configuration, setup.py)

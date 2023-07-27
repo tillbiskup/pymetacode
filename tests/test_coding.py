@@ -166,6 +166,18 @@ class TestPackageCreator(unittest.TestCase):
             contents = file.read().split('\n')
         self.assertEqual(len(contents[0]), len(contents[1]))
 
+    def test_create_creates_manifest_file(self):
+        self.creator.create(name=self.name)
+        self.assertTrue(os.path.exists(
+            os.path.join(self.name, 'MANIFEST.in')))
+
+    def test_create_fills_manifest_file(self):
+        self.creator.create(name=self.name)
+        file_path = os.path.join(self.name, 'MANIFEST.in')
+        with open(file_path) as file:
+            contents = file.read()
+        self.assertIn('include VERSION', contents)
+
     def test_create_creates_version_updater_file(self):
         self.creator.create(name=self.name)
         self.assertTrue(os.path.exists(

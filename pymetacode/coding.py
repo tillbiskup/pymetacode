@@ -129,6 +129,7 @@ class PackageCreator:
         self._create_prospector_profile()
         self._create_version_file()
         self._create_license_file()
+        self._create_manifest_file()
         self._create_setup_py_file()
         self._create_readme_file()
         self._create_version_updater_file()
@@ -161,6 +162,12 @@ class PackageCreator:
     def _create_prospector_profile(self):
         contents = utils.get_package_data('prospector.yaml')
         with open(os.path.join(self.name, '.prospector.yaml'), 'w+',
+                  encoding='utf8') as file:
+            file.write(contents)
+
+    def _create_manifest_file(self):
+        contents = utils.get_package_data('MANIFEST.in')
+        with open(os.path.join(self.name, 'MANIFEST.in'), 'w+',
                   encoding='utf8') as file:
             file.write(contents)
 
