@@ -17,7 +17,7 @@ with open(os.path.join(os.path.dirname(__file__), '..', 'VERSION')) as \
     release_ = version_file.read().strip()
 
 project = 'pymetacode'
-copyright = '2021, Till Biskup'
+copyright = '2021-23, Till Biskup'
 author = 'Till Biskup'
 
 # The short X.Y version
