@@ -42,7 +42,7 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
         "Topic :: Software Development",
         "Topic :: Software Development :: Code Generators",
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
     ],
     install_requires=[
         "jinja2",
