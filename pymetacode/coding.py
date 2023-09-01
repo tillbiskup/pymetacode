@@ -262,10 +262,10 @@ class PackageCreator:
         for name in self.documentation['pages']:
             template = utils.Template(
                 path='docs',
-                template='{}.j2.rst'.format(name),
+                template=f'{name}.j2.rst',
                 context=self.configuration.to_dict(),
                 destination=os.path.join(self.name, 'docs',
-                                         '{}.rst'.format(name)),
+                                         f'{name}.rst'),
             )
             template.create()
 
@@ -364,7 +364,7 @@ class ModuleCreator:
         filename = os.path.join(self.configuration.package['name'],
                                 self.name + '.py')
         if os.path.exists(filename):
-            warnings.warn("Module '{}' exists already".format(filename))
+            warnings.warn(f"Module '{filename}' exists already")
             return
         context = self.configuration.to_dict()
         context['module'] = {'name': self.name}
@@ -377,9 +377,9 @@ class ModuleCreator:
         template.create()
 
     def _create_test_module(self):
-        filename = os.path.join('tests', 'test_{}.py'.format(self.name))
+        filename = os.path.join('tests', f'test_{self.name}.py')
         if os.path.exists(filename):
-            warnings.warn("Module '{}' exists already".format(filename))
+            warnings.warn(f"Module '{filename}' exists already")
             return
         context = self.configuration.to_dict()
         context['module'] = {'name': self.name}
@@ -393,10 +393,9 @@ class ModuleCreator:
 
     def _create_api_documentation(self):
         package = self.configuration.package['name']
-        filename = os.path.join('docs', 'api', '{}.{}.rst'.format(package,
-                                                                  self.name))
+        filename = os.path.join('docs', 'api', f'{package}.{self.name}.rst')
         if os.path.exists(filename):
-            warnings.warn("File '{}' exists already".format(filename))
+            warnings.warn(f"File '{filename}' exists already")
             return
         context = self.configuration.to_dict()
         context['module'] = {'name': self.name}
@@ -421,7 +420,7 @@ class ModuleCreator:
         start_of_toctree = lines.index('.. toctree::')
         end_of_toctree = lines[start_of_toctree:].index('')
         lines.insert(start_of_toctree + end_of_toctree - 1,
-                     '    {}.{}'.format(package, self.name))
+                     f'    {package}.{self.name}')
         # Sort entries
         new_end_of_toctree = lines[start_of_toctree:].index('')
         start_sort = start_of_toctree + end_of_toctree - 1
@@ -520,9 +519,9 @@ class ClassCreator:
             raise ValueError('Module name missing')
         package = self.configuration.package['name']
         self._module_filename = os.path.join(package,
-                                             '{}.py'.format(self.module))
+                                             f'{self.module}.py')
         if not os.path.exists(self._module_filename):
-            raise ValueError('Module {} does not exist'.format(self.module))
+            raise ValueError(f'Module {self.module} does not exist')
         if not self._package_version:
             version = utils.package_version_from_file()
             self._package_version = '.'.join(version.split('.')[0:2])
@@ -546,7 +545,7 @@ class ClassCreator:
             'instance': utils.camel_case_to_underscore(self.name),
         }
         context['module'] = {'name': self.module}
-        filename = os.path.join('tests', 'test_{}.py'.format(self.module))
+        filename = os.path.join('tests', f'test_{self.module}.py')
         template = utils.Template(
             path='code',
             template='test_class.j2.py',
@@ -644,9 +643,9 @@ class FunctionCreator:
             raise ValueError('Module name missing')
         package = self.configuration.package['name']
         self._module_filename = os.path.join(package,
-                                             '{}.py'.format(self.module))
+                                             f'{self.module}.py')
         if not os.path.exists(self._module_filename):
-            raise ValueError('Module {} does not exist'.format(self.module))
+            raise ValueError(f'Module {self.module} does not exist')
         if not self._package_version:
             version = utils.package_version_from_file()
             self._package_version = '.'.join(version.split('.')[0:2])
@@ -670,7 +669,7 @@ class FunctionCreator:
             'name_camelcase': utils.underscore_to_camel_case(self.name),
         }
         context['module'] = {'name': self.module}
-        filename = os.path.join('tests', 'test_{}.py'.format(self.module))
+        filename = os.path.join('tests', f'test_{self.module}.py')
         template = utils.Template(
             path='code',
             template='test_function.j2.py',
