@@ -15,6 +15,7 @@ New features
 ------------
 
 * MANIFEST.in file (for README, LICENSE, VERSION)
+* CITATION.cff file
 
 
 Version 0.3.0
