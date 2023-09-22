@@ -8,9 +8,15 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.4
 ===============
 
+* CITATION.cff template?
+
+* Directory structure for GUIs (created with PySide6)
+
 * Update command (*e.g.*, for configuration, setup.py)
 
 * Command for copying templates to user-specific/site-wide directory
+
+* Check for existence of class/function and issue warning if already present instead of adding it again.
 
 
 For later versions

@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using these metadata.
+title: pymetacode
+abstract: >
+    pymetacode is a Python package helping to write and maintain Python packages.
+
+    Code that writes code - yes, that’s correct. Automating the boring stuff, one could say, or helping to focus on the creative part of programming. In any case, the idea for this package stems from experience with a couple of Python projects, and as such it is pretty opinionated, focussing on personal needs regarding structure and layout. Nevertheless, it tries to be as user-friendly as possible, coming with an intuitive command-line interface (CLI).
+authors:
+  - family-names: Biskup
+    given-names: Till
+    orcid: "https://orcid.org/0000-0003-2913-0004"
+type: software
+license: BSD-2-Clause
+repository-code: "https://github.com/tillbiskup/pymetacode"
+keywords:
+  - "metaprogramming"
+  - "Python packages"
+  - "automation"
+  - "code generation"
+#identifiers:
+#  - description: "The concept DOI of the work."
+#    type: doi
+#    value: 10.5281/zenodo.#######

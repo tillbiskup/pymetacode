@@ -187,7 +187,7 @@ class Cli:
         if not self.command:
             self._print_help()
         else:
-            method = '_command_{}'.format(self.command)
+            method = f'_command_{self.command}'
             if hasattr(self, method):
                 getattr(self, method)()
             else:
@@ -226,7 +226,7 @@ class Cli:
         if not self.options:
             self._print_add_help()
             return
-        method = '_command_add_{}'.format(self.options[0])
+        method = f'_command_add_{self.options[0]}'
         if hasattr(self, method):
             conf_file = '.package_config.yaml'
             conf = configuration.Configuration()
@@ -264,7 +264,7 @@ class Cli:
         if not self.options:
             self._print_help()
         else:
-            help_method = '_print_{}_help'.format(self.options[0])
+            help_method = f'_print_{self.options[0]}_help'
             getattr(self, help_method)()
 
     def _print_help(self):
