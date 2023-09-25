@@ -12,6 +12,8 @@ For version 0.4
 
 * Directory structure for GUIs (created with PySide6)
 
+* Using black for code style?
+
 * Update command (*e.g.*, for configuration, setup.py)
 
 * Command for copying templates to user-specific/site-wide directory

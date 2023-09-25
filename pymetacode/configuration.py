@@ -86,6 +86,7 @@ class Configuration(utils.ToDictMixin):
         self.documentation = {
             'logo': '',
             'favicon': '',
+            'language': 'en',
         }
         self.options = {
             'logging': False,

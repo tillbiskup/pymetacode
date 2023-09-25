@@ -235,6 +235,16 @@ class TestPackageCreator(unittest.TestCase):
             contents = file.read()
         self.assertIn(self.name, contents)
 
+    def test_create_sets_language_in_docs_conf_file(self):
+        language = 'de'
+        configuration = pymetacode.configuration.Configuration()
+        configuration.documentation['language'] = language
+        self.creator.configuration = configuration
+        self.creator.create(name=self.name)
+        with open(os.path.join(self.name, 'docs', 'conf.py')) as file:
+            contents = file.read()
+        self.assertIn(language, contents)
+
     def test_create_adds_templates_for_multiversion(self):
         self.creator.create(name=self.name)
         files = ['page.html', 'versions.html']

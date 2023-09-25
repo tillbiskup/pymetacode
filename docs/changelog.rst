@@ -11,6 +11,12 @@ Version 0.4.0
 Not yet released
 
 
+New features
+------------
+
+* Configuration option for language of documentation (default: "en")
+
+
 Version 0.3.1
 =============
 

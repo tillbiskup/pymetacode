@@ -13,6 +13,7 @@ package:
 documentation:
   logo: ''
   favicon: ''
+  language: 'en'
 options:
   logging: false
   git: false
