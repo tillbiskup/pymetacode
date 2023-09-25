@@ -17,6 +17,11 @@ New features
 * Configuration option for language of documentation (default: "en")
 
 
+Changes
+-------
+
+* Transition from discontinued ``appdirs`` package to ``platformdirs`` package
+
 Version 0.3.1
 =============
 

@@ -6,7 +6,7 @@ import shutil
 import unittest
 from unittest.mock import patch
 
-import appdirs
+import platformdirs
 
 from pymetacode import utils
 
@@ -71,13 +71,13 @@ class TestGetPackageData(unittest.TestCase):
 
     def test_get_package_data_with_user_data_returns_content(self):
         self.create_data_dir_and_contents()
-        with patch('appdirs.user_data_dir', return_value=self.data_dir):
+        with patch('platformdirs.user_data_dir', return_value=self.data_dir):
             content = utils.get_package_data(self.filename, directory='')
         self.assertTrue(content)
 
     def test_get_package_data_with_site_data_returns_content(self):
         self.create_data_dir_and_contents()
-        with patch('appdirs.site_data_dir', return_value=self.data_dir):
+        with patch('platformdirs.site_data_dir', return_value=self.data_dir):
             content = utils.get_package_data(self.filename, directory='')
         self.assertTrue(content)
 

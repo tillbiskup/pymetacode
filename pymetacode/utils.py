@@ -59,7 +59,7 @@ import os
 import pkgutil
 import re
 
-import appdirs
+import platformdirs
 import jinja2
 
 
@@ -102,7 +102,7 @@ def get_package_data(name='', directory='templates'):
        (with the package name as subdirectory).
 
     The location of the latter two is specific to the operating system used.
-    Here, the `appdirs package <https://pypi.org/project/appdirs/>`_ is
+    Here, the `platformdirs package <https://pypi.org/project/platformdirs/>`_ is
     used, providing paths for all major platforms (Windows, macOS, Linux/Unix).
 
     The given file is searched for in the user-specific data directory
@@ -168,12 +168,12 @@ def get_package_data(name='', directory='templates'):
         package, name = name.split('@')
     path = \
         os.path.join(package, os.path.sep.join(directory.split('/')), name)
-    if os.path.exists(os.path.join(appdirs.user_data_dir(), path)):
-        with open(os.path.join(appdirs.user_data_dir(), path),
+    if os.path.exists(os.path.join(platformdirs.user_data_dir(), path)):
+        with open(os.path.join(platformdirs.user_data_dir(), path),
                   encoding='utf8') as file:
             contents = file.read()
-    elif os.path.exists(os.path.join(appdirs.site_data_dir(), path)):
-        with open(os.path.join(appdirs.site_data_dir(), path),
+    elif os.path.exists(os.path.join(platformdirs.site_data_dir(), path)):
+        with open(os.path.join(platformdirs.site_data_dir(), path),
                   encoding='utf8') as file:
             contents = file.read()
     else:
