@@ -677,3 +677,167 @@ class FunctionCreator:
             destination=filename,
         )
         template.append()
+
+
+class GuiCreator:
+    """
+    Add PySide6-based (Qt) GUI subpackage to an existing package.
+
+    More description comes here...
+
+
+    Attributes
+    ----------
+    configuration : :class:`pymetacode.configuration.Configuration`
+        Configuration as usually read from the configuration file.
+
+    subdirectories : :class:`list`
+        Subdirectories created within the package source directory.
+
+
+    Examples
+    --------
+    It is always nice to give some examples how to use the class. Best to do
+    that with code examples:
+
+    .. code-block::
+
+        obj = GuiWindowCreator()
+        ...
+
+
+    .. versionadded:: 0.4
+
+
+    """
+
+    def __init__(self):
+        self.configuration = configuration.Configuration()
+        self.subdirectories = [
+            os.path.join('gui', 'data'),
+            os.path.join('gui', 'ui'),
+        ]
+        self._src_dir = ''
+
+    def create(self):
+        """Create actual code stub for the GUI subpackage."""
+        self._src_dir = os.path.join(
+            self.configuration.package['name'],
+            self.configuration.package['name']
+        )
+        self._create_subdirectories()
+        self._create_init_files()
+        self._create_makefile()
+        self._create_app_file()
+        self._create_mainwindow()
+
+    def _create_subdirectories(self):
+        for directory in self.subdirectories:
+            self._create_directory(name=os.path.join(self._src_dir, directory))
+        self._create_directory(os.path.join(
+            self.configuration.package['name'], 'tests', 'gui'))
+
+    @staticmethod
+    def _create_directory(name=''):
+        if os.path.exists(name):
+            warnings.warn("Directory '" + name + "' exists already.")
+        else:
+            os.makedirs(name)
+
+    def _create_init_files(self):
+        directories = [
+            os.path.join(self._src_dir, 'gui'),
+            os.path.join(self._src_dir, 'gui', 'ui'),
+            os.path.join(self.configuration.package['name'], 'tests', 'gui')
+        ]
+        for directory in directories:
+            init_filename = os.path.join(directory, '__init__.py')
+            utils.ensure_file_exists(init_filename)
+
+    def _create_makefile(self):
+        contents = utils.get_package_data('Makefile_gui')
+        filepath = os.path.join(self._src_dir, 'gui', 'Makefile')
+        with open(filepath, 'w+', encoding='utf8') as file:
+            file.write(contents)
+
+    def _create_app_file(self):
+        template = utils.Template(
+            path='code',
+            template='gui_app.j2.py',
+            context=self.configuration.to_dict(),
+            destination=os.path.join(self._src_dir, 'gui', 'app.py'),
+        )
+        template.create()
+
+    def _create_mainwindow(self):
+        gui_dir = os.path.join(self._src_dir, 'gui')
+        test_dir = \
+            os.path.join(self.configuration.package['name'], 'tests', 'gui')
+        files = [
+            {
+                'template': 'gui_mainwindow.j2.py',
+                'path': os.path.join(gui_dir, 'mainwindow.py')
+            },
+            {
+                'template': 'gui_mainwindow.j2.ui',
+                'path': os.path.join(gui_dir, 'ui', 'mainwindow.ui')
+            },
+            {
+                'template': 'test_guiwindow.j2.py',
+                'path': os.path.join(test_dir, 'test_mainwindow.py')
+            },
+        ]
+        context = self.configuration.to_dict()
+        context['module'] = {'name': 'gui.mainwindow'}
+        for file in files:
+            template = utils.Template(
+                path='code',
+                template=file['template'],
+                context=context,
+                destination=file['path'],
+            )
+            template.create()
+        # Decide whether to auto-generate these files or whether to postpone
+        # subprocess.run(
+        #     ['pyside6-uic',
+        #      os.path.join(self._src_dir, 'gui', 'ui', 'mainwindow.ui'),
+        #      '-o',
+        #      os.path.join(self._src_dir, 'gui', 'ui', 'mainwindow.py')]
+        # )
+
+
+class GuiWindowCreator:
+    """
+    Add a PySide6-based (Qt) GUI window to an existing GUI subpackage.
+
+    More description comes here...
+
+
+    Attributes
+    ----------
+    attr : :class:`None`
+        Short description
+
+    Raises
+    ------
+    exception
+        Short description when and why raised
+
+
+    Examples
+    --------
+    It is always nice to give some examples how to use the class. Best to do
+    that with code examples:
+
+    .. code-block::
+
+        obj = GuiWindowCreator()
+        ...
+
+
+    .. versionadded:: 0.4
+
+
+    """
+
+    pass
