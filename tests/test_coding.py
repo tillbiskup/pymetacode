@@ -217,6 +217,13 @@ class TestPackageCreator(unittest.TestCase):
                 filename = os.path.join(self.name, 'docs', 'api', file)
                 self.assertTrue(os.path.exists(filename))
 
+    def test_create_replaces_variables_in_docs_api_index(self):
+        self.creator.create(name=self.name)
+        filename = os.path.join(self.name, 'docs', 'api', 'index.rst')
+        with open(filename, encoding='utf8') as file:
+            contents = file.read()
+        self.assertIn(f'modules available within the {self.name}', contents)
+
     def test_create_populates_docs_directory(self):
         self.creator.create(name=self.name)
         files = self.creator.documentation['pages']
@@ -778,6 +785,53 @@ class TestGuiCreator(unittest.TestCase):
             contents = file.read()
         self.assertIn(f'from {self.package} import gui.mainwindow', contents)
 
+    def test_create_creates_docs_subdirectory(self):
+        directory = os.path.join(self.package, 'docs', 'api', 'gui')
+        self.creator.create()
+        self.assertTrue(os.path.exists(directory))
+        self.assertTrue(os.path.isdir(directory))
+
+    def test_create_populates_docs_api_gui_subdirectory(self):
+        self.creator.create()
+        files = ['index.rst']
+        for file in files:
+            with self.subTest(file=file):
+                filename = os.path.join(self.package, 'docs', 'api', 'gui',
+                                        file)
+                self.assertTrue(os.path.exists(filename))
+
+    def test_create_replaces_variables_in_docs_api_gui_index(self):
+        self.creator.create()
+        filepath = os.path.join(self.package, 'docs', 'api', 'gui', 'index.rst')
+        with open(filepath) as file:
+            contents = file.read()
+        self.assertIn(f'{self.package}.gui subpackage', contents)
+        self.assertIn(f'.. automodule:: {self.package}.gui', contents)
+
+    def test_create_sets_correct_header_length_in_docs_api_gui_index(self):
+        self.creator.create()
+        filepath = os.path.join(self.package, 'docs', 'api', 'gui', 'index.rst')
+        with open(filepath) as file:
+            contents = file.read()
+        header_underline = (len(self.package) + 5 + len('subpackage')) * '='
+        self.assertIn(header_underline, contents)
+
+    def test_create_adds_submodules_block_in_docs_api_index(self):
+        self.creator.create()
+        filepath = os.path.join(self.package, 'docs', 'api', 'index.rst')
+        with open(filepath) as file:
+            contents = file.read()
+        self.assertIn('Subpackages', contents)
+        self.assertIn(f'subpackages available within the {self.package}',
+                      contents)
+
+    def test_create_adds_gui_submodule_to_toc_in_docs_api_index(self):
+        self.creator.create()
+        filepath = os.path.join(self.package, 'docs', 'api', 'index.rst')
+        with open(filepath) as file:
+            contents = file.read()
+        self.assertIn(f'{self.package}.gui', contents)
+
 
 class TestGuiWindowCreator(unittest.TestCase):
 
@@ -919,3 +973,37 @@ class TestGuiWindowCreator(unittest.TestCase):
             contents = file.read()
         self.assertIn(f'from {self.package} import gui.{self.creator.name}',
                       contents)
+
+    def test_create_creates_api_documentation(self):
+        self.creator.create(name=self.name)
+        filename = os.path.join(self.package, 'docs', 'api', 'gui',
+                                f'{self.package}.gui.{self.creator.name}.rst')
+        self.assertTrue(os.path.exists(filename))
+
+    def test_create_warns_if_api_documentation_exists(self):
+        filename = os.path.join(self.package, 'docs', 'api', 'gui',
+                                f'{self.package}.gui.{self.name}window.rst')
+        with open(filename, 'a') as file:
+            file.write('foo bar')
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.creator.create(name=self.name)
+            self.assertTrue(w)
+
+    def test_create_replaces_placeholders_in_api_documentation(self):
+        self.creator.create(name=self.name)
+        filename = os.path.join(self.package, 'docs', 'api', 'gui',
+                                f'{self.package}.gui.{self.creator.name}.rst')
+        with open(filename) as file:
+            contents = file.read()
+        content_line = f'{self.package}.gui.{self.creator.name}'
+        self.assertIn(content_line, contents)
+
+    def test_create_adds_documentation_to_api_toctree(self):
+        index_filename = \
+            os.path.join(self.package, 'docs', 'api', 'gui', 'index.rst')
+        self.creator.create(name=self.name)
+        toctree_entry = f'{self.package}.gui.{self.creator.name}'
+        with open(index_filename) as file:
+            contents = file.read()
+        self.assertIn(toctree_entry, contents)

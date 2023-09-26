@@ -258,10 +258,12 @@ class PackageCreator:
         template.create()
 
     def _create_documentation_api_index(self):
+        context = self.configuration.to_dict()
+        context['package'] = {'name': self.name}
         template = utils.Template(
             path='docs',
             template='api_index.j2.rst',
-            context=self.configuration.to_dict(),
+            context=context,
             destination=os.path.join(self.name, 'docs', 'api', 'index.rst'),
         )
         template.create()
@@ -296,7 +298,7 @@ class PackageCreator:
                 with open('pre-commit', 'w+', encoding='utf8') as file:
                     file.write('#!/bin/sh\n')
                     file.write('./bin/incrementVersion.sh\n')
-                shutil.copymode('pre-commit.sample', 'pre-commit')
+                utils.make_executable('pre-commit')
 
 
 class ModuleCreator:
@@ -705,7 +707,7 @@ class GuiCreator:
         ├── docs
         │   ├── api
         │   │   ├── gui
-        │   │   │   ├── mainwindow.rst
+        │   │   │   ├── mypackage.gui.mainwindow.rst
         │   │   │   └── index.rst
         │   │   └── ...
         │   └── ...
@@ -727,10 +729,40 @@ class GuiCreator:
             └── ...
 
 
+    To summarise, what is added in terms of subdirectories:
 
-    .. todo::
+    #. A ``gui`` directory within the package source directory
+    #. A ``gui`` directory within the package tests directory
+    #. A ``gui`` directory within the package API docs directory
 
-        Add documentation directory and index file in API documentation.
+    The ``gui`` directories in source and tests as well as the ``gui.ui``
+    directory behave like subpackages, as they all contain an
+    ``__init__.py`` file.
+
+    The ``gui`` directory in the package source directory deserves a few
+    more comments:
+
+    * The user interface (\*.ui) files containing the XML
+      description of the Qt windows created by/modified with the Qt Designer
+      reside in the ``ui`` subdirectory, together with the auto-generated
+      Python files used for import. To help with auto-generating the Python
+      files from the ui files, use the ``Makefile`` in the ``gui`` subdirectory.
+
+    * Additional data files, such as icons or images for a splash screen,
+      reside in the ``data`` subdirectory.
+
+    * The ``app.py`` module contains the main entrance point to the GUI that
+      is added to the gui_scripts entrypoint in the ``setup.py`` file.
+
+    * The ``mainwindow.py`` module contains all relevant code for the main GUI
+      window.
+
+    * The ``Makefile`` is used for convenience to generate the Python files
+      from the ui files used by the Qt Designer. Simply type ``make`` in the
+      ``gui`` subdirectory to have them built.
+
+    If you would like to add additional windows to your existing GUI, have a
+    look at the :class:`GuiWindowCreator` class.
 
 
     Attributes
@@ -744,14 +776,41 @@ class GuiCreator:
 
     Examples
     --------
-    It is always nice to give some examples how to use the class. Best to do
-    that with code examples:
+    The following example demonstrates how to use the CLI from the terminal,
+    rather than how to use this class programmatically, as this is the
+    preferred and intended use case.
+
+    .. code-block:: bash
+
+        pymeta add gui
+
+    This will add the basic structure for a GUI to your package, including
+    tests and documentation.
+
+    However, in case you want or need to access pymetacode programmatically,
+    this is the series of steps you would need to perform to create a GUI.
+    At the same time, this is a minimum scenario for manually testing the
+    functionality:
 
     .. code-block::
 
-        obj = GuiWindowCreator()
-        ...
+        from pymetacode import coding, configuration
 
+        cfg = configuration.Configuration()
+        cfg.package['name'] = 'pkgname'
+
+        pkg = coding.PackageCreator()
+        pkg.configuration = cfg
+        pkg.create(name=cfg.package['name'])
+
+        gui = coding.GuiCreator()
+        gui.configuration = cfg
+        gui.create()
+
+    As you see here, this assumes no package to preexist. The crucial step
+    is to create a configuration first and as a bare minimum set the package
+    name. Next comes creating the package, and only afterwards the GUI. The
+    configuration is reused in both cases.
 
     .. versionadded:: 0.4
 
@@ -782,6 +841,7 @@ class GuiCreator:
         self._create_init_files()
         self._create_makefile()
         self._create_app_file()
+        self._create_documentation()
         self._create_mainwindow()
 
     def _create_subdirectories(self):
@@ -789,6 +849,8 @@ class GuiCreator:
             self._create_directory(name=os.path.join(self._src_dir, directory))
         self._create_directory(os.path.join(
             self.configuration.package['name'], 'tests', 'gui'))
+        self._create_directory(os.path.join(
+            self.configuration.package['name'], 'docs', 'api', 'gui'))
 
     @staticmethod
     def _create_directory(name=''):
@@ -822,6 +884,61 @@ class GuiCreator:
         )
         template.create()
 
+    def _create_documentation(self):
+        self._create_documentation_index()
+        self._add_submodule_documentation()
+        self._add_api_documentation_to_toctree()
+
+    def _create_documentation_index(self):
+        package_name = self.configuration.package['name']
+        context = self.configuration.to_dict()
+        context['subpackage'] = {'name': f"{package_name}.gui"}
+        context['header_extension'] = \
+            (len(package_name) + 4) * '='
+        template = utils.Template(
+            path='docs',
+            template='api_subpackage_index.j2.rst',
+            context=context,
+            destination=os.path.join(
+                package_name, 'docs', 'api', 'gui', 'index.rst'),
+        )
+        template.create()
+
+    def _add_submodule_documentation(self):
+        package_name = self.configuration.package['name']
+        context = self.configuration.to_dict()
+        context['package'] = {'name': package_name}
+        template = utils.Template(
+            path='docs',
+            template='api_index_subpackages_block.j2.rst',
+            context=context,
+            destination=os.path.join(
+                package_name, 'docs', 'api', 'index.rst'),
+        )
+        template.append()
+
+    def _add_api_documentation_to_toctree(self):
+        index_filename = os.path.join(self.configuration.package['name'],
+                                      'docs', 'api', 'index.rst')
+        if not os.path.exists(index_filename):
+            return
+        with open(index_filename, encoding='utf8') as file:
+            contents = file.read()
+        lines = contents.split('\n')
+        package = self.configuration.package['name']
+        start_of_toctree = \
+            lines.index('.. toctree::', lines.index('Subpackages'))
+        end_of_toctree = lines[start_of_toctree:].index('')
+        lines.insert(start_of_toctree + end_of_toctree - 1,
+                     f'    {package}.gui')
+        # Sort entries
+        new_end_of_toctree = lines[start_of_toctree:].index('')
+        start_sort = start_of_toctree + end_of_toctree - 1
+        end_sort = start_of_toctree + new_end_of_toctree
+        lines[start_sort:end_sort] = sorted(lines[start_sort:end_sort])
+        with open(index_filename, "w+", encoding='utf8') as file:
+            file.write('\n'.join(lines))
+
     def _create_mainwindow(self):
         window_creator = GuiWindowCreator()
         window_creator.configuration = self.configuration
@@ -842,11 +959,6 @@ class GuiWindowCreator:
     The latter gets added to the API toctree directive as well.
 
 
-    .. todo::
-
-        Add documentation when creating window files.
-
-
     Attributes
     ----------
     configuration : :class:`pymetacode.configuration.Configuration`
@@ -860,13 +972,20 @@ class GuiWindowCreator:
 
     Examples
     --------
-    It is always nice to give some examples how to use the class. Best to do
-    that with code examples:
+    The following example demonstrates how to use the CLI from the terminal,
+    rather than how to use this class programmatically, as this is the
+    preferred and intended use case.
 
-    .. code-block::
+    .. code-block:: bash
 
-        obj = GuiWindowCreator()
-        ...
+        pymeta add window mywindow
+
+    This will add the GUI window ``mywindow`` to the ``gui`` subpackage of your
+    package, together with the ``test_mywindow`` module in the ``tests.gui``
+    directory. Furthermore, the corresponding UI file (to be used with the
+    Qt Designer) gets added to the ``gui/ui`` subpackage. And even better,
+    the API documentation will be updated as well for you.
+
 
 
     .. versionadded:: 0.4
@@ -942,6 +1061,8 @@ class GuiWindowCreator:
         elif not self.name:
             raise ValueError('No window name given')
         self._create_window()
+        self._create_api_documentation()
+        self._add_api_documentation_to_toctree()
 
     def _create_window(self):
         gui_dir = os.path.join(
@@ -981,3 +1102,45 @@ class GuiWindowCreator:
         #      '-o',
         #      os.path.join(self._src_dir, 'gui', 'ui', f'{self.name}.py')]
         # )
+
+    def _create_api_documentation(self):
+        package = self.configuration.package['name'] + '.gui'
+        filename = os.path.join(self.configuration.package['name'],
+                                'docs', 'api', 'gui',
+                                f'{package}.{self.name}.rst')
+        if os.path.exists(filename):
+            warnings.warn(f"File '{filename}' exists already")
+            return
+        context = self.configuration.to_dict()
+        context['package'] = {'name': package}
+        context['module'] = {'name': self.name}
+        context['header_extension'] = \
+            (len(package) + len(self.name) + 1) * '='
+        template = utils.Template(
+            path='docs',
+            template='api_module.j2.rst',
+            context=context,
+            destination=filename,
+        )
+        template.create()
+
+    def _add_api_documentation_to_toctree(self):
+        index_filename = os.path.join(self.configuration.package['name'],
+                                      'docs', 'api', 'gui', 'index.rst')
+        if not os.path.exists(index_filename):
+            return
+        with open(index_filename, encoding='utf8') as file:
+            contents = file.read()
+        lines = contents.split('\n')
+        package = self.configuration.package['name']
+        start_of_toctree = lines.index('.. toctree::')
+        end_of_toctree = lines[start_of_toctree:].index('')
+        lines.insert(start_of_toctree + end_of_toctree,
+                     f'    {package}.gui.{self.name}')
+        # Sort entries
+        new_end_of_toctree = lines[start_of_toctree:].index('')
+        start_sort = start_of_toctree + end_of_toctree - 1
+        end_sort = start_of_toctree + new_end_of_toctree
+        lines[start_sort:end_sort] = sorted(lines[start_sort:end_sort])
+        with open(index_filename, "w+", encoding='utf8') as file:
+            file.write('\n'.join(lines))

@@ -16,9 +16,8 @@ For version 0.4
 
   * CLI commands for creating GUI structure and adding a GUI window
   * Update configuration to cope with things such as splash
-  * Replace GUI window title in template according to module name
   * Modify setup.py and MANIFEST.in in case of added GUI
-  * Documentation
+  * Add gui_scripts entrypoint to setup.py
 
 * Using black for code style?
 
