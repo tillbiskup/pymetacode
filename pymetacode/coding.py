@@ -769,6 +769,10 @@ class GuiCreator:
         Check if GUI submodule exists already, and in case, do not try to
         add it again.
 
+    .. todo::
+
+        Handle splash (according to extended package configuration)
+
 
     Attributes
     ----------
