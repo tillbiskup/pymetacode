@@ -260,6 +260,19 @@ class Cli:
         logger.info('Added function "%s" to module "%s"', creator.name,
                     creator.module)
 
+    def _command_add_gui(self, conf):
+        creator = coding.GuiCreator()
+        creator.configuration = conf
+        creator.create()
+        logger.info('Added GUI')
+
+    def _command_add_window(self, conf):
+        creator = coding.GuiWindowCreator()
+        creator.name = self.options[1]
+        creator.configuration = conf
+        creator.create()
+        logger.info(f'Added {creator.name} to GUI')
+
     def _command_help(self):
         if not self.options:
             self._print_help()
@@ -323,14 +336,19 @@ class Cli:
         Usage for add command:
             command_name add <item>
             command_name add <item> to <module>
+            command_name add window <window>
 
         Possible items are:
             module
             class
             function
+            gui
+            window
 
-        For the latter two, you need to provide the name of an existing module 
-        these items should be added to.
+        For "class" and "function", you need to provide the name of an 
+        existing module these items should be added to.
+        
+        For "window", you need to provide a name for the GUI window.
         """
         self._output_help_text(help_text)
 

@@ -429,7 +429,7 @@ class ModuleCreator:
         package = self.configuration.package['name']
         start_of_toctree = lines.index('.. toctree::')
         end_of_toctree = lines[start_of_toctree:].index('')
-        lines.insert(start_of_toctree + end_of_toctree - 1,
+        lines.insert(start_of_toctree + end_of_toctree,
                      f'    {package}.{self.name}')
         # Sort entries
         new_end_of_toctree = lines[start_of_toctree:].index('')
@@ -803,7 +803,7 @@ class GuiCreator:
 
     .. code-block::
 
-        from pymetacode import coding, configuration
+        from pymetacode import coding, configuration, utils
 
         cfg = configuration.Configuration()
         cfg.package['name'] = 'pkgname'
@@ -812,9 +812,10 @@ class GuiCreator:
         pkg.configuration = cfg
         pkg.create(name=cfg.package['name'])
 
-        gui = coding.GuiCreator()
-        gui.configuration = cfg
-        gui.create()
+        with utils.change_working_dir(cfg.package['name']):
+            gui = coding.GuiCreator()
+            gui.configuration = cfg
+            gui.create()
 
     As you see here, this assumes no package to preexist. The crucial step
     is to create a configuration first and as a bare minimum set the package
@@ -842,10 +843,7 @@ class GuiCreator:
         as mentioned in the :class:`GuiCreator` class documentation.
 
         """
-        self._src_dir = os.path.join(
-            self.configuration.package['name'],
-            self.configuration.package['name']
-        )
+        self._src_dir = self.configuration.package['name']
         self._create_subdirectories()
         self._create_init_files()
         self._create_makefile()
@@ -856,10 +854,8 @@ class GuiCreator:
     def _create_subdirectories(self):
         for directory in self.subdirectories:
             self._create_directory(name=os.path.join(self._src_dir, directory))
-        self._create_directory(os.path.join(
-            self.configuration.package['name'], 'tests', 'gui'))
-        self._create_directory(os.path.join(
-            self.configuration.package['name'], 'docs', 'api', 'gui'))
+        self._create_directory(os.path.join('tests', 'gui'))
+        self._create_directory(os.path.join('docs', 'api', 'gui'))
 
     @staticmethod
     def _create_directory(name=''):
@@ -872,7 +868,7 @@ class GuiCreator:
         directories = [
             os.path.join(self._src_dir, 'gui'),
             os.path.join(self._src_dir, 'gui', 'ui'),
-            os.path.join(self.configuration.package['name'], 'tests', 'gui')
+            os.path.join('tests', 'gui')
         ]
         for directory in directories:
             init_filename = os.path.join(directory, '__init__.py')
@@ -908,8 +904,7 @@ class GuiCreator:
             path='docs',
             template='api_subpackage_index.j2.rst',
             context=context,
-            destination=os.path.join(
-                package_name, 'docs', 'api', 'gui', 'index.rst'),
+            destination=os.path.join('docs', 'api', 'gui', 'index.rst'),
         )
         template.create()
 
@@ -921,14 +916,12 @@ class GuiCreator:
             path='docs',
             template='api_index_subpackages_block.j2.rst',
             context=context,
-            destination=os.path.join(
-                package_name, 'docs', 'api', 'index.rst'),
+            destination=os.path.join('docs', 'api', 'index.rst'),
         )
         template.append()
 
     def _add_api_documentation_to_toctree(self):
-        index_filename = os.path.join(self.configuration.package['name'],
-                                      'docs', 'api', 'index.rst')
+        index_filename = os.path.join('docs', 'api', 'index.rst')
         if not os.path.exists(index_filename):
             return
         with open(index_filename, encoding='utf8') as file:
@@ -938,11 +931,11 @@ class GuiCreator:
         start_of_toctree = \
             lines.index('.. toctree::', lines.index('Subpackages'))
         end_of_toctree = lines[start_of_toctree:].index('')
-        lines.insert(start_of_toctree + end_of_toctree - 1,
-                     f'    {package}.gui')
+        lines.insert(start_of_toctree + end_of_toctree + 1,
+                     f'    gui/index')
         # Sort entries
         new_end_of_toctree = lines[start_of_toctree:].index('')
-        start_sort = start_of_toctree + end_of_toctree - 1
+        start_sort = start_of_toctree + end_of_toctree
         end_sort = start_of_toctree + new_end_of_toctree
         lines[start_sort:end_sort] = sorted(lines[start_sort:end_sort])
         with open(index_filename, "w+", encoding='utf8') as file:
@@ -1079,11 +1072,8 @@ class GuiWindowCreator:
         self._add_api_documentation_to_toctree()
 
     def _create_window(self):
-        gui_dir = os.path.join(
-            self.configuration.package['name'],
-            self.configuration.package['name'], 'gui')
-        test_dir = \
-            os.path.join(self.configuration.package['name'], 'tests', 'gui')
+        gui_dir = os.path.join(self.configuration.package['name'], 'gui')
+        test_dir = os.path.join('tests', 'gui')
         files = [
             {
                 'template': 'gui_window.j2.py',
@@ -1119,8 +1109,7 @@ class GuiWindowCreator:
 
     def _create_api_documentation(self):
         package = self.configuration.package['name'] + '.gui'
-        filename = os.path.join(self.configuration.package['name'],
-                                'docs', 'api', 'gui',
+        filename = os.path.join('docs', 'api', 'gui',
                                 f'{package}.{self.name}.rst')
         if os.path.exists(filename):
             warnings.warn(f"File '{filename}' exists already")
@@ -1139,8 +1128,7 @@ class GuiWindowCreator:
         template.create()
 
     def _add_api_documentation_to_toctree(self):
-        index_filename = os.path.join(self.configuration.package['name'],
-                                      'docs', 'api', 'gui', 'index.rst')
+        index_filename = os.path.join('docs', 'api', 'gui', 'index.rst')
         if not os.path.exists(index_filename):
             return
         with open(index_filename, encoding='utf8') as file:
@@ -1149,12 +1137,13 @@ class GuiWindowCreator:
         package = self.configuration.package['name']
         start_of_toctree = lines.index('.. toctree::')
         end_of_toctree = lines[start_of_toctree:].index('')
-        lines.insert(start_of_toctree + end_of_toctree,
+        lines.insert(start_of_toctree + end_of_toctree + 1,
                      f'    {package}.gui.{self.name}')
         # Sort entries
-        new_end_of_toctree = lines[start_of_toctree:].index('')
-        start_sort = start_of_toctree + end_of_toctree - 1
-        end_sort = start_of_toctree + new_end_of_toctree
+        new_end_of_toctree = \
+            lines[start_of_toctree + end_of_toctree + 1:].index('')
+        start_sort = start_of_toctree + end_of_toctree + 1
+        end_sort = start_of_toctree + end_of_toctree + new_end_of_toctree + 1
         lines[start_sort:end_sort] = sorted(lines[start_sort:end_sort])
         with open(index_filename, "w+", encoding='utf8') as file:
             file.write('\n'.join(lines))

@@ -291,6 +291,66 @@ class TestCli(unittest.TestCase):
         self.assertIn('Added function "{}" to module "{}"'.format(
             function_name, module_name), cm.output[0])
 
+    def test_call_add_gui_adds_gui(self):
+        conf = configuration.Configuration()
+        conf.package['name'] = self.package_name
+        conf.to_file(self.config_filename)
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            self.cli.call(command="create",
+                          options=["package", "from", self.config_filename])
+        with utils.change_working_dir(self.package_name):
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.cli.call(command="add",
+                              options=["gui"])
+            self.assertTrue(os.path.exists(
+                os.path.join(self.package_name, 'gui')))
+
+    def test_call_add_gui_logs_success_message(self):
+        conf = configuration.Configuration()
+        conf.package['name'] = self.package_name
+        conf.to_file(self.config_filename)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.cli.call(command="create",
+                          options=["package", "from", self.config_filename])
+        with utils.change_working_dir(self.package_name):
+            with self.assertLogs(__package__, level='INFO') as cm:
+                self.cli.call(command="add",
+                              options=["gui"])
+        self.assertIn('Added GUI', cm.output[0])
+
+    def test_call_add_window_adds_window(self):
+        conf = configuration.Configuration()
+        conf.package['name'] = self.package_name
+        conf.to_file(self.config_filename)
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            self.cli.call(command="create",
+                          options=["package", "from", self.config_filename])
+        with utils.change_working_dir(self.package_name):
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.cli.call(command="add",
+                              options=["gui"])
+                self.cli.call(command="add",
+                              options=["window", "test"])
+            self.assertTrue(os.path.exists(
+                os.path.join(self.package_name, 'gui', "testwindow.py")))
+
+    def test_call_add_window_logs_success_message(self):
+        conf = configuration.Configuration()
+        conf.package['name'] = self.package_name
+        conf.to_file(self.config_filename)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.cli.call(command="create",
+                          options=["package", "from", self.config_filename])
+        with utils.change_working_dir(self.package_name):
+            with self.assertLogs(__package__, level='INFO') as cm:
+                self.cli.call(command="add",
+                              options=["gui"])
+                self.cli.call(command="add",
+                              options=["window", "test"])
+        self.assertIn('Added testwindow to GUI', cm.output[1])
+
 
 class TestConsoleEntryPoint(unittest.TestCase):
 

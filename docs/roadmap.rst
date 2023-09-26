@@ -14,7 +14,6 @@ For version 0.4
 
 * Directory structure for GUIs (created with PySide6)
 
-  * CLI commands for creating GUI structure and adding a GUI window
   * Update configuration to cope with things such as splash
   * Modify setup.py and MANIFEST.in in case of added GUI
   * Add gui_scripts entrypoint to setup.py

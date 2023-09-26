@@ -678,159 +678,172 @@ class TestGuiCreator(unittest.TestCase):
         self.assertTrue(callable(self.creator.create))
 
     def test_create_creates_gui_directory(self):
-        self.creator.create()
-        path = os.path.join(self.package, self.package, 'gui')
-        self.assertTrue(os.path.exists(path))
-        self.assertTrue(os.path.isdir(path))
+        path = os.path.join(self.package, 'gui')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            self.assertTrue(os.path.exists(path))
+            self.assertTrue(os.path.isdir(path))
 
     def test_create_with_existing_directory_issues_warning(self):
-        self.creator.create()
-        path = os.path.join(self.package, self.package, 'gui')
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
+        path = os.path.join(self.package, 'gui')
+        with utils.change_working_dir(self.package):
             self.creator.create()
-            self.assertTrue(w)
-        self.assertTrue(os.path.exists(path))
-        self.assertTrue(os.path.isdir(path))
+            with warnings.catch_warnings(record=True) as w:
+                warnings.simplefilter("always")
+                self.creator.create()
+                self.assertTrue(w)
+            self.assertTrue(os.path.exists(path))
+            self.assertTrue(os.path.isdir(path))
 
     def test_create_creates_subdirectories(self):
         directories = [
-            os.path.join(self.package, self.package, 'gui', 'data'),
-            os.path.join(self.package, self.package, 'gui', 'ui'),
+            os.path.join(self.package, 'gui', 'data'),
+            os.path.join(self.package, 'gui', 'ui'),
         ]
-        self.creator.create()
-        for directory in directories:
-            with self.subTest(directory=directory):
-                self.assertTrue(os.path.exists(directory))
-                self.assertTrue(os.path.isdir(directory))
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            for directory in directories:
+                with self.subTest(directory=directory):
+                    self.assertTrue(os.path.exists(directory))
+                    self.assertTrue(os.path.isdir(directory))
 
     def test_create_creates_init_files(self):
         directories = [
-            os.path.join(self.package, self.package, 'gui'),
-            os.path.join(self.package, self.package, 'gui', 'ui'),
+            os.path.join(self.package, 'gui'),
+            os.path.join(self.package, 'gui', 'ui'),
         ]
-        self.creator.create()
-        for directory in directories:
-            with self.subTest(directory=directory):
-                filename = os.path.join(directory, '__init__.py')
-                self.assertTrue(os.path.exists(filename))
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            for directory in directories:
+                with self.subTest(directory=directory):
+                    filename = os.path.join(directory, '__init__.py')
+                    self.assertTrue(os.path.exists(filename))
 
     def test_create_creates_test_subdirectory(self):
-        directory = os.path.join(self.package, 'tests', 'gui')
-        self.creator.create()
-        self.assertTrue(os.path.exists(directory))
-        self.assertTrue(os.path.isdir(directory))
+        directory = os.path.join('tests', 'gui')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            self.assertTrue(os.path.exists(directory))
+            self.assertTrue(os.path.isdir(directory))
 
     def test_create_creates_init_file_in_test_subdirectory(self):
-        directory = os.path.join(self.package, 'tests', 'gui')
-        self.creator.create()
-        filename = os.path.join(directory, '__init__.py')
-        self.assertTrue(os.path.exists(filename))
+        directory = os.path.join('tests', 'gui')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filename = os.path.join(directory, '__init__.py')
+            self.assertTrue(os.path.exists(filename))
 
     def test_create_copies_makefile(self):
-        self.creator.create()
-        filepath = os.path.join(
-            self.package, self.package, 'gui', 'Makefile'
-        )
-        self.assertTrue(os.path.exists(filepath))
+        filepath = os.path.join(self.package, 'gui', 'Makefile')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            self.assertTrue(os.path.exists(filepath))
 
     def test_create_copies_app_module(self):
-        self.creator.create()
-        filepath = os.path.join(self.package, self.package, 'gui', 'app.py')
-        self.assertTrue(os.path.exists(filepath))
+        filepath = os.path.join(self.package, 'gui', 'app.py')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            self.assertTrue(os.path.exists(filepath))
 
     def test_create_replaces_variables_in_app_module(self):
-        self.creator.create()
-        filepath = os.path.join(self.package, self.package, 'gui', 'app.py')
-        with open(filepath) as file:
-            contents = file.read()
-        self.assertIn(self.package + '.gui.mainwindow', contents)
+        filepath = os.path.join(self.package, 'gui', 'app.py')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn(self.package + '.gui.mainwindow', contents)
 
     def test_create_creates_mainwindow_module(self):
-        self.creator.create()
-        gui_path = os.path.join(self.package, self.package, 'gui')
-        filepaths = [
-            os.path.join(gui_path, 'mainwindow.py'),
-            os.path.join(gui_path, 'ui', 'mainwindow.ui'),
-            # os.path.join(gui_path, 'ui', 'mainwindow.py'),
-            os.path.join(self.package, 'tests', 'gui', 'test_mainwindow.py'),
-        ]
-        for filepath in filepaths:
-            with self.subTest(filepath=filepath):
-                self.assertTrue(os.path.exists(filepath))
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filepaths = [
+                os.path.join(self.package, 'gui', 'mainwindow.py'),
+                os.path.join(self.package, 'gui', 'ui', 'mainwindow.ui'),
+                # os.path.join(gui_path, 'ui', 'mainwindow.py'),
+                os.path.join('tests', 'gui', 'test_mainwindow.py'),
+            ]
+            for filepath in filepaths:
+                with self.subTest(filepath=filepath):
+                    self.assertTrue(os.path.exists(filepath))
 
     def test_create_fills_mainwindow_module(self):
-        self.creator.create()
-        filepath = \
-            os.path.join(self.package, self.package, 'gui', 'mainwindow.py')
-        with open(filepath) as file:
-            contents = file.read()
-        self.assertIn('class MainWindow', contents)
+        filepath = os.path.join(self.package, 'gui', 'mainwindow.py')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn('class MainWindow', contents)
 
     def test_create_fills_mainwindow_ui_file(self):
-        self.creator.create()
-        filepath = os.path.join(
-            self.package, self.package, 'gui', 'ui', 'mainwindow.ui'
-        )
-        with open(filepath) as file:
-            contents = file.read()
-        self.assertIn('<ui version=', contents)
+        filepath = os.path.join(self.package, 'gui', 'ui', 'mainwindow.ui')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn('<ui version=', contents)
 
     def test_create_fills_mainwindow_unittest_file(self):
-        self.creator.create()
-        filepath = os.path.join(
-            self.package, 'tests', 'gui', 'test_mainwindow.py'
-        )
-        with open(filepath) as file:
-            contents = file.read()
-        self.assertIn(f'from {self.package} import gui.mainwindow', contents)
+        filepath = os.path.join('tests', 'gui', 'test_mainwindow.py')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn(f'from {self.package} import gui.mainwindow',
+                          contents)
 
     def test_create_creates_docs_subdirectory(self):
-        directory = os.path.join(self.package, 'docs', 'api', 'gui')
-        self.creator.create()
-        self.assertTrue(os.path.exists(directory))
-        self.assertTrue(os.path.isdir(directory))
+        directory = os.path.join('docs', 'api', 'gui')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            self.assertTrue(os.path.exists(directory))
+            self.assertTrue(os.path.isdir(directory))
 
     def test_create_populates_docs_api_gui_subdirectory(self):
-        self.creator.create()
-        files = ['index.rst']
-        for file in files:
-            with self.subTest(file=file):
-                filename = os.path.join(self.package, 'docs', 'api', 'gui',
-                                        file)
-                self.assertTrue(os.path.exists(filename))
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            files = ['index.rst']
+            for file in files:
+                with self.subTest(file=file):
+                    filename = os.path.join('docs', 'api', 'gui', file)
+                    self.assertTrue(os.path.exists(filename))
 
     def test_create_replaces_variables_in_docs_api_gui_index(self):
-        self.creator.create()
-        filepath = os.path.join(self.package, 'docs', 'api', 'gui', 'index.rst')
-        with open(filepath) as file:
-            contents = file.read()
-        self.assertIn(f'{self.package}.gui subpackage', contents)
-        self.assertIn(f'.. automodule:: {self.package}.gui', contents)
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filepath = os.path.join('docs', 'api', 'gui', 'index.rst')
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn(f'{self.package}.gui subpackage', contents)
+            self.assertIn(f'.. automodule:: {self.package}.gui', contents)
 
     def test_create_sets_correct_header_length_in_docs_api_gui_index(self):
-        self.creator.create()
-        filepath = os.path.join(self.package, 'docs', 'api', 'gui', 'index.rst')
-        with open(filepath) as file:
-            contents = file.read()
-        header_underline = (len(self.package) + 5 + len('subpackage')) * '='
-        self.assertIn(header_underline, contents)
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filepath = os.path.join('docs', 'api', 'gui', 'index.rst')
+            with open(filepath) as file:
+                contents = file.read()
+            header_underline = \
+                (len(self.package) + 5 + len('subpackage')) * '='
+            self.assertIn(header_underline, contents)
 
     def test_create_adds_submodules_block_in_docs_api_index(self):
-        self.creator.create()
-        filepath = os.path.join(self.package, 'docs', 'api', 'index.rst')
-        with open(filepath) as file:
-            contents = file.read()
-        self.assertIn('Subpackages', contents)
-        self.assertIn(f'subpackages available within the {self.package}',
-                      contents)
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filepath = os.path.join('docs', 'api', 'index.rst')
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn('Subpackages', contents)
+            self.assertIn(f'subpackages available within the {self.package}',
+                          contents)
 
     def test_create_adds_gui_submodule_to_toc_in_docs_api_index(self):
-        self.creator.create()
-        filepath = os.path.join(self.package, 'docs', 'api', 'index.rst')
-        with open(filepath) as file:
-            contents = file.read()
-        self.assertIn(f'{self.package}.gui', contents)
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filepath = os.path.join('docs', 'api', 'index.rst')
+            with open(filepath) as file:
+                contents = file.read()
+            print(contents)
+            self.assertIn('gui/index', contents)
 
 
 class TestGuiWindowCreator(unittest.TestCase):
@@ -852,9 +865,10 @@ class TestGuiWindowCreator(unittest.TestCase):
         pkg = coding.PackageCreator()
         pkg.name = self.package
         pkg.create()
-        gui = coding.GuiCreator()
-        gui.configuration = self.configuration
-        gui.create()
+        with utils.change_working_dir(self.package):
+            gui = coding.GuiCreator()
+            gui.configuration = self.configuration
+            gui.create()
 
     def test_instantiate_class(self):
         pass
@@ -876,8 +890,9 @@ class TestGuiWindowCreator(unittest.TestCase):
         self.assertEqual(f'{self.name}window', self.creator.name)
 
     def test_create_with_name_sets_name_property(self):
-        self.creator.create(name=self.name)
-        self.assertEqual(f'{self.name}window', self.creator.name)
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            self.assertEqual(f'{self.name}window', self.creator.name)
 
     def test_setting_name_sets_lowercase_name(self):
         self.creator.name = 'CamelCase'
@@ -909,101 +924,113 @@ class TestGuiWindowCreator(unittest.TestCase):
         self.assertEqual('', self.creator.class_name)
 
     def test_create_creates_window_module(self):
-        self.creator.create(name=self.name)
-        gui_path = os.path.join(self.package, self.package, 'gui')
-        filepaths = [
-            os.path.join(gui_path, self.creator.name + '.py'),
-            os.path.join(gui_path, 'ui', self.creator.name + '.ui'),
-            # os.path.join(gui_path, 'ui', self.name + '.py'),
-            os.path.join(self.package, 'tests', 'gui',
-                         'test_' + self.creator.name + '.py'),
-        ]
-        for filepath in filepaths:
-            with self.subTest(filepath=filepath):
-                self.assertTrue(os.path.exists(filepath))
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            gui_path = os.path.join(self.package, 'gui')
+            filepaths = [
+                os.path.join(gui_path, self.creator.name + '.py'),
+                os.path.join(gui_path, 'ui', self.creator.name + '.ui'),
+                # os.path.join(gui_path, 'ui', self.name + '.py'),
+                os.path.join('tests', 'gui',
+                             'test_' + self.creator.name + '.py'),
+            ]
+            for filepath in filepaths:
+                with self.subTest(filepath=filepath):
+                    self.assertTrue(os.path.exists(filepath))
 
     def test_create_fills_window_module(self):
-        self.creator.create(name=self.name)
-        filepath = os.path.join(
-            self.package, self.package, 'gui', self.creator.name + '.py')
-        with open(filepath) as file:
-            contents = file.read()
-        self.assertIn('class ', contents)
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filepath = os.path.join(
+                self.package, 'gui', self.creator.name + '.py')
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn('class ', contents)
 
     def test_create_replaces_variables_in_window_module(self):
-        self.creator.create(name=self.name)
-        filepath = os.path.join(
-            self.package, self.package, 'gui', self.creator.name + '.py')
-        with open(filepath) as file:
-            contents = file.read()
-        self.assertIn(f'from .ui.{self.creator.name} import Ui_'
-                      f'{self.creator.class_name}', contents)
-        self.assertIn(f'class {self.creator.class_name}(QMainWindow, '
-                      f'Ui_{self.creator.class_name}', contents)
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filepath = os.path.join(
+                self.package, 'gui', self.creator.name + '.py')
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn(f'from .ui.{self.creator.name} import Ui_'
+                          f'{self.creator.class_name}', contents)
+            self.assertIn(f'class {self.creator.class_name}(QMainWindow, '
+                          f'Ui_{self.creator.class_name}', contents)
 
     def test_create_fills_window_ui_file(self):
-        self.creator.create(name=self.name)
-        filepath = os.path.join(
-            self.package, self.package, 'gui', 'ui', self.creator.name + '.ui'
-        )
-        with open(filepath) as file:
-            contents = file.read()
-        self.assertIn('<ui version=', contents)
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filepath = os.path.join(
+                self.package, 'gui', 'ui', self.creator.name + '.ui'
+            )
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn('<ui version=', contents)
 
     def test_create_replaces_variables_in_window_ui_file(self):
-        self.creator.create(name=self.name)
-        filepath = os.path.join(
-            self.package, self.package, 'gui', 'ui', self.creator.name + '.ui'
-        )
-        with open(filepath) as file:
-            contents = file.read()
-        self.assertIn(f'<class>{self.creator.class_name}</class>', contents)
-        self.assertIn(
-            f'<widget class="QMainWindow" name="{self.creator.class_name}">',
-            contents
-        )
-        self.assertIn(f'<string>{self.creator.class_name}</string>', contents)
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filepath = os.path.join(
+                self.package, 'gui', 'ui', self.creator.name + '.ui'
+            )
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn(f'<class>{self.creator.class_name}</class>', contents)
+            self.assertIn(
+                f'<widget class="QMainWindow" name="{self.creator.class_name}">',
+                contents
+            )
+            self.assertIn(f'<string>{self.creator.class_name}</string>', contents)
 
     def test_create_fills_window_unittest_file(self):
-        self.creator.create(name=self.name)
-        filepath = os.path.join(
-            self.package, 'tests', 'gui', 'test_' + self.creator.name + '.py'
-        )
-        with open(filepath) as file:
-            contents = file.read()
-        self.assertIn(f'from {self.package} import gui.{self.creator.name}',
-                      contents)
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filepath = os.path.join(
+                'tests', 'gui', 'test_' + self.creator.name + '.py'
+            )
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn(f'from {self.package} import gui.{self.creator.name}',
+                          contents)
 
     def test_create_creates_api_documentation(self):
-        self.creator.create(name=self.name)
-        filename = os.path.join(self.package, 'docs', 'api', 'gui',
-                                f'{self.package}.gui.{self.creator.name}.rst')
-        self.assertTrue(os.path.exists(filename))
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filename = \
+                os.path.join('docs', 'api', 'gui',
+                             f'{self.package}.gui.{self.creator.name}.rst')
+            self.assertTrue(os.path.exists(filename))
 
     def test_create_warns_if_api_documentation_exists(self):
-        filename = os.path.join(self.package, 'docs', 'api', 'gui',
-                                f'{self.package}.gui.{self.name}window.rst')
-        with open(filename, 'a') as file:
-            file.write('foo bar')
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
-            self.creator.create(name=self.name)
-            self.assertTrue(w)
+        with utils.change_working_dir(self.package):
+            filename = \
+                os.path.join('docs', 'api', 'gui',
+                             f'{self.package}.gui.{self.name}window.rst')
+            with open(filename, 'a') as file:
+                file.write('foo bar')
+            with warnings.catch_warnings(record=True) as w:
+                warnings.simplefilter("always")
+                self.creator.create(name=self.name)
+                self.assertTrue(w)
 
     def test_create_replaces_placeholders_in_api_documentation(self):
-        self.creator.create(name=self.name)
-        filename = os.path.join(self.package, 'docs', 'api', 'gui',
-                                f'{self.package}.gui.{self.creator.name}.rst')
-        with open(filename) as file:
-            contents = file.read()
-        content_line = f'{self.package}.gui.{self.creator.name}'
-        self.assertIn(content_line, contents)
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filename = \
+                os.path.join('docs', 'api', 'gui',
+                             f'{self.package}.gui.{self.creator.name}.rst')
+            with open(filename) as file:
+                contents = file.read()
+            content_line = f'{self.package}.gui.{self.creator.name}'
+            self.assertIn(content_line, contents)
 
     def test_create_adds_documentation_to_api_toctree(self):
-        index_filename = \
-            os.path.join(self.package, 'docs', 'api', 'gui', 'index.rst')
-        self.creator.create(name=self.name)
-        toctree_entry = f'{self.package}.gui.{self.creator.name}'
-        with open(index_filename) as file:
-            contents = file.read()
-        self.assertIn(toctree_entry, contents)
+        index_filename = os.path.join('docs', 'api', 'gui', 'index.rst')
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            toctree_entry = f'{self.package}.gui.{self.creator.name}'
+            with open(index_filename) as file:
+                contents = file.read()
+            self.assertIn(toctree_entry, contents)
