@@ -1,9 +1,9 @@
 from PySide6.QtWidgets import QMainWindow
 
-from .ui.mainwindow import Ui_MainWindow
+from .ui.{{ module.name }} import Ui_{{ class.name }}
 
 
-class MainWindow(QMainWindow, Ui_MainWindow):
+class {{ class.name }}(QMainWindow, Ui_{{ class.name }}):
     def __init__(self):
         super().__init__()
         self.setupUi(self)

@@ -783,6 +783,139 @@ class TestGuiWindowCreator(unittest.TestCase):
 
     def setUp(self):
         self.creator = coding.GuiWindowCreator()
+        self.package = 'bar'
+        self.name = 'test'
+        self.configuration = pymetacode.configuration.Configuration()
+        self.configuration.package['name'] = self.package
+        self.creator.configuration = self.configuration
+        self.create_package_structure()
+
+    def tearDown(self):
+        if os.path.exists(self.configuration.package['name']):
+            shutil.rmtree(self.configuration.package['name'])
+
+    def create_package_structure(self):
+        pkg = coding.PackageCreator()
+        pkg.name = self.package
+        pkg.create()
+        gui = coding.GuiCreator()
+        gui.configuration = self.configuration
+        gui.create()
 
     def test_instantiate_class(self):
         pass
+
+    def test_has_create_method(self):
+        self.assertTrue(hasattr(self.creator, 'create'))
+        self.assertTrue(callable(self.creator.create))
+
+    def test_create_without_name_raises(self):
+        with self.assertRaisesRegex(ValueError, 'No window name given'):
+            self.creator.create()
+
+    def test_setting_name_property_adds_window_suffix(self):
+        self.creator.name = self.name
+        self.assertEqual(f'{self.name}window', self.creator.name)
+
+    def test_setting_name_property_with_window_suffix(self):
+        self.creator.name = f'{self.name}window'
+        self.assertEqual(f'{self.name}window', self.creator.name)
+
+    def test_create_with_name_sets_name_property(self):
+        self.creator.create(name=self.name)
+        self.assertEqual(f'{self.name}window', self.creator.name)
+
+    def test_setting_name_sets_lowercase_name(self):
+        self.creator.name = 'CamelCase'
+        self.assertEqual(f'{self.creator.name}'.lower(),
+                         self.creator.name)
+
+    def test_setting_empty_name(self):
+        self.creator.name = 'CamelCase'
+        self.creator.name = ''
+        self.assertEqual('', self.creator.name)
+
+    def test_setting_name_property_with_window_suffix_sets_lowercase(self):
+        self.creator.name = 'CamelCaseWindow'
+        self.assertEqual('camelcasewindow', self.creator.name)
+
+    def test_set_class_name_from_window_name(self):
+        self.creator.name = f'{self.name}'
+        self.assertEqual(f'{self.name.capitalize()}Window',
+                         self.creator.class_name)
+
+    def test_set_class_name_from_window_name_with_suffix(self):
+        self.creator.name = f'{self.name}window'
+        self.assertEqual(f'{self.name.capitalize()}Window',
+                         self.creator.class_name)
+
+    def test_set_empty_class_name_from_empty_name(self):
+        self.creator.name = 'foo'
+        self.creator.name = ''
+        self.assertEqual('', self.creator.class_name)
+
+    def test_create_creates_window_module(self):
+        self.creator.create(name=self.name)
+        gui_path = os.path.join(self.package, self.package, 'gui')
+        filepaths = [
+            os.path.join(gui_path, self.creator.name + '.py'),
+            os.path.join(gui_path, 'ui', self.creator.name + '.ui'),
+            # os.path.join(gui_path, 'ui', self.name + '.py'),
+            os.path.join(self.package, 'tests', 'gui',
+                         'test_' + self.creator.name + '.py'),
+        ]
+        for filepath in filepaths:
+            with self.subTest(filepath=filepath):
+                self.assertTrue(os.path.exists(filepath))
+
+    def test_create_fills_window_module(self):
+        self.creator.create(name=self.name)
+        filepath = os.path.join(
+            self.package, self.package, 'gui', self.creator.name + '.py')
+        with open(filepath) as file:
+            contents = file.read()
+        self.assertIn('class ', contents)
+
+    def test_create_replaces_variables_in_window_module(self):
+        self.creator.create(name=self.name)
+        filepath = os.path.join(
+            self.package, self.package, 'gui', self.creator.name + '.py')
+        with open(filepath) as file:
+            contents = file.read()
+        self.assertIn(f'from .ui.{self.creator.name} import Ui_'
+                      f'{self.creator.class_name}', contents)
+        self.assertIn(f'class {self.creator.class_name}(QMainWindow, '
+                      f'Ui_{self.creator.class_name}', contents)
+
+    def test_create_fills_window_ui_file(self):
+        self.creator.create(name=self.name)
+        filepath = os.path.join(
+            self.package, self.package, 'gui', 'ui', self.creator.name + '.ui'
+        )
+        with open(filepath) as file:
+            contents = file.read()
+        self.assertIn('<ui version=', contents)
+
+    def test_create_replaces_variables_in_window_ui_file(self):
+        self.creator.create(name=self.name)
+        filepath = os.path.join(
+            self.package, self.package, 'gui', 'ui', self.creator.name + '.ui'
+        )
+        with open(filepath) as file:
+            contents = file.read()
+        self.assertIn(f'<class>{self.creator.class_name}</class>', contents)
+        self.assertIn(
+            f'<widget class="QMainWindow" name="{self.creator.class_name}">',
+            contents
+        )
+        self.assertIn(f'<string>{self.creator.class_name}</string>', contents)
+
+    def test_create_fills_window_unittest_file(self):
+        self.creator.create(name=self.name)
+        filepath = os.path.join(
+            self.package, 'tests', 'gui', 'test_' + self.creator.name + '.py'
+        )
+        with open(filepath) as file:
+            contents = file.read()
+        self.assertIn(f'from {self.package} import gui.{self.creator.name}',
+                      contents)

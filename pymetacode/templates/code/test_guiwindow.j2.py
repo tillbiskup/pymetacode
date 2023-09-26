@@ -1,4 +1,4 @@
 import unittest
 
-from {{ package.name }} import {{ module.name }}
+from {{ package.name }} import gui.{{ module.name }}
 

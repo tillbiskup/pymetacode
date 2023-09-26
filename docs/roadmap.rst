@@ -10,9 +10,10 @@ For version 0.4
 
 * CITATION.cff template?
 
+  * Would possibly need much more information in .package_config.yaml
+
 * Directory structure for GUIs (created with PySide6)
 
-  * Flesh out :class:`pymetacode.coding.GuiWindowCreator`
   * CLI commands for creating GUI structure and adding a GUI window
   * Update configuration to cope with things such as splash
   * Replace GUI window title in template according to module name

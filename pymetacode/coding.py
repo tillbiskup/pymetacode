@@ -770,40 +770,9 @@ class GuiCreator:
         template.create()
 
     def _create_mainwindow(self):
-        gui_dir = os.path.join(self._src_dir, 'gui')
-        test_dir = \
-            os.path.join(self.configuration.package['name'], 'tests', 'gui')
-        files = [
-            {
-                'template': 'gui_mainwindow.j2.py',
-                'path': os.path.join(gui_dir, 'mainwindow.py')
-            },
-            {
-                'template': 'gui_mainwindow.j2.ui',
-                'path': os.path.join(gui_dir, 'ui', 'mainwindow.ui')
-            },
-            {
-                'template': 'test_guiwindow.j2.py',
-                'path': os.path.join(test_dir, 'test_mainwindow.py')
-            },
-        ]
-        context = self.configuration.to_dict()
-        context['module'] = {'name': 'gui.mainwindow'}
-        for file in files:
-            template = utils.Template(
-                path='code',
-                template=file['template'],
-                context=context,
-                destination=file['path'],
-            )
-            template.create()
-        # Decide whether to auto-generate these files or whether to postpone
-        # subprocess.run(
-        #     ['pyside6-uic',
-        #      os.path.join(self._src_dir, 'gui', 'ui', 'mainwindow.ui'),
-        #      '-o',
-        #      os.path.join(self._src_dir, 'gui', 'ui', 'mainwindow.py')]
-        # )
+        window_creator = GuiWindowCreator()
+        window_creator.configuration = self.configuration
+        window_creator.create(name='main')
 
 
 class GuiWindowCreator:
@@ -840,4 +809,73 @@ class GuiWindowCreator:
 
     """
 
-    pass
+    def __init__(self):
+        self.configuration = configuration.Configuration()
+        self._name = ''
+        self._class_name = ''
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name=''):
+        if not name:
+            self._name = ''
+            self._class_name = ''
+        elif name.lower().endswith('window'):
+            self._name = name.lower()
+            self._class_name = f'{self.name[:-6].capitalize()}Window'
+        else:
+            self._name = f'{name}window'.lower()
+            self._class_name = f'{name.capitalize()}Window'
+
+    @property
+    def class_name(self):
+        return self._class_name
+
+    def create(self, name=''):
+        if name:
+            self.name = name
+        elif not self.name:
+            raise ValueError('No window name given')
+        self._create_window()
+
+    def _create_window(self):
+        gui_dir = os.path.join(
+            self.configuration.package['name'],
+            self.configuration.package['name'], 'gui')
+        test_dir = \
+            os.path.join(self.configuration.package['name'], 'tests', 'gui')
+        files = [
+            {
+                'template': 'gui_window.j2.py',
+                'path': os.path.join(gui_dir, f'{self.name}.py')
+            },
+            {
+                'template': 'gui_window.j2.ui',
+                'path': os.path.join(gui_dir, 'ui', f'{self.name}.ui')
+            },
+            {
+                'template': 'test_guiwindow.j2.py',
+                'path': os.path.join(test_dir, f'test_{self.name}.py')
+            },
+        ]
+        context = self.configuration.to_dict()
+        context['module'] = {'name': self.name}
+        context['class'] = {'name': self.class_name}
+        for file in files:
+            template = utils.Template(
+                path='code',
+                template=file['template'],
+                context=context,
+                destination=file['path'],
+            )
+            template.create()
+        # Decide whether to auto-generate these files or whether to postpone
+        # subprocess.run(
+        #     ['pyside6-uic',
+        #      os.path.join(self._src_dir, 'gui', 'ui', f'{self.name}.ui'),
+        #      '-o',
+        #      os.path.join(self._src_dir, 'gui', 'ui', f'{self.name}.py')]
+        # )
