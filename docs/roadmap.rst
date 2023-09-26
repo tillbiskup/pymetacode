@@ -36,3 +36,12 @@ For later versions
 * More configuration options.
 
 * Commands for releasing a package to PyPI
+
+
+Todos
+=====
+
+A list of todos, extracted from the code and documentation itself, and only meant as convenience for the main developers. Ideally, this list will be empty at some point.
+
+.. todolist::
+
