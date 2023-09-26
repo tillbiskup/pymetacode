@@ -764,6 +764,11 @@ class GuiCreator:
     If you would like to add additional windows to your existing GUI, have a
     look at the :class:`GuiWindowCreator` class.
 
+    .. todo::
+
+        Check if GUI submodule exists already, and in case, do not try to
+        add it again.
+
 
     Attributes
     ----------
@@ -957,6 +962,11 @@ class GuiWindowCreator:
     #. the API documentation file
 
     The latter gets added to the API toctree directive as well.
+
+    .. todo::
+
+        Check if GUI window exists already, and in case, do not try to
+        add it again.
 
 
     Attributes
