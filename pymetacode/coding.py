@@ -1,23 +1,31 @@
 """
 The actual code generators of the pymetacode package.
 
-Currently, there are four types of code generators:
+Currently, there are the following types of code generators:
 
 * :class:`pymetacode.coding.PackageCreator`
 
-  Generates the basic package structure.
+  Generate the basic package structure.
 
 * :class:`pymetacode.coding.ModuleCreator`
 
-  Adds a module to an existing package.
+  Add a module to an existing package.
 
 * :class:`pymetacode.coding.ClassCreator`
 
-  Adds a class to an existing module, including a test class.
+  Add a class to an existing module, including a test class.
 
 * :class:`pymetacode.coding.FunctionCreator`
 
-  Adds a function to an existing module, including a test class.
+  Add a function to an existing module, including a test class.
+
+* :class:`pymetacode.coding.GuiCreator`
+
+  Add PySide6-based (Qt6) GUI subpackage to an existing package.
+
+* :class:`pymetacode.coding.GuiWindowCreator`
+
+  Add a PySide6-based (Qt6) GUI window to an existing GUI subpackage.
 
 Each of these generators uses templates in the ``templates`` subdirectory of
 the pymetacode package.
@@ -681,9 +689,48 @@ class FunctionCreator:
 
 class GuiCreator:
     """
-    Add PySide6-based (Qt) GUI subpackage to an existing package.
+    Add PySide6-based (Qt6) GUI subpackage to an existing package.
 
-    More description comes here...
+    If you want to add a GUI to your package, this involves extending the
+    overall package structure with a GUI submodule (as well in the tests).
+    For now, the pymetacode package only supports creating GUIs using Qt6
+    and the PySide6 bindings. The package structure of the added
+    subpackages follows best practices. An example of the additional
+    package structure is shown below.
+
+
+    .. code-block::
+
+        mypackage
+        ├── docs
+        │   ├── api
+        │   │   ├── gui
+        │   │   │   ├── mainwindow.rst
+        │   │   │   └── index.rst
+        │   │   └── ...
+        │   └── ...
+        ├── mypackage
+        │   ├── gui
+        │   │   ├── app.py
+        │   │   ├── data
+        │   │   ├── __init__.py
+        │   │   ├── mainwindow.py
+        │   │   ├── Makefile
+        │   │   └── ui
+        │   │       ├── __init__.py
+        │   │       └── mainwindow.ui
+        │   └── ...
+        └── tests
+            ├── gui
+            │   ├── __init__.py
+            │   └── test_mainwindow.py
+            └── ...
+
+
+
+    .. todo::
+
+        Add documentation directory and index file in API documentation.
 
 
     Attributes
@@ -720,7 +767,13 @@ class GuiCreator:
         self._src_dir = ''
 
     def create(self):
-        """Create actual code stub for the GUI subpackage."""
+        """
+        Create actual code stub for the GUI subpackage.
+
+        This will create a number of files and (sub)directories,
+        as mentioned in the :class:`GuiCreator` class documentation.
+
+        """
         self._src_dir = os.path.join(
             self.configuration.package['name'],
             self.configuration.package['name']
@@ -777,20 +830,32 @@ class GuiCreator:
 
 class GuiWindowCreator:
     """
-    Add a PySide6-based (Qt) GUI window to an existing GUI subpackage.
+    Add a PySide6-based (Qt6) GUI window to an existing GUI subpackage.
 
-    More description comes here...
+    Actually, adding a GUI window consists of creating a number of files:
+
+    #. the module used to call the GUI window
+    #. the corresponding ui file defining the Qt layout of the window
+    #. an accompanying test module
+    #. the API documentation file
+
+    The latter gets added to the API toctree directive as well.
+
+
+    .. todo::
+
+        Add documentation when creating window files.
 
 
     Attributes
     ----------
-    attr : :class:`None`
-        Short description
+    configuration : :class:`pymetacode.configuration.Configuration`
+        Configuration as usually read from the configuration file.
 
     Raises
     ------
-    exception
-        Short description when and why raised
+    ValueError
+        Raised if no name is provided
 
 
     Examples
@@ -816,6 +881,18 @@ class GuiWindowCreator:
 
     @property
     def name(self):
+        """
+        Name of the GUI window to be created.
+
+        A suffix "window" gets added if not present, and the name is
+        ensured to be in lowercase letters.
+
+        Returns
+        -------
+        name : :class:`str`
+            Name of the GUI window to be created.
+
+        """
         return self._name
 
     @name.setter
@@ -832,9 +909,34 @@ class GuiWindowCreator:
 
     @property
     def class_name(self):
+        """
+        The name of the class containing the GUI window.
+
+        Similar to :attr:`name`, but in CamelCase with the first letter
+        capitalised and the suffix "Window".
+
+        Returns
+        -------
+        class_name : :class:`str`
+            The name of the class containing the GUI window.
+
+        """
         return self._class_name
 
     def create(self, name=''):
+        """
+        Create actual code stub for the GUI window.
+
+        This will create a number of files:
+
+        #. the module used to call the GUI window
+        #. the corresponding ui file defining the Qt layout of the window
+        #. an accompanying test module
+        #. the API documentation file
+
+        The latter gets added to the API toctree directive as well.
+
+        """
         if name:
             self.name = name
         elif not self.name:
