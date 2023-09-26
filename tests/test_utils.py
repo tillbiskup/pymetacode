@@ -400,3 +400,19 @@ class TestPackageVersionFromFile(unittest.TestCase):
         with open(os.path.join('..', 'VERSION')) as file:
             version = file.read()
         self.assertEqual(version, result)
+
+
+class TestMakeExecutable(unittest.TestCase):
+
+    def setUp(self):
+        self.filename = 'foo.txt'
+
+    def tearDown(self):
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+
+    def test_set_executable_makes_file_executable(self):
+        with open(self.filename, 'w+', encoding='utf8') as file:
+            file.write('')
+        utils.make_executable(self.filename)
+        self.assertTrue(os.access(self.filename, os.X_OK))

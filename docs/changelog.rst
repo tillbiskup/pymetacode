@@ -15,12 +15,14 @@ New features
 ------------
 
 * Configuration option for language of documentation (default: "en")
+* Function :func:`pymetacode.utils.make_executable` to set executable flag for files/paths
 
 
 Changes
 -------
 
 * Transition from discontinued ``appdirs`` package to ``platformdirs`` package
+
 
 Version 0.3.1
 =============

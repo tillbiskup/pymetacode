@@ -24,6 +24,10 @@ Files and I/O
 
   Context manager for temporarily changing the working directory.
 
+* :func:`make_executable`
+
+  Make a file executable, *i.e.*, set its executable flag.
+
 
 String manipulation
 ===================
@@ -534,3 +538,24 @@ def package_version_from_file():
     with open('VERSION', encoding='utf8') as file:
         version = file.read()
     return version
+
+
+def make_executable(path=''):
+    """
+    Make a file executable, *i.e.*, set its executable flag.
+
+    Only for those allowed to read the file, the executable flag will be set.
+
+    Parameters
+    ----------
+    path : :class:`str`
+        Name of the path/file to make executable
+
+    Taken from http://stackoverflow.com/a/30463972/119527
+    
+    .. versionadded:: 0.4
+
+    """
+    mode = os.stat(path).st_mode
+    mode |= (mode & 0o444) >> 2  # copy R bits to X
+    os.chmod(path, mode)
