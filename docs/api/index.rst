@@ -5,11 +5,22 @@ This is the definite source of information for developers, besides having a look
 
 .. toctree::
     :maxdepth: 1
+    :hidden:
 
     pymetacode.cli
     pymetacode.coding
     pymetacode.configuration
     pymetacode.utils
+
+
+
+Package contents
+----------------
+
+.. automodule:: pymetacode
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 
 Index
