@@ -766,11 +766,6 @@ class GuiCreator:
 
     .. todo::
 
-        Check if GUI submodule exists already, and in case, do not try to
-        add it again.
-
-    .. todo::
-
         Handle splash (according to extended package configuration)
 
 
@@ -844,6 +839,9 @@ class GuiCreator:
 
         """
         self._src_dir = self.configuration.package['name']
+        if os.path.exists(os.path.join(self._src_dir, 'gui')):
+            warnings.warn("GUI directory exists already... nothing done.")
+            return
         self._create_subdirectories()
         self._create_init_files()
         self._create_makefile()
@@ -960,11 +958,6 @@ class GuiWindowCreator:
 
     The latter gets added to the API toctree directive as well.
 
-    .. todo::
-
-        Check if GUI window exists already, and in case, do not try to
-        add it again.
-
 
     Attributes
     ----------
@@ -1067,6 +1060,12 @@ class GuiWindowCreator:
             self.name = name
         elif not self.name:
             raise ValueError('No window name given')
+        window_module = os.path.join(
+            self.configuration.package['name'], 'gui', f'{self.name}.py'
+        )
+        if os.path.exists(window_module):
+            warnings.warn('Window %s exists already. Nothing done.' % self.name)
+            return
         self._create_window()
         self._create_api_documentation()
         self._add_api_documentation_to_toctree()

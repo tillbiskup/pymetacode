@@ -684,7 +684,7 @@ class TestGuiCreator(unittest.TestCase):
             self.assertTrue(os.path.exists(path))
             self.assertTrue(os.path.isdir(path))
 
-    def test_create_with_existing_directory_issues_warning(self):
+    def test_create_with_existing_gui_directory_issues_warning(self):
         path = os.path.join(self.package, 'gui')
         with utils.change_working_dir(self.package):
             self.creator.create()
@@ -694,6 +694,16 @@ class TestGuiCreator(unittest.TestCase):
                 self.assertTrue(w)
             self.assertTrue(os.path.exists(path))
             self.assertTrue(os.path.isdir(path))
+
+    def test_create_with_existing_gui_dir_warns_and_does_nothing(self):
+        path = os.path.join(self.package, 'gui')
+        with utils.change_working_dir(self.package):
+            os.mkdir(path)
+            with warnings.catch_warnings(record=True) as w:
+                warnings.simplefilter("always")
+                self.creator.create()
+                self.assertTrue(w)
+            self.assertFalse(os.path.exists(os.path.join(path, 'ui')))
 
     def test_create_creates_subdirectories(self):
         directories = [
@@ -1034,3 +1044,16 @@ class TestGuiWindowCreator(unittest.TestCase):
             with open(index_filename) as file:
                 contents = file.read()
             self.assertIn(toctree_entry, contents)
+
+    def test_create_already_existing_window_warns_and_does_nothing(self):
+        gui_path = os.path.join(self.package, 'gui')
+        window_module = os.path.join(gui_path, self.name + 'window.py')
+        ui_file = os.path.join(gui_path, 'ui', self.name + 'window.ui')
+        with utils.change_working_dir(self.package):
+            with open(window_module, 'w+', encoding='utf8') as file:
+                file.write('')
+            with warnings.catch_warnings(record=True) as w:
+                warnings.simplefilter("always")
+                self.creator.create(name=self.name)
+                self.assertTrue(w)
+            self.assertFalse(os.path.exists(ui_file))
