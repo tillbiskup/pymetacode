@@ -33,7 +33,7 @@ Once you have your package structure, you can **add modules, classes, and functi
     pymeta add class MyClass to mymodule
     pymeta add function my_function to mymodule
 
-If you ever want to add a graphical user interface (GUI) to your project, this is (now) possible as well:
+If you ever want to add a **graphical user interface (GUI)** to your project, this is (now) possible as well:
 
 .. code-block:: bash
 
