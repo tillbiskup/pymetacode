@@ -8,7 +8,7 @@ This page contains a summary of changes between the official pymetacode releases
 Version 0.4.0
 =============
 
-Not yet released
+Released 2023-09-27
 
 
 New features
