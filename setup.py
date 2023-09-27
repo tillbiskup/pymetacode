@@ -46,10 +46,11 @@ setuptools.setup(
     ],
     install_requires=[
         "jinja2",
+        "pyyaml",
         "platformdirs",
         ],
     extras_require={
-        'dev': ['prospector'],
+        'dev': ['prospector', 'pyroma', 'bandit'],
         'docs': ['sphinx', 'sphinx-rtd-theme', 'sphinx-multiversion'],
         'deployment': ['wheel', 'twine'],
     },
