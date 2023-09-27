@@ -44,11 +44,11 @@ class PackageCreator:
     """
     Generate the basic package structure.
 
-    The basic package structure follows Python best practices and has been
-    used in a number of packages by the author of this package. In short,
-    the modules reside in a subdirectory with the same name as the package,
-    and parallel to that are directories for tests and documentation (
-    "tests", "docs").
+    The :doc:`basic package structure <../directory-structure>` follows Python
+    best practices and has been used in a number of packages by the author
+    of this package. In short, the modules reside in a subdirectory with the
+    same name as the package, and parallel to that are directories for tests
+    and documentation ("tests", "docs").
 
     Furthermore, a "setup.py" file is created to have the package
     installable using pip, and a license ("LICENSE") and readme ("README.rst")
@@ -60,6 +60,10 @@ class PackageCreator:
     this case, a pre-commit hook is installed as well incrementing the
     version number for each commit, using the file "incrementVersion.sh"
     from the "bin" directory.
+
+    In case of the ``gui`` option in the :attr:`configuration` being set,
+    a scaffold for a complete GUI (based on Qt6, PySide6) is added. See the
+    :class:`GuiCreator` class for further details.
 
 
     Attributes
@@ -317,6 +321,9 @@ class ModuleCreator:
     itself, an accompanying test module, and the API documentation file. The
     latter gets added to the API toctree directive as well.
 
+    If you try to add an already existing module, a warning is raised and no
+    further action taken, in order *not* to overwrite existing code.
+
 
     Attributes
     ----------
@@ -456,6 +463,10 @@ class ClassCreator:
     of the module file, and at the same time a test class with a very basic
     setup and a first test will be added to the corresponding test module.
 
+    If you try to add an already existing class to the given module,
+    a warning is raised and no further action taken, in order *not* to
+    overwrite existing code.
+
 
     Attributes
     ----------
@@ -589,6 +600,10 @@ class FunctionCreator:
     When a function is added to a module, it will always be added to the bottom
     of the module file, and at the same time a test class with a first test
     will be added to the corresponding test module.
+
+    If you try to add an already existing function to the respective module,
+    a warning is raised and no further action taken, in order *not* to
+    overwrite existing code.
 
 
     Attributes
@@ -726,6 +741,10 @@ class GuiCreator:
     subpackages follows best practices. An example of the additional
     package structure is shown below.
 
+    In case a GUI already exists (or at least the ``gui`` subpackage),
+    a warning is raised and no further action taken, in order *not* to
+    overwrite existing code.
+
 
     .. code-block::
 
@@ -805,6 +824,12 @@ class GuiCreator:
     The following example demonstrates how to use the CLI from the terminal,
     rather than how to use this class programmatically, as this is the
     preferred and intended use case.
+
+    Prerequisite for using the CLI is to have the package configuration
+    stored within the package root directory in the file
+    ".project_configuration.yaml". This will be the case if the package has
+    been created by the CLI as well. Furthermore, all following CLI commands
+    need to be issued from *within* the root directory of your package.
 
     .. code-block:: bash
 
@@ -1036,6 +1061,9 @@ class GuiWindowCreator:
 
     The latter gets added to the API toctree directive as well.
 
+    If you try to add an already existing GUI window, a warning is raised
+    and no further action taken, in order *not* to overwrite existing code.
+
 
     Attributes
     ----------
@@ -1053,6 +1081,12 @@ class GuiWindowCreator:
     The following example demonstrates how to use the CLI from the terminal,
     rather than how to use this class programmatically, as this is the
     preferred and intended use case.
+
+    Prerequisite for using the CLI is to have the package configuration
+    stored within the package root directory in the file
+    ".project_configuration.yaml". This will be the case if the package has
+    been created by the CLI as well. Furthermore, all following CLI commands
+    need to be issued from *within* the root directory of your package.
 
     .. code-block:: bash
 
