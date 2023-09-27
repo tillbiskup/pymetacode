@@ -281,6 +281,15 @@ class TestPackageCreator(unittest.TestCase):
         self.assertTrue(os.access(os.path.join(self.name, '.git', 'hooks',
                                                'pre-commit'), os.X_OK))
 
+    def test_create_with_gui_true_creates_gui(self):
+        configuration = pymetacode.configuration.Configuration()
+        configuration.package['name'] = self.name
+        configuration.options['gui'] = True
+        self.creator.configuration = configuration
+        self.creator.create(name=self.name)
+        gui_path = os.path.join(self.name, self.name, 'gui')
+        self.assertTrue(os.path.exists(gui_path))
+
 
 class TestModuleCreator(unittest.TestCase):
 
@@ -762,6 +771,46 @@ class TestGuiCreator(unittest.TestCase):
             with open(filepath) as file:
                 contents = file.read()
             self.assertIn(self.package + '.gui.mainwindow', contents)
+
+    def test_create_with_splash_adds_splash_in_app_module(self):
+        filepath = os.path.join(self.package, 'gui', 'app.py')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn('splash_screen()', contents)
+
+    def test_create_without_splash_does_not_add_splash_in_app_module(self):
+        filepath = os.path.join(self.package, 'gui', 'app.py')
+        self.configuration.gui['splash'] = False
+        self.creator.configuration = self.configuration
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertNotIn('splash_screen()', contents)
+
+    def test_create_with_splash_adds_splash_image(self):
+        filepath = os.path.join(self.package, 'gui', 'data', 'splash.svg')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            self.assertTrue(os.path.exists(filepath))
+
+    def test_create_with_splash_adds_project_name_to_splash_image(self):
+        filepath = os.path.join(self.package, 'gui', 'data', 'splash.svg')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn(self.package, contents)
+
+    def test_create_without_splash_does_not_add_splash_image(self):
+        filepath = os.path.join(self.package, 'gui', 'data', 'splash.svg')
+        self.configuration.gui['splash'] = False
+        self.creator.configuration = self.configuration
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            self.assertFalse(os.path.exists(filepath))
 
     def test_create_creates_mainwindow_module(self):
         with utils.change_working_dir(self.package):

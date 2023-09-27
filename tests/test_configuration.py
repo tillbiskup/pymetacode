@@ -44,8 +44,15 @@ class TestConfiguration(unittest.TestCase):
         self.assertTrue(hasattr(self.configuration, 'options'))
 
     def test_options_property_has_keys(self):
-        self.assertListEqual(['logging', 'git'],
+        self.assertListEqual(['logging', 'git', 'gui'],
                              list(self.configuration.options.keys()))
+
+    def test_has_gui_property(self):
+        self.assertTrue(hasattr(self.configuration, 'gui'))
+
+    def test_options_gui_has_keys(self):
+        self.assertListEqual(['splash'],
+                             list(self.configuration.gui.keys()))
 
     def test_to_dict_returns_dict(self):
         result = self.configuration.to_dict()

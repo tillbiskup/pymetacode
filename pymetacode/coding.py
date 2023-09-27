@@ -143,6 +143,7 @@ class PackageCreator:
         self._create_version_updater_file()
         self._create_documentation_stub()
         self._git_init()
+        self._create_gui()
 
     def _create_subdirectories(self):
         self.subdirectories.append(self.name)
@@ -299,6 +300,13 @@ class PackageCreator:
                     file.write('#!/bin/sh\n')
                     file.write('./bin/incrementVersion.sh\n')
                 utils.make_executable('pre-commit')
+
+    def _create_gui(self):
+        if self.configuration.options['gui']:
+            with utils.change_working_dir(self.name):
+                gui = GuiCreator()
+                gui.configuration = self.configuration
+                gui.create()
 
 
 class ModuleCreator:
@@ -846,6 +854,7 @@ class GuiCreator:
         self._create_init_files()
         self._create_makefile()
         self._create_app_file()
+        self._create_splash_file()
         self._create_documentation()
         self._create_mainwindow()
         self._update_manifest()
@@ -886,6 +895,18 @@ class GuiCreator:
             template='gui_app.j2.py',
             context=self.configuration.to_dict(),
             destination=os.path.join(self._src_dir, 'gui', 'app.py'),
+        )
+        template.create()
+
+    def _create_splash_file(self):
+        if not self.configuration.gui['splash']:
+            return
+        template = utils.Template(
+            path='',
+            template='splash.j2.svg',
+            context=self.configuration.to_dict(),
+            destination=os.path.join(self._src_dir, 'gui', 'data',
+                                     'splash.svg'),
         )
         template.create()
 

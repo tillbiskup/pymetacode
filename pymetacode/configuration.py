@@ -40,6 +40,9 @@ class Configuration(utils.ToDictMixin):
     options : :class:`dict`
         Configuration regarding the metacode
 
+    gui : :class:`dict`
+        Configuration regarding the GUI
+
     Raises
     ------
     ValueError
@@ -64,6 +67,9 @@ class Configuration(utils.ToDictMixin):
 
     .. versionchanged:: 0.3
         New property "options", moved key "git" to property "options"
+
+    .. versionchanged:: 0.4
+        New property "gui"
 
     """
 
@@ -91,6 +97,10 @@ class Configuration(utils.ToDictMixin):
         self.options = {
             'logging': False,
             'git': False,
+            'gui': False,
+        }
+        self.gui = {
+            'splash': True,
         }
 
     def from_dict(self, dict_=None):
@@ -132,7 +142,7 @@ class Configuration(utils.ToDictMixin):
 
         """
         with open(name, 'w+', encoding='utf8') as file:
-            yaml.dump(self.to_dict(), file)
+            yaml.dump(self.to_dict(), file, sort_keys=False)
 
     def from_file(self, name=''):
         """
