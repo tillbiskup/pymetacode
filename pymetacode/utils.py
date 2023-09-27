@@ -530,7 +530,7 @@ def make_executable(path=''):
         Name of the path/file to make executable
 
     Taken from http://stackoverflow.com/a/30463972/119527
-    
+
     .. versionadded:: 0.4
 
     """

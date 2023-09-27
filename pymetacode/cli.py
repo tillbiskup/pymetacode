@@ -271,7 +271,7 @@ class Cli:
         creator.name = self.options[1]
         creator.configuration = conf
         creator.create()
-        logger.info(f'Added {creator.name} to GUI')
+        logger.info('Added %s to GUI', creator.name)
 
     def _command_help(self):
         if not self.options:
@@ -347,7 +347,7 @@ class Cli:
 
         For "class" and "function", you need to provide the name of an 
         existing module these items should be added to.
-        
+
         For "window", you need to provide a name for the GUI window.
         """
         self._output_help_text(help_text)

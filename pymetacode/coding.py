@@ -690,7 +690,7 @@ class FunctionCreator:
 
 
 class GuiCreator:
-    """
+    r"""
     Add PySide6-based (Qt6) GUI subpackage to an existing package.
 
     If you want to add a GUI to your package, this involves extending the
@@ -931,7 +931,7 @@ class GuiCreator:
             lines.index('.. toctree::', lines.index('Subpackages'))
         end_of_toctree = lines[start_of_toctree:].index('')
         lines.insert(start_of_toctree + end_of_toctree + 1,
-                     f'    gui/index')
+                     '    gui/index')
         # Sort entries
         new_end_of_toctree = lines[start_of_toctree:].index('')
         start_sort = start_of_toctree + end_of_toctree
@@ -968,7 +968,7 @@ class GuiCreator:
         end_of_install_requires = \
             lines[start_of_install_requires:].index('    ],')
         lines.insert(start_of_install_requires + end_of_install_requires,
-                     f'        "PySide6",')
+                     '        "PySide6",')
         # Add gui_scripts entry_points
         package_name = self.configuration.package['name']
         context = self.configuration.to_dict()
@@ -1107,7 +1107,7 @@ class GuiWindowCreator:
             self.configuration.package['name'], 'gui', f'{self.name}.py'
         )
         if os.path.exists(window_module):
-            warnings.warn('Window %s exists already. Nothing done.' % self.name)
+            warnings.warn(f'Window {self.name} exists already. Nothing done.')
             return
         self._create_window()
         self._create_api_documentation()
