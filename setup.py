@@ -46,7 +46,6 @@ setuptools.setup(
     ],
     install_requires=[
         "jinja2",
-        "oyaml",
         "platformdirs",
         ],
     extras_require={

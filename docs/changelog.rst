@@ -23,6 +23,7 @@ Changes
 
 * Transition from discontinued ``appdirs`` package to ``platformdirs`` package
 * :class:`pymetacode.utils.ToDictMixin` returns :class:`dict` rather than :class:`collections.OrderedDict`, as dicts are order-preserving since Python 3.7
+* Removed dependency on ``oyaml`` package from ``setup.py``
 
 
 Version 0.3.1
