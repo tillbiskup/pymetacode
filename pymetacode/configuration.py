@@ -13,7 +13,7 @@ configuration from a file for use with the code generators.
 """
 import datetime
 
-import oyaml as yaml
+import yaml
 
 from pymetacode import utils
 

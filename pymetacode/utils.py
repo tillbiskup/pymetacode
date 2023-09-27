@@ -205,9 +205,6 @@ class ToDictMixin:
 
     Attributes
     ----------
-    __odict__ : :class:`collections.OrderedDict`
-        Dictionary of attributes preserving the order of their definition
-
     _exclude_from_to_dict : :class:`list`
         Names of (public) attributes to exclude from dictionary
 
@@ -222,30 +219,16 @@ class ToDictMixin:
         dictionary are those attributes accessed by getters and setters and
         hence not automatically included in the list otherwise.
 
+
+    .. versionchanged:: 0.4
+        Return dict rather than collections.OrderedDict, as dicts are
+        order-preserving since Python 3.7
+
     """
 
     def __init__(self):
-        if '__odict__' not in self.__dict__:
-            self.__odict__ = collections.OrderedDict()
         self._exclude_from_to_dict = []
         self._include_in_to_dict = []
-
-    def __setattr__(self, attribute, value):
-        """
-        Add attributes to :attr:`__odict__` to preserve order of definition.
-
-        Parameters
-        ----------
-        attribute : :class:`str`
-            Name of attribute
-        value : :class:`str`
-            Value of attribute
-
-        """
-        if '__odict__' not in self.__dict__:
-            super().__setattr__('__odict__', collections.OrderedDict())
-        self.__odict__[attribute] = value
-        super().__setattr__(attribute, value)
 
     def to_dict(self):
         """
@@ -259,14 +242,11 @@ class ToDictMixin:
             The order of attribute definition is preserved
 
         """
-        if hasattr(self, '__odict__'):
-            result = self._traverse_dict(self.__odict__)
-        else:
-            result = self._traverse_dict(self.__dict__)
+        result = self._traverse_dict(self.__dict__)
         return result
 
     def _traverse_dict(self, instance_dict):
-        output = collections.OrderedDict()
+        output = {}
         for key, value in instance_dict.items():
             if str(key).startswith('_') \
                     or str(key) in self._exclude_from_to_dict:
@@ -282,8 +262,6 @@ class ToDictMixin:
             result = value.to_dict()
         elif isinstance(value, (dict, collections.OrderedDict)):
             result = self._traverse_dict(value)
-        elif hasattr(value, '__odict__'):
-            result = self._traverse_dict(value.__odict__)
         elif hasattr(value, '__dict__'):
             result = self._traverse_dict(value.__dict__)
         elif isinstance(value, list):

@@ -6,8 +6,6 @@ import shutil
 import unittest
 from unittest.mock import patch
 
-import platformdirs
-
 from pymetacode import utils
 
 
@@ -214,14 +212,7 @@ class TestToDictMixin(unittest.TestCase):
         obj_dict = self.mixed_in.to_dict()
         self.assertDictEqual(orig_dict, obj_dict)
 
-    def test_has_odict_attribute(self):
-        self.assertTrue(hasattr(self.mixed_in, '__odict__'))
-
-    def test_odict_attribute_is_ordered_dict(self):
-        self.assertTrue(isinstance(self.mixed_in.__odict__,
-                                   collections.OrderedDict))
-
-    def test_odict_preserves_argument_definition_order(self):
+    def test_dict_preserves_argument_definition_order(self):
         arguments = ["purpose", "operator", "labbook"]
 
         class Test(utils.ToDictMixin):
