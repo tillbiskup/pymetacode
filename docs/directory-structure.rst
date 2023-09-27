@@ -8,7 +8,7 @@ As there are different ways of how to eventually structure your package director
 
 .. code-block:: bash
 
-    mypackage/
+    mypackage
     ├── bin
     │   └── incrementVersion.sh
     ├── docs
@@ -40,3 +40,31 @@ As there are different ways of how to eventually structure your package director
     └── VERSION
 
 
+If you add a graphical user interface (GUI) to your package, the following additional directories and files are added to the basic package layout shown above:
+
+.. code-block::
+
+    mypackage
+    ├── docs
+    │   ├── api
+    │   │   ├── gui
+    │   │   │   ├── mypackage.gui.mainwindow.rst
+    │   │   │   └── index.rst
+    │   │   └── ...
+    │   └── ...
+    ├── mypackage
+    │   ├── gui
+    │   │   ├── app.py
+    │   │   ├── data
+    │   │   ├── __init__.py
+    │   │   ├── mainwindow.py
+    │   │   ├── Makefile
+    │   │   └── ui
+    │   │       ├── __init__.py
+    │   │       └── mainwindow.ui
+    │   └── ...
+    └── tests
+        ├── gui
+        │   ├── __init__.py
+        │   └── test_mainwindow.py
+        └── ...

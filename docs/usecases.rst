@@ -136,3 +136,32 @@ Again, function and test class will be added to your package.
 
 In both cases, class and function, a minimum documentation header will be created as well, just to make it easier to properly document your code.
 
+
+Adding a GUI and GUI windows
+============================
+
+All following commands need to be issued from *within* the root directory of your package.
+
+.. code-block:: bash
+
+    pymeta add gui
+
+will add the scaffold (directory structure, files, documentation, configuration in setup.py) necessary for adding a graphical user interface (GUI) to your package. Note that **Qt6 and the PySide6 Qt bindings** are used.
+
+At the same time, a first window, named ``mainwindow``, will be added, together with a very basic template of the UI file used by the Qt Designer to layout your window.
+
+Adding additional windows is as simple as
+
+.. code-block:: bash
+
+    pymeta add window mysubwindow
+
+As windows are always suffixed with "window", you are not required to add the suffix "window", but in case you do, it will be handled accordingly.
+
+Hence, the same window as above will get added with the command
+
+.. code-block:: bash
+
+    pymeta add window mysub
+
+Therefore, use whichever way you are more comfortable with.
