@@ -11,8 +11,6 @@ For version 0.4
 * Directory structure for GUIs (created with PySide6)
 
   * Update configuration to cope with things such as splash
-  * Modify setup.py and MANIFEST.in in case of added GUI
-  * Add gui_scripts entrypoint to setup.py
 
 
 For version 0.5

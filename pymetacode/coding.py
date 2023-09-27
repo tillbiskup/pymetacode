@@ -848,6 +848,8 @@ class GuiCreator:
         self._create_app_file()
         self._create_documentation()
         self._create_mainwindow()
+        self._update_manifest()
+        self._update_setup()
 
     def _create_subdirectories(self):
         for directory in self.subdirectories:
@@ -925,7 +927,6 @@ class GuiCreator:
         with open(index_filename, encoding='utf8') as file:
             contents = file.read()
         lines = contents.split('\n')
-        package = self.configuration.package['name']
         start_of_toctree = \
             lines.index('.. toctree::', lines.index('Subpackages'))
         end_of_toctree = lines[start_of_toctree:].index('')
@@ -943,6 +944,48 @@ class GuiCreator:
         window_creator = GuiWindowCreator()
         window_creator.configuration = self.configuration
         window_creator.create(name='main')
+
+    def _update_manifest(self):
+        package_name = self.configuration.package['name']
+        context = self.configuration.to_dict()
+        context['package'] = {'name': package_name}
+        template = utils.Template(
+            template='MANIFEST-gui.j2.in',
+            context=context,
+            destination='MANIFEST.in',
+        )
+        template.append()
+
+    def _update_setup(self):
+        filename = os.path.join('setup.py')
+        if not os.path.exists(filename):
+            return
+        with open(filename, encoding='utf8') as file:
+            contents = file.read()
+        lines = contents.split('\n')
+        # Insert package(s) to install_requires
+        start_of_install_requires = lines.index('    install_requires=[')
+        end_of_install_requires = \
+            lines[start_of_install_requires:].index('    ],')
+        lines.insert(start_of_install_requires + end_of_install_requires,
+                     f'        "PySide6",')
+        # Add gui_scripts entry_points
+        package_name = self.configuration.package['name']
+        context = self.configuration.to_dict()
+        context['package'] = {'name': package_name}
+        template = utils.Template(
+            template='setup-gui-scripts.j2.py',
+            context=context,
+        )
+        entry_points = template.render()
+        lines.insert(start_of_install_requires, entry_points)
+        # Add include_package_data
+        start_of_setup = lines.index('setuptools.setup(')
+        end_of_setup = lines[start_of_setup:].index(')')
+        lines.insert(start_of_setup + end_of_setup,
+                     '    include_package_data=True,')
+        with open(filename, "w+", encoding='utf8') as file:
+            file.write('\n'.join(lines))
 
 
 class GuiWindowCreator:

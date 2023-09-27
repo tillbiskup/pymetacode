@@ -852,8 +852,44 @@ class TestGuiCreator(unittest.TestCase):
             filepath = os.path.join('docs', 'api', 'index.rst')
             with open(filepath) as file:
                 contents = file.read()
-            print(contents)
             self.assertIn('gui/index', contents)
+
+    def test_create_adds_block_to_manifest_file(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filepath = 'MANIFEST.in'
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn('# Include the README', contents)
+            self.assertIn(f'recursive-include {self.package}/gui/data *',
+                          contents)
+
+    def test_create_adds_requirements_to_setup_file(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filepath = 'setup.py'
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn('setuptools.setup(', contents)
+            self.assertIn('PySide6', contents)
+
+    def test_create_adds_entry_points_to_setup_file(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filepath = 'setup.py'
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn('setuptools.setup(', contents)
+            self.assertIn('gui_scripts', contents)
+
+    def test_create_adds_include_package_data_to_setup_file(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filepath = 'setup.py'
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn('setuptools.setup(', contents)
+            self.assertIn('include_package_data=True', contents)
 
 
 class TestGuiWindowCreator(unittest.TestCase):
