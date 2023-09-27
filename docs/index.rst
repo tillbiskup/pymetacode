@@ -1,10 +1,15 @@
-========================
-pymetacode documentation
-========================
 
-Welcome! This is the documentation for pymetacode, a Python package helping to write and maintain Python packages.
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.8370310.svg
+   :target: https://doi.org/10.5281/zenodo.8370310
+   :align: right
 
-**Code that writes code** - yes, that's correct. Automating the boring stuff, one could say, or helping to focus on the creative part of programming. In any case, the idea for this package stems from experience with a couple of Python projects, and as such it is pretty opinionated, focussing on personal needs regarding structure and layout. Nevertheless, it tries to be as user-friendly as possible, coming with an intuitive command-line interface (CLI).
+==========
+pymetacode
+==========
+
+*A Python package helping to write and maintain Python packages.*
+
+**Code that writes code** -- yes, that's correct. Automating the boring stuff, one could say, or helping to focus on the creative part of programming. In any case, the idea for this package stems from experience with a couple of Python projects, and as such it is pretty *opinionated*, focussing on personal needs regarding structure and layout. Nevertheless, it tries to be as user-friendly as possible, coming with an intuitive command-line interface (CLI).
 
 Want to get an idea? Here you go. **Creating a new package** would be a two-step process:
 
@@ -20,7 +25,7 @@ Want to get an idea? Here you go. **Creating a new package** would be a two-step
 
     pymeta create package from mypackage_config.yaml
 
-Once you have your package structure, you can **add modules, classes, and functions** to your package from within the package's root directory any time:
+Once you have your package structure, you can **add modules, classes, and functions** to your package from *within the package's root directory* at any time:
 
 .. code-block:: bash
 
@@ -28,7 +33,14 @@ Once you have your package structure, you can **add modules, classes, and functi
     pymeta add class MyClass to mymodule
     pymeta add function my_function to mymodule
 
-And now - happy coding!
+If you ever want to add a graphical user interface (GUI) to your project, this is (now) possible as well:
+
+.. code-block:: bash
+
+    pymeta add gui
+    pymeta add window mysubwindow
+
+See :doc:`usecases` for more examples. And now - happy coding!
 
 
 Features
@@ -39,6 +51,10 @@ A list of features:
 * Create initial package structure (directory layout, files)
 
 * Add module, class, and function scaffolds to an existing project, including tests and API documentation
+
+* Add initial (Qt) GUI subpackage structure (directory layout, files)
+
+* Add (Qt) GUI window scaffolds to existing project, including tests and API documentation
 
 * Intuitive command-line interface (CLI)
 
@@ -70,6 +86,8 @@ To install the pymetacode package on your computer (sensibly within a Python vir
 .. code-block:: bash
 
     pip install pymetacode
+
+For more details, see the :doc:`installation instructions <installing>`.
 
 
 License

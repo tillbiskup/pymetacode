@@ -5,6 +5,29 @@ Changelog
 This page contains a summary of changes between the official pymetacode releases. Only the biggest changes are listed here. A complete and detailed log of all changes is available through the `GitHub Repository Browser <https://github.com/tillbiskup/pymetacode>`_.
 
 
+Version 0.4.0
+=============
+
+Released 2023-09-27
+
+
+New features
+------------
+
+* Configuration option for language of documentation (default: "en")
+* Function :func:`pymetacode.utils.make_executable` to set executable flag for files/paths
+* Creating/adding GUI and GUI windows (based on Qt6 and PySide6)
+* Adding functions/classes checks for their existence, not overriding them (any more)
+
+
+Changes
+-------
+
+* Transition from discontinued ``appdirs`` package to ``platformdirs`` package
+* :class:`pymetacode.utils.ToDictMixin` returns :class:`dict` rather than :class:`collections.OrderedDict`, as dicts are order-preserving since Python 3.7
+* Removed dependency on ``oyaml`` package from ``setup.py``
+
+
 Version 0.3.1
 =============
 

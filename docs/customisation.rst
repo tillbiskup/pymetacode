@@ -16,5 +16,5 @@ While the default configuration is stored within and gets installed together wit
 
 Therefore, if you place a template in either of the first two places and adjust it to your needs, it will override the default template distributed with the package.
 
-The actual locations of the user-specific and site-wide data directories are operating-system specific. For details, see the documentation of the `appdirs package <https://pypi.org/project/appdirs/>`_ that gets used internally and provides paths for all major platforms (Windows, macOS, Linux/Unix).
+The actual locations of the user-specific and site-wide data directories are operating-system specific. For details, see the documentation of the `platformdirs package <https://pypi.org/project/platformdirs/>`_ that gets used internally and provides paths for all major platforms (Windows, macOS, Linux/Unix).
 

@@ -6,8 +6,6 @@ import shutil
 import unittest
 from unittest.mock import patch
 
-import appdirs
-
 from pymetacode import utils
 
 
@@ -71,13 +69,13 @@ class TestGetPackageData(unittest.TestCase):
 
     def test_get_package_data_with_user_data_returns_content(self):
         self.create_data_dir_and_contents()
-        with patch('appdirs.user_data_dir', return_value=self.data_dir):
+        with patch('platformdirs.user_data_dir', return_value=self.data_dir):
             content = utils.get_package_data(self.filename, directory='')
         self.assertTrue(content)
 
     def test_get_package_data_with_site_data_returns_content(self):
         self.create_data_dir_and_contents()
-        with patch('appdirs.site_data_dir', return_value=self.data_dir):
+        with patch('platformdirs.site_data_dir', return_value=self.data_dir):
             content = utils.get_package_data(self.filename, directory='')
         self.assertTrue(content)
 
@@ -214,14 +212,7 @@ class TestToDictMixin(unittest.TestCase):
         obj_dict = self.mixed_in.to_dict()
         self.assertDictEqual(orig_dict, obj_dict)
 
-    def test_has_odict_attribute(self):
-        self.assertTrue(hasattr(self.mixed_in, '__odict__'))
-
-    def test_odict_attribute_is_ordered_dict(self):
-        self.assertTrue(isinstance(self.mixed_in.__odict__,
-                                   collections.OrderedDict))
-
-    def test_odict_preserves_argument_definition_order(self):
+    def test_dict_preserves_argument_definition_order(self):
         arguments = ["purpose", "operator", "labbook"]
 
         class Test(utils.ToDictMixin):
@@ -400,3 +391,19 @@ class TestPackageVersionFromFile(unittest.TestCase):
         with open(os.path.join('..', 'VERSION')) as file:
             version = file.read()
         self.assertEqual(version, result)
+
+
+class TestMakeExecutable(unittest.TestCase):
+
+    def setUp(self):
+        self.filename = 'foo.txt'
+
+    def tearDown(self):
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+
+    def test_set_executable_makes_file_executable(self):
+        with open(self.filename, 'w+', encoding='utf8') as file:
+            file.write('')
+        utils.make_executable(self.filename)
+        self.assertTrue(os.access(self.filename, os.X_OK))

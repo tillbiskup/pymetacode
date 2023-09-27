@@ -34,15 +34,25 @@ class TestConfiguration(unittest.TestCase):
         self.assertTrue(hasattr(self.configuration, 'documentation'))
 
     def test_documentation_property_has_keys(self):
-        self.assertListEqual(['logo', 'favicon'],
+        self.assertListEqual(['logo', 'favicon', 'language'],
                              list(self.configuration.documentation.keys()))
+
+    def test_default_documentation_language_is_en(self):
+        self.assertEqual('en', self.configuration.documentation['language'])
 
     def test_has_options_property(self):
         self.assertTrue(hasattr(self.configuration, 'options'))
 
-    def test_documentation_property_has_keys(self):
-        self.assertListEqual(['logging', 'git'],
+    def test_options_property_has_keys(self):
+        self.assertListEqual(['logging', 'git', 'gui'],
                              list(self.configuration.options.keys()))
+
+    def test_has_gui_property(self):
+        self.assertTrue(hasattr(self.configuration, 'gui'))
+
+    def test_options_gui_has_keys(self):
+        self.assertListEqual(['splash'],
+                             list(self.configuration.gui.keys()))
 
     def test_to_dict_returns_dict(self):
         result = self.configuration.to_dict()

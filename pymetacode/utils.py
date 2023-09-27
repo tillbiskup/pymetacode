@@ -24,6 +24,10 @@ Files and I/O
 
   Context manager for temporarily changing the working directory.
 
+* :func:`make_executable`
+
+  Make a file executable, *i.e.*, set its executable flag.
+
 
 String manipulation
 ===================
@@ -59,7 +63,7 @@ import os
 import pkgutil
 import re
 
-import appdirs
+import platformdirs
 import jinja2
 
 
@@ -102,7 +106,7 @@ def get_package_data(name='', directory='templates'):
        (with the package name as subdirectory).
 
     The location of the latter two is specific to the operating system used.
-    Here, the `appdirs package <https://pypi.org/project/appdirs/>`_ is
+    Here, the `platformdirs package <https://pypi.org/project/platformdirs/>`_ is
     used, providing paths for all major platforms (Windows, macOS, Linux/Unix).
 
     The given file is searched for in the user-specific data directory
@@ -168,12 +172,12 @@ def get_package_data(name='', directory='templates'):
         package, name = name.split('@')
     path = \
         os.path.join(package, os.path.sep.join(directory.split('/')), name)
-    if os.path.exists(os.path.join(appdirs.user_data_dir(), path)):
-        with open(os.path.join(appdirs.user_data_dir(), path),
+    if os.path.exists(os.path.join(platformdirs.user_data_dir(), path)):
+        with open(os.path.join(platformdirs.user_data_dir(), path),
                   encoding='utf8') as file:
             contents = file.read()
-    elif os.path.exists(os.path.join(appdirs.site_data_dir(), path)):
-        with open(os.path.join(appdirs.site_data_dir(), path),
+    elif os.path.exists(os.path.join(platformdirs.site_data_dir(), path)):
+        with open(os.path.join(platformdirs.site_data_dir(), path),
                   encoding='utf8') as file:
             contents = file.read()
     else:
@@ -201,9 +205,6 @@ class ToDictMixin:
 
     Attributes
     ----------
-    __odict__ : :class:`collections.OrderedDict`
-        Dictionary of attributes preserving the order of their definition
-
     _exclude_from_to_dict : :class:`list`
         Names of (public) attributes to exclude from dictionary
 
@@ -218,30 +219,16 @@ class ToDictMixin:
         dictionary are those attributes accessed by getters and setters and
         hence not automatically included in the list otherwise.
 
+
+    .. versionchanged:: 0.4
+        Return dict rather than collections.OrderedDict, as dicts are
+        order-preserving since Python 3.7
+
     """
 
     def __init__(self):
-        if '__odict__' not in self.__dict__:
-            self.__odict__ = collections.OrderedDict()
         self._exclude_from_to_dict = []
         self._include_in_to_dict = []
-
-    def __setattr__(self, attribute, value):
-        """
-        Add attributes to :attr:`__odict__` to preserve order of definition.
-
-        Parameters
-        ----------
-        attribute : :class:`str`
-            Name of attribute
-        value : :class:`str`
-            Value of attribute
-
-        """
-        if '__odict__' not in self.__dict__:
-            super().__setattr__('__odict__', collections.OrderedDict())
-        self.__odict__[attribute] = value
-        super().__setattr__(attribute, value)
 
     def to_dict(self):
         """
@@ -255,14 +242,11 @@ class ToDictMixin:
             The order of attribute definition is preserved
 
         """
-        if hasattr(self, '__odict__'):
-            result = self._traverse_dict(self.__odict__)
-        else:
-            result = self._traverse_dict(self.__dict__)
+        result = self._traverse_dict(self.__dict__)
         return result
 
     def _traverse_dict(self, instance_dict):
-        output = collections.OrderedDict()
+        output = {}
         for key, value in instance_dict.items():
             if str(key).startswith('_') \
                     or str(key) in self._exclude_from_to_dict:
@@ -278,8 +262,6 @@ class ToDictMixin:
             result = value.to_dict()
         elif isinstance(value, (dict, collections.OrderedDict)):
             result = self._traverse_dict(value)
-        elif hasattr(value, '__odict__'):
-            result = self._traverse_dict(value.__odict__)
         elif hasattr(value, '__dict__'):
             result = self._traverse_dict(value.__dict__)
         elif isinstance(value, list):
@@ -534,3 +516,24 @@ def package_version_from_file():
     with open('VERSION', encoding='utf8') as file:
         version = file.read()
     return version
+
+
+def make_executable(path=''):
+    """
+    Make a file executable, *i.e.*, set its executable flag.
+
+    Only for those allowed to read the file, the executable flag will be set.
+
+    Parameters
+    ----------
+    path : :class:`str`
+        Name of the path/file to make executable
+
+    Taken from http://stackoverflow.com/a/30463972/119527
+
+    .. versionadded:: 0.4
+
+    """
+    mode = os.stat(path).st_mode
+    mode |= (mode & 0o444) >> 2  # copy R bits to X
+    os.chmod(path, mode)

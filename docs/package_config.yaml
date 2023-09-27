@@ -2,7 +2,7 @@ package:
   name: ''
   author: ''
   author_email: ''
-  year: '2021'
+  year: '2023'
   description: ''
   urls:
     main: ''
@@ -13,6 +13,10 @@ package:
 documentation:
   logo: ''
   favicon: ''
+  language: en
 options:
   logging: false
   git: false
+  gui: false
+gui:
+  splash: true
