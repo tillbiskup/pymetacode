@@ -790,10 +790,6 @@ class GuiCreator:
     If you would like to add additional windows to your existing GUI, have a
     look at the :class:`GuiWindowCreator` class.
 
-    .. todo::
-
-        Handle splash (according to extended package configuration)
-
 
     Attributes
     ----------
