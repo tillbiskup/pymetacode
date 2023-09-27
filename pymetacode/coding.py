@@ -523,6 +523,10 @@ class ClassCreator:
 
         """
         self._check_prerequisites(module, name)
+        if self._class_exists_in_module():
+            msg = f'Class {self.name} exists already in {self.module}.'
+            warnings.warn(msg)
+            return
         self._create_class()
         self._create_test_class()
 
@@ -543,6 +547,11 @@ class ClassCreator:
         if not self._package_version:
             version = utils.package_version_from_file()
             self._package_version = '.'.join(version.split('.')[0:2])
+
+    def _class_exists_in_module(self):
+        with open(self._module_filename, encoding='utf8') as file:
+            contents = file.read()
+        return f'class {self.name}' in contents
 
     def _create_class(self):
         context = self.configuration.to_dict()
@@ -647,6 +656,10 @@ class FunctionCreator:
 
         """
         self._check_prerequisites(module, name)
+        if self._function_exists_in_module():
+            msg = f'Function {self.name} exists already in {self.module}.'
+            warnings.warn(msg)
+            return
         self._create_function()
         self._create_test_class()
 
@@ -667,6 +680,11 @@ class FunctionCreator:
         if not self._package_version:
             version = utils.package_version_from_file()
             self._package_version = '.'.join(version.split('.')[0:2])
+
+    def _function_exists_in_module(self):
+        with open(self._module_filename, encoding='utf8') as file:
+            contents = file.read()
+        return f'def {self.name}' in contents
 
     def _create_function(self):
         context = self.configuration.to_dict()

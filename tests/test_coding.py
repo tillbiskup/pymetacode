@@ -573,6 +573,14 @@ class TestClassCreator(unittest.TestCase):
         self.assertIn('class Test{}(unittest.TestCase):'.format(self.name),
                       contents)
 
+    def test_create_existing_class_in_module_issues_warning(self):
+        self.creator.create(name=self.name, module=self.module)
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.creator.create(name=self.name, module=self.module)
+            self.assertIn(f'Class {self.name} exists already in '
+                          f'{self.module}.', str(w[0].message))
+
 
 class TestFunctionCreator(unittest.TestCase):
 
@@ -658,6 +666,14 @@ class TestFunctionCreator(unittest.TestCase):
         camel = utils.underscore_to_camel_case(self.name)
         self.assertIn('class Test{}(unittest.TestCase):'.format(camel),
                       contents)
+
+    def test_create_existing_function_in_module_issues_warning(self):
+        self.creator.create(name=self.name, module=self.module)
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.creator.create(name=self.name, module=self.module)
+            self.assertIn(f'Function {self.name} exists already in '
+                          f'{self.module}.', str(w[0].message))
 
 
 class TestGuiCreator(unittest.TestCase):

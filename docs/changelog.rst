@@ -17,6 +17,7 @@ New features
 * Configuration option for language of documentation (default: "en")
 * Function :func:`pymetacode.utils.make_executable` to set executable flag for files/paths
 * Creating/adding GUI and GUI windows (based on Qt6 and PySide6)
+* Adding functions/classes checks for their existence, not overriding them (any more)
 
 
 Changes
