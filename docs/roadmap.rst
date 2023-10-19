@@ -8,6 +8,11 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.5
 ===============
 
+* GUI code
+
+  * Basic documentation of the modules
+  * GUI without UI file, but programmatically created?
+
 * Update command (*e.g.*, for configuration, setup.py)
 
   * Configuration: useful when newer versions of pymetacode change the structure of the configuration file.
