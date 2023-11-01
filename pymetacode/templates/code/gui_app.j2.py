@@ -1,9 +1,11 @@
+import os
 import sys
 
 from PySide6.QtWidgets import QApplication
 {%- if gui.splash %}
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QApplication, QSplashScreen
+from PySide6.QtCore import Qt
 {%- endif %}
 
 from {{ package.name }}.gui.mainwindow import MainWindow

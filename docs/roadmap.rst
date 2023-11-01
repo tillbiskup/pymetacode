@@ -10,8 +10,11 @@ For version 0.5
 
 * GUI code
 
+  * Rearrange modules:
+    * separation of models and views
   * Basic documentation of the modules
   * GUI without UI file, but programmatically created?
+    * MainWindow programmatically, other widgets/(sub-)windows via UI file
 
 * Update command (*e.g.*, for configuration, setup.py)
 
