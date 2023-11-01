@@ -1,5 +1,5 @@
 
-.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.8370310.svg
+.. image:: images/zenodo.8370310.svg
    :target: https://doi.org/10.5281/zenodo.8370310
    :align: right
 
