@@ -980,7 +980,8 @@ class GuiCreator:
         )
         template.append()
 
-    def _add_api_documentation_to_toctree(self):
+    @staticmethod
+    def _add_api_documentation_to_toctree():
         index_filename = os.path.join('docs', 'api', 'index.rst')
         if not os.path.exists(index_filename):
             return

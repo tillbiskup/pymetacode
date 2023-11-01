@@ -11,6 +11,17 @@ Version 0.5.0
 Not yet released
 
 
+Version 0.4.1
+=============
+
+Not yet released
+
+Fixes
+-----
+
+* Makefile in gui subdirectory: indentation with tabs
+* app.py: add missing imports
+
 
 Version 0.4.0
 =============
