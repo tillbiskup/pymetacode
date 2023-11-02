@@ -10,15 +10,10 @@ For version 0.5
 
 * GUI code
 
+  * Add GUI modules to GUI API documentation toctree
+    * Remove ":inherited-members: from GUI API doc template
   * Rearrange modules:
     * separation of models and views
-  * Basic documentation of the modules
-  * GUI without UI file, but programmatically created?
-    * MainWindow programmatically, other widgets/(sub-)windows via UI file
-  * Add app module to documentation
-  * Reorganise data directory?
-    * Either rename "data" -> "images" or add "images" as subdirectory?
-    * Alternative: "images" directory parallel to "data" directory?
 
 * Update command (*e.g.*, for configuration, setup.py)
 

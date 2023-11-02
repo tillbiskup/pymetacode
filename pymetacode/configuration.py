@@ -101,6 +101,8 @@ class Configuration(utils.ToDictMixin):
         }
         self.gui = {
             'splash': True,
+            'organisation': '',
+            'domain': '',
         }
 
     def from_dict(self, dict_=None):

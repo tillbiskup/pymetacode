@@ -732,7 +732,7 @@ class TestGuiCreator(unittest.TestCase):
 
     def test_create_creates_subdirectories(self):
         directories = [
-            os.path.join(self.package, 'gui', 'data'),
+            os.path.join(self.package, 'gui', 'images'),
             os.path.join(self.package, 'gui', 'ui'),
         ]
         with utils.change_working_dir(self.package):
@@ -790,6 +790,7 @@ class TestGuiCreator(unittest.TestCase):
 
     def test_create_with_splash_adds_splash_in_app_module(self):
         filepath = os.path.join(self.package, 'gui', 'app.py')
+        self.configuration.gui['splash'] = True
         with utils.change_working_dir(self.package):
             self.creator.create()
             with open(filepath) as file:
@@ -807,13 +808,13 @@ class TestGuiCreator(unittest.TestCase):
             self.assertNotIn('splash_screen()', contents)
 
     def test_create_with_splash_adds_splash_image(self):
-        filepath = os.path.join(self.package, 'gui', 'data', 'splash.svg')
+        filepath = os.path.join(self.package, 'gui', 'images', 'splash.svg')
         with utils.change_working_dir(self.package):
             self.creator.create()
             self.assertTrue(os.path.exists(filepath))
 
     def test_create_with_splash_adds_project_name_to_splash_image(self):
-        filepath = os.path.join(self.package, 'gui', 'data', 'splash.svg')
+        filepath = os.path.join(self.package, 'gui', 'images', 'splash.svg')
         with utils.change_working_dir(self.package):
             self.creator.create()
             with open(filepath) as file:
@@ -821,25 +822,36 @@ class TestGuiCreator(unittest.TestCase):
             self.assertIn(self.package, contents)
 
     def test_create_without_splash_does_not_add_splash_image(self):
-        filepath = os.path.join(self.package, 'gui', 'data', 'splash.svg')
+        filepath = os.path.join(self.package, 'gui', 'images', 'splash.svg')
         self.configuration.gui['splash'] = False
         self.creator.configuration = self.configuration
         with utils.change_working_dir(self.package):
             self.creator.create()
             self.assertFalse(os.path.exists(filepath))
 
+    def test_create_adds_icon_image(self):
+        filepath = os.path.join(self.package, 'gui', 'images', 'icon.svg')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            self.assertTrue(os.path.exists(filepath))
+
+    def test_create_copies_utils_module(self):
+        filepath = os.path.join(self.package, 'gui', 'utils.py')
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            self.assertTrue(os.path.exists(filepath))
+
     def test_create_creates_mainwindow_module(self):
         with utils.change_working_dir(self.package):
             self.creator.create()
             filepaths = [
                 os.path.join(self.package, 'gui', 'mainwindow.py'),
-                os.path.join(self.package, 'gui', 'ui', 'mainwindow.ui'),
-                # os.path.join(gui_path, 'ui', 'mainwindow.py'),
                 os.path.join('tests', 'gui', 'test_mainwindow.py'),
             ]
             for filepath in filepaths:
                 with self.subTest(filepath=filepath):
-                    self.assertTrue(os.path.exists(filepath))
+                    self.assertTrue(os.path.exists(filepath),
+                                    f"File {filepath} does not exist.")
 
     def test_create_fills_mainwindow_module(self):
         filepath = os.path.join(self.package, 'gui', 'mainwindow.py')
@@ -848,14 +860,6 @@ class TestGuiCreator(unittest.TestCase):
             with open(filepath) as file:
                 contents = file.read()
             self.assertIn('class MainWindow', contents)
-
-    def test_create_fills_mainwindow_ui_file(self):
-        filepath = os.path.join(self.package, 'gui', 'ui', 'mainwindow.ui')
-        with utils.change_working_dir(self.package):
-            self.creator.create()
-            with open(filepath) as file:
-                contents = file.read()
-            self.assertIn('<ui version=', contents)
 
     def test_create_fills_mainwindow_unittest_file(self):
         filepath = os.path.join('tests', 'gui', 'test_mainwindow.py')
@@ -876,11 +880,16 @@ class TestGuiCreator(unittest.TestCase):
     def test_create_populates_docs_api_gui_subdirectory(self):
         with utils.change_working_dir(self.package):
             self.creator.create()
-            files = ['index.rst']
+            files = [
+                'index.rst',
+                f'{self.package}.gui.app.rst',
+                f'{self.package}.gui.mainwindow.rst',
+            ]
             for file in files:
                 with self.subTest(file=file):
                     filename = os.path.join('docs', 'api', 'gui', file)
-                    self.assertTrue(os.path.exists(filename))
+                    self.assertTrue(os.path.exists(filename),
+                                    f'"{filename}" has not been created')
 
     def test_create_replaces_variables_in_docs_api_gui_index(self):
         with utils.change_working_dir(self.package):
@@ -926,7 +935,7 @@ class TestGuiCreator(unittest.TestCase):
             with open(filepath) as file:
                 contents = file.read()
             self.assertIn('# Include the README', contents)
-            self.assertIn(f'recursive-include {self.package}/gui/data *',
+            self.assertIn(f'recursive-include {self.package}/gui/images *',
                           contents)
 
     def test_create_adds_requirements_to_setup_file(self):

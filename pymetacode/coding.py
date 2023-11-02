@@ -752,6 +752,7 @@ class GuiCreator:
         ├── docs
         │   ├── api
         │   │   ├── gui
+        │   │   │   ├── mypackage.gui.app.rst
         │   │   │   ├── mypackage.gui.mainwindow.rst
         │   │   │   └── index.rst
         │   │   └── ...
@@ -760,12 +761,13 @@ class GuiCreator:
         │   ├── gui
         │   │   ├── app.py
         │   │   ├── data
+        │   │   │   ├── icon.svg
+        │   │   │   └── splash.svg
         │   │   ├── __init__.py
         │   │   ├── mainwindow.py
         │   │   ├── Makefile
         │   │   └── ui
-        │   │       ├── __init__.py
-        │   │       └── mainwindow.ui
+        │   │       └── __init__.py
         │   └── ...
         └── tests
             ├── gui
@@ -872,7 +874,7 @@ class GuiCreator:
     def __init__(self):
         self.configuration = configuration.Configuration()
         self.subdirectories = [
-            os.path.join('gui', 'data'),
+            os.path.join('gui', 'images'),
             os.path.join('gui', 'ui'),
         ]
         self._src_dir = ''
@@ -892,10 +894,11 @@ class GuiCreator:
         self._create_subdirectories()
         self._create_init_files()
         self._create_makefile()
-        self._create_app_file()
+        self._create_modules()
+        self._create_test_modules()
         self._create_splash_file()
+        self._copy_images()
         self._create_documentation()
-        self._create_mainwindow()
         self._update_manifest()
         self._update_setup()
 
@@ -928,14 +931,29 @@ class GuiCreator:
         with open(filepath, 'w+', encoding='utf8') as file:
             file.write(contents)
 
-    def _create_app_file(self):
-        template = utils.Template(
-            path='code',
-            template='gui_app.j2.py',
-            context=self.configuration.to_dict(),
-            destination=os.path.join(self._src_dir, 'gui', 'app.py'),
-        )
-        template.create()
+    def _create_modules(self):
+        modules = ['app', 'utils', 'mainwindow']
+        for module in modules:
+            template = utils.Template(
+                path='code',
+                template=f'gui_{module}.j2.py',
+                context=self.configuration.to_dict(),
+                destination=os.path.join(self._src_dir, 'gui', f'{module}.py'),
+            )
+            template.create()
+
+    def _create_test_modules(self):
+        modules = ['app', 'utils', 'mainwindow']
+        for module in modules:
+            context = self.configuration.to_dict()
+            context['module'] = {'name': module}
+            template = utils.Template(
+                path='code',
+                template='test_guimodule.j2.py',
+                context=context,
+                destination=os.path.join('tests', 'gui', f'test_{module}.py'),
+            )
+            template.create()
 
     def _create_splash_file(self):
         if not self.configuration.gui['splash']:
@@ -944,14 +962,25 @@ class GuiCreator:
             path='',
             template='splash.j2.svg',
             context=self.configuration.to_dict(),
-            destination=os.path.join(self._src_dir, 'gui', 'data',
+            destination=os.path.join(self._src_dir, 'gui', 'images',
                                      'splash.svg'),
         )
         template.create()
 
+    def _copy_images(self):
+        images = ['icon.svg']
+        for image in images:
+            contents = utils.get_package_data(image)
+            filepath = os.path.join(self._src_dir, 'gui', 'images', image)
+            with open(filepath, 'w+', encoding='utf8') as file:
+                file.write(contents)
+
     def _create_documentation(self):
         self._create_documentation_index()
         self._add_submodule_documentation()
+        modules = ['app', 'mainwindow']
+        for module in modules:
+            self._create_api_documentation(module)
         self._add_api_documentation_to_toctree()
 
     def _create_documentation_index(self):
@@ -979,6 +1008,26 @@ class GuiCreator:
             destination=os.path.join('docs', 'api', 'index.rst'),
         )
         template.append()
+
+    def _create_api_documentation(self, module):
+        package = self.configuration.package['name'] + '.gui'
+        filename = os.path.join('docs', 'api', 'gui',
+                                f'{package}.{module}.rst')
+        if os.path.exists(filename):
+            warnings.warn(f"File '{filename}' exists already")
+            return
+        context = self.configuration.to_dict()
+        context['package'] = {'name': package}
+        context['module'] = {'name': module}
+        context['header_extension'] = \
+            (len(package) + len(module) + 1) * '='
+        template = utils.Template(
+            path='docs',
+            template='api_module.j2.rst',
+            context=context,
+            destination=filename,
+        )
+        template.create()
 
     @staticmethod
     def _add_api_documentation_to_toctree():
@@ -1196,7 +1245,7 @@ class GuiWindowCreator:
                 'path': os.path.join(gui_dir, 'ui', f'{self.name}.ui')
             },
             {
-                'template': 'test_guiwindow.j2.py',
+                'template': 'test_guimodule.j2.py',
                 'path': os.path.join(test_dir, f'test_{self.name}.py')
             },
         ]
