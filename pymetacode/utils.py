@@ -537,3 +537,90 @@ def make_executable(path=''):
     mode = os.stat(path).st_mode
     mode |= (mode & 0o444) >> 2  # copy R bits to X
     os.chmod(path, mode)
+
+
+def add_to_toctree(filename='', entries=None, sort=False, after=''):
+    """
+    Add entries to toc tree.
+
+    Adding lines to toctrees in documentation generated with Sphinx is a
+    frequent task for a metacode package. A toctree in Sphinx typically
+    looks similar to the following:
+
+    .. code-block:: rst
+
+        .. toctree::
+            :maxdepth: 1
+
+            first_entry
+
+    The ``.. toctree::`` directive is followed by (optional) parameters,
+    the actual entries appear after a blank line and are indented.
+
+    This function allows to add arbitrary entries to a given toctree,
+    as entries are given as list.
+
+    If you would like to have the toctree entries sorted alphabetically,
+    make sure to set the ``sort`` parameter to ``True``.
+
+    In case of several toctrees in one document, you may use the
+    ``after`` parameter to provide a string as a marker. This string
+    is searched for treating it as substring through all lines of the
+    file, and the first matching line used as actual offset.
+
+    In case of the file not containing any toctree directive or the string
+    provided by ``after`` not being found, exceptions will be thrown.
+
+    Parameters
+    ----------
+    filename : :class:`str`
+        Name of the file containing the toctree
+
+    entries : :class:`list`
+        lines to be added to the toctree
+
+        Note that regardless of the leading whitespace, entries are left
+        stripped and indented with four spaces.
+
+    sort : :class:`bool`
+        Whether to sort all toctree entries (alphabetically) after insert
+
+        Default: False
+
+    after : :class:`str`
+        String used as marker below which we look for a toctree
+
+        Useful particularly in case of several toctree directives in one
+        document. Note that the string provided is used as substring: The
+        first line containing it will be used as offset.
+    
+    .. versionadded:: 0.5
+
+    """
+    with open(filename, 'r', encoding='utf8') as file:
+        contents = file.read()
+    contents = contents.split('\n')
+    contents = [line.rstrip() for line in contents]
+
+    offset = 0
+    if after:
+        offset = contents.index(
+            [entry for entry in contents if after in entry][0])
+    toctree_start = \
+        contents.index('', contents.index('.. toctree::', offset)) + 1
+    if contents[toctree_start].startswith('  '):
+        toctree_end = contents.index('', toctree_start)
+    else:
+        toctree_end = toctree_start
+
+    entries = [f'    {line.lstrip()}' for line in entries]
+    toctree = contents[toctree_start:toctree_end] + entries
+    if sort:
+        toctree.sort()
+    empty_line = [''] if contents[toctree_end] else []
+
+    contents = contents[:toctree_start] + toctree + empty_line \
+        + contents[toctree_end:]
+    with open(filename, 'w+', encoding='utf8') as file:
+        for line in contents:
+            file.write(f'{line}\n')

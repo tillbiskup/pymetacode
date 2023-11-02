@@ -16,6 +16,12 @@ Version 0.4.1
 
 Not yet released
 
+Changes
+-------
+
+* Rename gui subdirectory: 'data' -> 'images'
+
+
 Fixes
 -----
 

@@ -10,8 +10,6 @@ For version 0.5
 
 * GUI code
 
-  * Add GUI modules to GUI API documentation toctree
-    * Remove ":inherited-members: from GUI API doc template
   * Rearrange modules:
     * separation of models and views
 

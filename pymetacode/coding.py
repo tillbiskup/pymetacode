@@ -1029,26 +1029,26 @@ class GuiCreator:
         )
         template.create()
 
-    @staticmethod
-    def _add_api_documentation_to_toctree():
+    def _add_api_documentation_to_toctree(self):
         index_filename = os.path.join('docs', 'api', 'index.rst')
         if not os.path.exists(index_filename):
             return
-        with open(index_filename, encoding='utf8') as file:
-            contents = file.read()
-        lines = contents.split('\n')
-        start_of_toctree = \
-            lines.index('.. toctree::', lines.index('Subpackages'))
-        end_of_toctree = lines[start_of_toctree:].index('')
-        lines.insert(start_of_toctree + end_of_toctree + 1,
-                     '    gui/index')
-        # Sort entries
-        new_end_of_toctree = lines[start_of_toctree:].index('')
-        start_sort = start_of_toctree + end_of_toctree
-        end_sort = start_of_toctree + new_end_of_toctree
-        lines[start_sort:end_sort] = sorted(lines[start_sort:end_sort])
-        with open(index_filename, "w+", encoding='utf8') as file:
-            file.write('\n'.join(lines))
+        utils.add_to_toctree(
+            filename=index_filename,
+            entries=['gui/index'],
+            sort=True,
+            after='Subpackages'
+        )
+        index_filename = os.path.join('docs', 'api', 'gui', 'index.rst')
+        if not os.path.exists(index_filename):
+            return
+        modules = ['app', 'mainwindow']
+        package = self.configuration.package['name'] + '.gui'
+        utils.add_to_toctree(
+            filename=index_filename,
+            entries=[f'{package}.{module}' for module in modules],
+            sort=True
+        )
 
     def _create_mainwindow(self):
         window_creator = GuiWindowCreator()
@@ -1292,19 +1292,10 @@ class GuiWindowCreator:
         index_filename = os.path.join('docs', 'api', 'gui', 'index.rst')
         if not os.path.exists(index_filename):
             return
-        with open(index_filename, encoding='utf8') as file:
-            contents = file.read()
-        lines = contents.split('\n')
+
         package = self.configuration.package['name']
-        start_of_toctree = lines.index('.. toctree::')
-        end_of_toctree = lines[start_of_toctree:].index('')
-        lines.insert(start_of_toctree + end_of_toctree + 1,
-                     f'    {package}.gui.{self.name}')
-        # Sort entries
-        new_end_of_toctree = \
-            lines[start_of_toctree + end_of_toctree + 1:].index('')
-        start_sort = start_of_toctree + end_of_toctree + 1
-        end_sort = start_of_toctree + end_of_toctree + new_end_of_toctree + 1
-        lines[start_sort:end_sort] = sorted(lines[start_sort:end_sort])
-        with open(index_filename, "w+", encoding='utf8') as file:
-            file.write('\n'.join(lines))
+        utils.add_to_toctree(
+            filename=index_filename,
+            entries=[f'{package}.gui.{self.name}'],
+            sort=True
+        )

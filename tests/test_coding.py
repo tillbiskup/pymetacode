@@ -928,6 +928,17 @@ class TestGuiCreator(unittest.TestCase):
                 contents = file.read()
             self.assertIn('gui/index', contents)
 
+    def test_create_adds_submodules_to_toc_in_docs_api_gui_index(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filepath = os.path.join('docs', 'api', 'gui', 'index.rst')
+            with open(filepath) as file:
+                contents = file.read()
+            modules = ['app', 'mainwindow']
+            for module in modules:
+                with self.subTest(module=module):
+                    self.assertIn(module, contents)
+
     def test_create_adds_block_to_manifest_file(self):
         with utils.change_working_dir(self.package):
             self.creator.create()

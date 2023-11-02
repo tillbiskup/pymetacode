@@ -407,3 +407,105 @@ class TestMakeExecutable(unittest.TestCase):
             file.write('')
         utils.make_executable(self.filename)
         self.assertTrue(os.access(self.filename, os.X_OK))
+
+
+class TestAddToToctree(unittest.TestCase):
+
+    def setUp(self):
+        self.filename = 'test.rst'
+        self.content = [
+            '.. toctree::',
+            '    :maxdepth: 1',
+            '',
+            'additional text',
+        ]
+
+    def tearDown(self):
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+
+    def write_file(self):
+        with open(self.filename, 'w+', encoding='utf8') as file:
+            for line in self.content:
+                file.write(line + '\n')
+
+    def get_file_contents(self):
+        with open(self.filename, 'r', encoding='utf8') as file:
+            content = file.read()
+        return content
+
+    def test_add_to_toctree_adds_line(self):
+        self.write_file()
+        utils.add_to_toctree(filename=self.filename, entries=['foo'])
+        self.assertIn('foo', self.get_file_contents())
+
+    def test_add_to_toctree_adds_line_in_actual_toctree(self):
+        self.write_file()
+        utils.add_to_toctree(filename=self.filename, entries=['foo'])
+        self.assertLess(
+            self.get_file_contents().index('foo'),
+            self.get_file_contents().index('additional')
+        )
+
+    def test_add_to_toctree_adds_empty_line_after_toctree(self):
+        self.write_file()
+        utils.add_to_toctree(filename=self.filename, entries=['foo'])
+        file_contents = self.get_file_contents().split('\n')
+        index = file_contents.index('additional text') - 1
+        self.assertFalse(file_contents[index])
+
+    def test_add_to_toctree_with_trailing_whitespace(self):
+        self.content[0] = '.. toctree:: '
+        self.write_file()
+        utils.add_to_toctree(filename=self.filename, entries=['foo'])
+        self.assertLess(
+            self.get_file_contents().index('foo'),
+            self.get_file_contents().index('additional')
+        )
+
+    def test_add_to_toctree_adds_multiple_lines(self):
+        self.write_file()
+        entries = ['foo', 'bar']
+        utils.add_to_toctree(filename=self.filename, entries=entries)
+        for entry in entries:
+            with self.subTest(entry=entry):
+                self.assertIn(entry, self.get_file_contents())
+
+    def test_add_to_toctree_adds_line_at_the_bottom_of_the_toctree(self):
+        self.write_file()
+        utils.add_to_toctree(filename=self.filename, entries=['foo'])
+        utils.add_to_toctree(filename=self.filename, entries=['bar'])
+        file_contents = self.get_file_contents().split('\n')
+        self.assertGreater(file_contents.index('    bar'),
+                           file_contents.index('    foo'))
+
+    def test_add_to_toctree_sorts_entries_if_told_so(self):
+        self.write_file()
+        entries = ['foo', 'bar']
+        utils.add_to_toctree(filename=self.filename, entries=entries,
+                             sort=True)
+        file_contents = self.get_file_contents().split('\n')
+        self.assertLess(file_contents.index('    bar'),
+                        file_contents.index('    foo'))
+
+    def test_add_to_toctree_sorts_all_entries(self):
+        self.write_file()
+        entries = ['foo', 'bar']
+        utils.add_to_toctree(filename=self.filename, entries=['bla'])
+        utils.add_to_toctree(filename=self.filename, entries=entries,
+                             sort=True)
+        file_contents = self.get_file_contents().split('\n')
+        self.assertLess(file_contents.index('    bar'),
+                        file_contents.index('    bla'))
+        self.assertLess(file_contents.index('    bla'),
+                        file_contents.index('    foo'))
+
+    def test_add_to_toctree_appearing_after_string_in_file(self):
+        content = self.content
+        self.content = content + ['', 'Lorem ipsum', ''] + content
+        self.write_file()
+        utils.add_to_toctree(filename=self.filename, entries=['bla'],
+                             after='Lorem')
+        file_contents = self.get_file_contents().split('\n')
+        self.assertGreater(file_contents.index('    bla'),
+                           file_contents.index('Lorem ipsum'))
