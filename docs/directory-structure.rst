@@ -48,6 +48,7 @@ If you add a graphical user interface (GUI) to your package, the following addit
     ├── docs
     │   ├── api
     │   │   ├── gui
+    │   │   │   ├── mypackage.gui.app.rst
     │   │   │   ├── mypackage.gui.mainwindow.rst
     │   │   │   └── index.rst
     │   │   └── ...
@@ -55,13 +56,14 @@ If you add a graphical user interface (GUI) to your package, the following addit
     ├── mypackage
     │   ├── gui
     │   │   ├── app.py
-    │   │   ├── data
+    │   │   ├── images
+    │   │   │   │── icon.svg
+    │   │   │   └── splash.svg
     │   │   ├── __init__.py
     │   │   ├── mainwindow.py
     │   │   ├── Makefile
     │   │   └── ui
-    │   │       ├── __init__.py
-    │   │       └── mainwindow.ui
+    │   │       └── __init__.py
     │   └── ...
     └── tests
         ├── gui

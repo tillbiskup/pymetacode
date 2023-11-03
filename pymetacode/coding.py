@@ -1023,7 +1023,7 @@ class GuiCreator:
             (len(package) + len(module) + 1) * '='
         template = utils.Template(
             path='docs',
-            template='api_module.j2.rst',
+            template='api_gui_module.j2.rst',
             context=context,
             destination=filename,
         )

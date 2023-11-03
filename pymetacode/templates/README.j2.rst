@@ -1,6 +1,8 @@
 =============={{ rst_markup.header_equal }}
-{{ package.name }} documentation
+{{ package.name }}
 =============={{ rst_markup.header_equal }}
+
+*{{ package.description }}.*
 
 Welcome! This is the documentation for {{ package.name }}, a Python package for ...
 

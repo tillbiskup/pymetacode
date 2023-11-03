@@ -891,6 +891,21 @@ class TestGuiCreator(unittest.TestCase):
                     self.assertTrue(os.path.exists(filename),
                                     f'"{filename}" has not been created')
 
+    def test_api_gui_docs_do_not_show_inherited_members(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            files = [
+                'index.rst',
+                f'{self.package}.gui.app.rst',
+                f'{self.package}.gui.mainwindow.rst',
+            ]
+            for file in files:
+                with self.subTest(file=file):
+                    filename = os.path.join('docs', 'api', 'gui', file)
+                    with open(filename, 'r', encoding='utf8') as doc:
+                        content = doc.read()
+                    self.assertNotIn(':inherited-members:', content)
+
     def test_create_replaces_variables_in_docs_api_gui_index(self):
         with utils.change_working_dir(self.package):
             self.creator.create()
@@ -910,7 +925,7 @@ class TestGuiCreator(unittest.TestCase):
                 (len(self.package) + 5 + len('subpackage')) * '='
             self.assertIn(header_underline, contents)
 
-    def test_create_adds_submodules_block_in_docs_api_index(self):
+    def test_create_adds_subpackages_block_in_docs_api_index(self):
         with utils.change_working_dir(self.package):
             self.creator.create()
             filepath = os.path.join('docs', 'api', 'index.rst')
@@ -920,13 +935,23 @@ class TestGuiCreator(unittest.TestCase):
             self.assertIn(f'subpackages available within the {self.package}',
                           contents)
 
-    def test_create_adds_gui_submodule_to_toc_in_docs_api_index(self):
+    def test_create_adds_gui_subpackage_to_toc_in_docs_api_index(self):
         with utils.change_working_dir(self.package):
             self.creator.create()
             filepath = os.path.join('docs', 'api', 'index.rst')
             with open(filepath) as file:
                 contents = file.read()
             self.assertIn('gui/index', contents)
+
+    def test_create_adds_to_subpackages_toc_in_docs_api_index(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filepath = os.path.join('docs', 'api', 'index.rst')
+            with open(filepath) as file:
+                contents = file.read()
+            contents = contents.split('\n')
+            self.assertGreater(contents.index('    gui/index'),
+                               contents.index('Subpackages'))
 
     def test_create_adds_submodules_to_toc_in_docs_api_gui_index(self):
         with utils.change_working_dir(self.package):

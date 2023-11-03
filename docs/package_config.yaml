@@ -20,3 +20,5 @@ options:
   gui: false
 gui:
   splash: true
+  organisation: ''
+  domain: ''

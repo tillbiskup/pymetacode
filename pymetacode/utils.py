@@ -41,6 +41,21 @@ String manipulation
   Change string from underscores to using camel case.
 
 
+Manipulating file contents
+==========================
+
+Part of metacoding is to manipulate file contents after the files have
+been generated using templates. Hence, it is sometimes not easily possible
+to parse the entire file into a sensible structure. Therefore, rather
+complex search and insert operations need to be performed.
+
+The following functions exist currenty:
+
+* :func:`add_to_toctree`
+
+  Add entries to toctrees in documentation generated via Sphinx
+
+
 Helper classes
 ==============
 

@@ -70,6 +70,11 @@ And to make it even more convenient for users and future-proof:
 * Extensive user and API documentation
 
 
+.. hint::
+
+    Just in case you wondered: Yes, pymetacode is maintained using pymetacode itself.
+
+
 Where to start
 ==============
 
