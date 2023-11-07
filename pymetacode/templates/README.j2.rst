@@ -1,6 +1,6 @@
-=============={{ rst_markup.header_equal }}
+{{ rst_markup.header_equal }}
 {{ package.name }}
-=============={{ rst_markup.header_equal }}
+{{ rst_markup.header_equal }}
 
 *{{ package.description }}.*
 

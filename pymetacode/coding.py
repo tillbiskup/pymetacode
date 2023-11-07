@@ -40,6 +40,12 @@ import warnings
 from pymetacode import configuration, utils
 
 
+LICENSES = {
+    'BSD': 'bsd-2clause.j2.txt',
+    'GPLv3': 'gpl-v3-boilerplate.j2.txt',
+}
+
+
 class PackageCreator:
     """
     Generate the basic package structure.
@@ -192,11 +198,19 @@ class PackageCreator:
     def _create_license_file(self):
         template = utils.Template(
             path='licenses',
-            template='bsd-2clause.j2.txt',
+            template=LICENSES[self.configuration.package['license']],
             context=self.configuration.to_dict(),
             destination=os.path.join(self.name, 'LICENSE'),
         )
         template.create()
+        if self.configuration.package['license'] == 'GPLv3':
+            template = utils.Template(
+                path='licenses',
+                template='gpl-v3.txt',
+                context=self.configuration.to_dict(),
+                destination=os.path.join(self.name, 'COPYING'),
+            )
+            template.create()
 
     def _create_setup_py_file(self):
         template = utils.Template(

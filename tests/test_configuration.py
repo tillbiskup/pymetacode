@@ -23,7 +23,7 @@ class TestConfiguration(unittest.TestCase):
     def test_package_property_has_keys(self):
         self.assertListEqual(['name', 'author', 'author_email', 'year',
                               'description', 'urls', 'keywords',
-                              'install_requires'],
+                              'install_requires', 'license'],
                              list(self.configuration.package.keys()))
 
     def test_package_property_year_is_set_to_current_year(self):
@@ -57,6 +57,11 @@ class TestConfiguration(unittest.TestCase):
     def test_to_dict_returns_dict(self):
         result = self.configuration.to_dict()
         self.assertTrue(isinstance(result, dict))
+
+    def test_to_dict_with_unknown_license_raises(self):
+        self.configuration.package['license'] = 'foo'
+        with self.assertRaises(ValueError):
+            self.configuration.to_dict()
 
     def test_to_file_writes_yaml_file(self):
         self.configuration.to_file(name=self.filename)
@@ -102,3 +107,9 @@ class TestConfiguration(unittest.TestCase):
                          self.configuration.package['name'])
         self.assertEqual(new_config.package['author'],
                          self.configuration.package['author'])
+
+    def test_from_dict_with_unknown_license_raises(self):
+        dict_ = self.configuration.to_dict()
+        dict_['package']['license'] = 'foo'
+        with self.assertRaises(ValueError):
+            self.configuration.from_dict(dict_)

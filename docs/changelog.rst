@@ -11,10 +11,13 @@ Version 0.5.0
 Not yet released
 
 
-Version 0.4.1
-=============
+New features
+------------
 
-Not yet released
+* Configuration option for license (default: "BSD")
+
+  * Added GPLv3 as possible license
+
 
 Changes
 -------

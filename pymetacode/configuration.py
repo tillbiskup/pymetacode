@@ -18,6 +18,12 @@ import yaml
 from pymetacode import utils
 
 
+LICENSES = (
+    'BSD',
+    'GPLv3',
+)
+
+
 class Configuration(utils.ToDictMixin):
     """
     Configuration used for generating code.
@@ -71,6 +77,9 @@ class Configuration(utils.ToDictMixin):
     .. versionchanged:: 0.4
         New property "gui"
 
+    .. versionchanged:: 0.5
+        New key "license" in property "package"
+
     """
 
     def __init__(self):
@@ -88,6 +97,7 @@ class Configuration(utils.ToDictMixin):
             },
             'keywords': [],
             'install_requires': [],
+            'license': 'BSD',
         }
         self.documentation = {
             'logo': '',
@@ -104,6 +114,10 @@ class Configuration(utils.ToDictMixin):
             'organisation': '',
             'domain': '',
         }
+
+    def to_dict(self):
+        self._check_values()
+        return super().to_dict()
 
     def from_dict(self, dict_=None):
         """
@@ -132,6 +146,7 @@ class Configuration(utils.ToDictMixin):
                         getattr(self, key).append(value)
                 else:
                     setattr(self, key, value)
+        self._check_values()
 
     def to_file(self, name=''):
         """
@@ -159,3 +174,8 @@ class Configuration(utils.ToDictMixin):
         with open(name, 'r', encoding='utf8') as file:
             dict_ = yaml.load(file, Loader=yaml.SafeLoader)
         self.from_dict(dict_)
+
+    def _check_values(self):
+        if 'license' in self.package \
+                and self.package['license'] not in LICENSES:
+            raise ValueError

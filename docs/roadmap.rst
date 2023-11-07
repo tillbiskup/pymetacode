@@ -10,8 +10,19 @@ For version 0.5
 
 * GUI code
 
+  * additional subcommands for non-windows (dialogs, widgets)
+
+    * ``pymeta add dialog``
+    * ``pymeta add widget``
+
   * Rearrange modules:
+
     * separation of models and views
+
+* Licenses
+
+  * Add GPLv3 as template
+  * Add to config
 
 * Update command (*e.g.*, for configuration, setup.py)
 

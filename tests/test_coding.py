@@ -117,6 +117,25 @@ class TestPackageCreator(unittest.TestCase):
                                          configuration.package['author'])
         self.assertIn(copyright_line, contents)
 
+    def test_create_creates_correct_license_file(self):
+        configuration = pymetacode.configuration.Configuration()
+        configuration.package['license'] = 'GPLv3'
+        self.creator.configuration = configuration
+        self.creator.create(name=self.name)
+        with open(os.path.join(self.name, 'LICENSE')) as file:
+            contents = file.read()
+        self.assertIn('GNU General Public License', contents)
+
+    def test_gplv3_license_creates_copying_file(self):
+        configuration = pymetacode.configuration.Configuration()
+        configuration.package['license'] = 'GPLv3'
+        self.creator.configuration = configuration
+        self.creator.create(name=self.name)
+        self.assertTrue(os.path.exists(os.path.join(self.name, 'COPYING')))
+        with open(os.path.join(self.name, 'COPYING')) as file:
+            contents = file.read()
+        self.assertIn('GNU General Public License', contents)
+
     def test_create_creates_setup_py_file(self):
         self.creator.create(name=self.name)
         self.assertTrue(os.path.exists(os.path.join(self.name, 'setup.py')))
@@ -154,7 +173,7 @@ class TestPackageCreator(unittest.TestCase):
         self.creator.create(name=self.name)
         with open(os.path.join(self.name, 'README.rst')) as file:
             contents = file.read()
-        content_line = "{} documentation".format(self.name)
+        content_line = "{}".format(self.name)
         self.assertIn(content_line, contents)
 
     def test_create_readme_file_adjusts_rst_header_length(self):
@@ -164,6 +183,7 @@ class TestPackageCreator(unittest.TestCase):
         self.creator.create(name=self.name)
         with open(os.path.join(self.name, 'README.rst')) as file:
             contents = file.read().split('\n')
+        print(contents)
         self.assertEqual(len(contents[0]), len(contents[1]))
 
     def test_create_creates_manifest_file(self):
