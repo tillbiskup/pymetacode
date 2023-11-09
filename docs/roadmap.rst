@@ -19,10 +19,10 @@ For version 0.5
 
     * separation of models and views
 
-* Licenses
+* Add subpackage command
 
-  * Add GPLv3 as template
-  * Add to config
+  * Helpful for organising packages
+  * ``pymeta add subpackage <name>``
 
 * Update command (*e.g.*, for configuration, setup.py)
 
