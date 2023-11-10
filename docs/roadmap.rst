@@ -8,6 +8,10 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.5
 ===============
 
+* Fixes
+
+  * Adding to toctree omits empty line...
+
 * GUI code
 
   * additional subcommands for non-windows (dialogs, widgets)
@@ -23,6 +27,7 @@ For version 0.5
 
   * Helpful for organising packages
   * ``pymeta add subpackage <name>``
+  * Needs changes in ``add`` command, dealing with subpackages (dot notation: ``pymeta add class|function foo to bar.baz``)
 
 * Update command (*e.g.*, for configuration, setup.py)
 
