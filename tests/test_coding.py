@@ -183,8 +183,17 @@ class TestPackageCreator(unittest.TestCase):
         self.creator.create(name=self.name)
         with open(os.path.join(self.name, 'README.rst')) as file:
             contents = file.read().split('\n')
-        print(contents)
         self.assertEqual(len(contents[0]), len(contents[1]))
+
+    def test_create_readme_sets_correct_license(self):
+        configuration = pymetacode.configuration.Configuration()
+        configuration.package['name'] = self.name
+        configuration.package['license'] = 'GPLv3'
+        self.creator.configuration = configuration
+        self.creator.create(name=self.name)
+        with open(os.path.join(self.name, 'README.rst')) as file:
+            contents = file.read().split('\n')
+        self.assertIn(configuration.package['license'], "".join(contents))
 
     def test_create_creates_manifest_file(self):
         self.creator.create(name=self.name)

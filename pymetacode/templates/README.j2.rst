@@ -42,5 +42,5 @@ To install the {{ package.name }} package on your computer (sensibly within a Py
 License
 =======
 
-This program is free software: you can redistribute it and/or modify it under the terms of the **BSD License**.
+This program is free software: you can redistribute it and/or modify it under the terms of the **{{ package.license }} License**.
 
