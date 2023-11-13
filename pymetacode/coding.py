@@ -452,21 +452,12 @@ class ModuleCreator:
         index_filename = os.path.join('docs', 'api', 'index.rst')
         if not os.path.exists(index_filename):
             return
-        with open(index_filename, encoding='utf8') as file:
-            contents = file.read()
-        lines = contents.split('\n')
         package = self.configuration.package['name']
-        start_of_toctree = lines.index('.. toctree::')
-        end_of_toctree = lines[start_of_toctree:].index('')
-        lines.insert(start_of_toctree + end_of_toctree,
-                     f'    {package}.{self.name}')
-        # Sort entries
-        new_end_of_toctree = lines[start_of_toctree:].index('')
-        start_sort = start_of_toctree + end_of_toctree - 1
-        end_sort = start_of_toctree + new_end_of_toctree
-        lines[start_sort:end_sort] = sorted(lines[start_sort:end_sort])
-        with open(index_filename, "w+", encoding='utf8') as file:
-            file.write('\n'.join(lines))
+        utils.add_to_toctree(
+            filename=index_filename,
+            entries=[f'{package}.{self.name}'],
+            sort=True,
+        )
 
 
 class ClassCreator:

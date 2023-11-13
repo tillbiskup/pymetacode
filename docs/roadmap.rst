@@ -8,16 +8,18 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.5
 ===============
 
-* Fixes
-
-  * Adding to toctree omits empty line...
-
 * GUI code
 
   * additional subcommands for non-windows (dialogs, widgets)
 
     * ``pymeta add dialog``
     * ``pymeta add widget``
+
+  * Discriminate between ui and non-ui windows/dialogs/widgets
+
+    * Two separate commands, one creating ui files for use with QtDesigner, the other for programmatically laid out windows/dialogs/widgets
+
+  * Import and use qtbricks
 
   * Rearrange modules:
 
