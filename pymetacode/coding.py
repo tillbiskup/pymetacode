@@ -185,10 +185,13 @@ class PackageCreator:
             file.write(contents)
 
     def _create_manifest_file(self):
-        contents = utils.get_package_data('MANIFEST.in')
-        with open(os.path.join(self.name, 'MANIFEST.in'), 'w+',
-                  encoding='utf8') as file:
-            file.write(contents)
+        template = utils.Template(
+            path='',
+            template='MANIFEST.j2.in',
+            context=self.configuration.to_dict(),
+            destination=os.path.join(self.name, 'MANIFEST.in'),
+        )
+        template.create()
 
     def _create_version_file(self):
         with open(os.path.join(self.name, 'VERSION'), 'w+', encoding='utf8') \

@@ -30,6 +30,7 @@ Fixes
 
 * Makefile in gui subdirectory: indentation with tabs
 * app.py: add missing imports
+* MANIFEST.in includes package name for recursive-include
 
 
 Version 0.4.0

@@ -7,5 +7,5 @@ include VERSION
 # Include the LICENSE
 include LICENSE*
 
-# Include templates
-recursive-include pymetacode *
+# Include package data
+recursive-include {{ package.name }} *

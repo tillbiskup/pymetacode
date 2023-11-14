@@ -207,6 +207,16 @@ class TestPackageCreator(unittest.TestCase):
             contents = file.read()
         self.assertIn('include VERSION', contents)
 
+    def test_create_replaces_placeholders_in_manifest_file(self):
+        configuration = pymetacode.configuration.Configuration()
+        configuration.package['name'] = self.name
+        self.creator.configuration = configuration
+        self.creator.create(name=self.name)
+        file_path = os.path.join(self.name, 'MANIFEST.in')
+        with open(file_path) as file:
+            contents = file.read()
+        self.assertIn(self.name, contents)
+
     def test_create_creates_version_updater_file(self):
         self.creator.create(name=self.name)
         self.assertTrue(os.path.exists(
