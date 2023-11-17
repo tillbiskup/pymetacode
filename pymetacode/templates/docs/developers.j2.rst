@@ -62,6 +62,32 @@ A general overview of the overall package structure:
     tests/
 
 
+Code formatting
+===============
+
+Generally, code formatting follows :pep:`8` guidelines.
+
+A consistent code formatting is enforced using `Black <https://black.readthedocs.io/>`_, with the only change to the default settings being the line width of 78 characters (as compared to the standard of 88 characters). Use ``black -l 78`` on the command line, or, preferably, configure Black in your IDE. For PyCharm (starting with 2023.2), the settings can be found in ``Preferences`` | ``Settings`` > ``Tools`` > ``Black``. Here, set ``-l 78`` as command-line options via the ``Settings`` edit field. For older PyCharm versions or other IDEs/editors see the `official Black documentation <https://black.readthedocs.io/en/stable/integrations/editors.html>`_.
+
+To use Black, it needs to be installed. Either install it separately
+
+.. code-block:: bash
+
+    pip install black
+
+or install the {{ package.name }} package with the appropriate dependencies:
+
+.. code-block:: bash
+
+    pip install {{ package.name }}[dev]
+
+In case you are installing the {{ package.name }} package in editable fashion (as usual for development purposes), use the following command from *within* the package directory (*i.e.*, the one containing the ``setup.py`` file):
+
+.. code-block::
+
+    pip install -e .[dev]
+
+For static code analysis using Prospector, see the respective :ref:`section <sec_prospector>`.
 
 
 Docstring format
@@ -95,6 +121,19 @@ To install the necessary Python dependencies, create a virtual environment, e.g.
     pip install sphinx-multiversion
 
 
+Alternatively, you may simply install {{ package.name }} with the required dependencies:
+
+.. code-block:: bash
+
+    pip install {{ package.name }}[docs]
+
+In case you are installing the {{ package.name }} package in editable fashion (as usual for development purposes), use the following command from *within* the package directory (*i.e.*, the one containing the ``setup.py`` file):
+
+.. code-block::
+
+    pip install -e .[docs]
+
+
 To build the documentation:
 
     * Activate the virtual environment where the necessary dependencies are installed in.
@@ -106,6 +145,8 @@ To build the documentation for all releases and the current master branch:
   * Activate the virtual environment where the necessary dependencies are installed in.
   * ``cd`` to ``docs/``, then run ``make multiversion``. (To clean previously built documentation, run ``make clean`` first).
 
+
+.. _sec_prospector:
 
 Static code analysis with Prospector
 ====================================

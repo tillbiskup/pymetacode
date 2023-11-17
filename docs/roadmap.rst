@@ -51,6 +51,8 @@ For version 0.5
 For later versions
 ==================
 
+* Transition to ``pyproject.toml`` file
+
 * Templates specific to packages (*e.g.*, ASpecD)
 
   * Requires mechanism to detect which package we are called from
