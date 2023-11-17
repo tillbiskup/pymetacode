@@ -3,6 +3,7 @@
 
 ignore-paths:
   - templates
+  - pymetacode/templates
   - build
 
 inherits:

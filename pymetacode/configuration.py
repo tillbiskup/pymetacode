@@ -116,6 +116,17 @@ class Configuration(utils.ToDictMixin):
         }
 
     def to_dict(self):
+        """
+        Create dictionary containing public attributes of an object.
+
+        Returns
+        -------
+        public_attributes : :class:`collections.OrderedDict`
+            Ordered dictionary containing the public attributes of the object
+
+            The order of attribute definition is preserved
+
+        """
         self._check_values()
         return super().to_dict()
 

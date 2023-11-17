@@ -608,7 +608,7 @@ def add_to_toctree(filename='', entries=None, sort=False, after=''):
         Useful particularly in case of several toctree directives in one
         document. Note that the string provided is used as substring: The
         first line containing it will be used as offset.
-    
+
     .. versionadded:: 0.5
 
     """
