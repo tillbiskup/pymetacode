@@ -106,6 +106,12 @@ Developing the {{ package.name }} package code should be done test-driven wherev
 Tests should be written using the Python :mod:`unittest` framework. Make sure that tests are independent of the respective local environment and clean up afterwards (using appropriate ``teardown`` methods).
 
 
+Metacode: Conveniently adding features
+======================================
+
+The {{ package.name }} package is maintained using the `pymetacode Python package <https://python.docs.meta-co.de/>`_. In short, use the pymetacode ``pymeta`` command from the command line/terminal whenever you want to add modules, classes, or functions. This will ensure both a consistent overall style and organisation and automatically create the respective unittest stubs for you.
+
+
 Setting up the documentation build system
 =========================================
 
