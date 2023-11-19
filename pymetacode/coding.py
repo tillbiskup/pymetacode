@@ -258,10 +258,13 @@ class PackageCreator:
                 doc_file.write(contents)
 
     def _create_documentation_index(self):
-        shutil.copyfile(
-            os.path.join(self.name, 'README.rst'),
-            os.path.join(self.name, 'docs', 'index.rst')
+        template = utils.Template(
+            path='docs',
+            template='index.j2.rst',
+            context=self.configuration.to_dict(),
+            destination=os.path.join(self.name, 'docs', 'index.rst'),
         )
+        template.create()
         template = utils.Template(
             path='docs',
             template='main-toctree.j2.rst',

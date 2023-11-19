@@ -23,6 +23,7 @@ Changes
 -------
 
 * Rename gui subdirectory: 'data' -> 'images'
+* README and documentation index are now independent and differ slightly in their content.
 
 
 Fixes
