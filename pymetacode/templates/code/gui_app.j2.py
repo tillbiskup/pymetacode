@@ -5,25 +5,21 @@ This module provides the high-level interface to the app and a function that
 gets wired up as "gui_script" entry point in the ``setup.py``.
 """
 
-import os
 import sys
 
+from PySide6 import QtWidgets, QtGui
 {%- if gui.splash %}
-from PySide6.QtGui import QPixmap, QIcon
-from PySide6.QtWidgets import QApplication, QSplashScreen
 from PySide6.QtCore import Qt
-{%- else %}
-from PySide6.QtWidgets import QApplication
-from PySide6.QtGui import QIcon
 {%- endif %}
 
-from {{ package.name }}.gui.mainwindow import MainWindow
-from {{ package.name }}.gui import utils
+from {{ package.name }}.gui import mainwindow, utils
 
 
 {% if gui.splash -%}
 def splash_screen():
-    splash = QSplashScreen(QPixmap(utils.image_path("splash.svg")))
+    splash = QtWidgets.QSplashScreen(
+        QtGui.QPixmap(utils.image_path("splash.svg"))
+    )
     splash.show()
     return splash
 
@@ -38,7 +34,7 @@ def main():
     aspects of the (Qt) application are set that are relevant for saving and
     restoring settings, as well as the window icon.
     """
-    app = QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     {% if gui.splash -%}
     splash = splash_screen()
 
@@ -46,8 +42,8 @@ def main():
     app.setOrganizationName("{{ gui.organisation }}")
     app.setOrganizationDomain("{{ gui.domain }}")
     app.setApplicationName("{{ package.name }}")
-    app.setWindowIcon(QIcon(utils.image_path("icon.svg")))
-    window = MainWindow()
+    app.setWindowIcon(QtGui.QIcon(utils.image_path("icon.svg")))
+    window = mainwindow.MainWindow()
     window.show()
     {% if gui.splash -%}
 
