@@ -32,13 +32,11 @@ the pymetacode package.
 
 """
 import os
-import shutil
 import stat
 import subprocess
 import warnings
 
 from pymetacode import configuration, utils
-
 
 LICENSES = {
     'BSD': 'bsd-2clause.j2.txt',
@@ -134,7 +132,8 @@ class PackageCreator:
         name : :class:`str`
             Name of the package to create.
 
-            If provided, this will set the :attr:`name` attribute of the class.
+            If provided, this will set the :attr:`name` attribute of the
+            class.
 
         """
         if name:
@@ -174,8 +173,8 @@ class PackageCreator:
 
     def _create_gitignore(self):
         contents = utils.get_package_data('gitignore')
-        with open(os.path.join(self.name, '.gitignore'), 'w+', encoding='utf8')\
-                as file:
+        with open(os.path.join(self.name, '.gitignore'), 'w+',
+                  encoding='utf8') as file:
             file.write(contents)
 
     def _create_prospector_profile(self):
@@ -393,7 +392,8 @@ class ModuleCreator:
         name : :class:`str`
             Name of the module to add.
 
-            If provided, this will set the :attr:`name` attribute of the class.
+            If provided, this will set the :attr:`name` attribute of the
+            class.
 
         """
         if name:
@@ -511,11 +511,11 @@ class ClassCreator:
 
         pymeta add class MyClass to mymodule
 
-    This will add the class "MyClass" to the module "mymodule", together with a
-    test class in the "test_mymodule" module. The class will come with a
-    basic docstring, and the test class with a minimalistic setup and first
-    test (for implementation of the class) that gets you started with
-    writing further tests.
+    This will add the class "MyClass" to the module "mymodule", together
+    with a test class in the "test_mymodule" module. The class will come
+    with a basic docstring, and the test class with a minimalistic setup
+    and first test (for implementation of the class) that gets you started
+    with writing further tests.
 
     """
 
@@ -608,9 +608,9 @@ class FunctionCreator:
     """
     Add a function to an existing module, including a test class.
 
-    When a function is added to a module, it will always be added to the bottom
-    of the module file, and at the same time a test class with a first test
-    will be added to the corresponding test module.
+    When a function is added to a module, it will always be added to the
+    bottom of the module file, and at the same time a test class with a
+    first test will be added to the corresponding test module.
 
     If you try to add an already existing function to the respective module,
     a warning is raised and no further action taken, in order *not* to
@@ -649,10 +649,10 @@ class FunctionCreator:
 
         pymeta add function my_function to mymodule
 
-    This will add the function "my_function" to the module "mymodule", together
-    with a test class in the "test_mymodule" module. The function will come
-    with a basic docstring, and the test class with a minimalistic first
-    test that gets you started with writing further tests.
+    This will add the function "my_function" to the module "mymodule",
+    together with a test class in the "test_mymodule" module. The function
+    will come with a basic docstring, and the test class with a
+    minimalistic first test that gets you started with writing further tests.
 
     """
 
@@ -804,7 +804,8 @@ class GuiCreator:
       description of the Qt windows created by/modified with the Qt Designer
       reside in the ``ui`` subdirectory, together with the auto-generated
       Python files used for import. To help with auto-generating the Python
-      files from the ui files, use the ``Makefile`` in the ``gui`` subdirectory.
+      files from the ui files, use the ``Makefile`` in the ``gui``
+      subdirectory.
 
     * Additional data files, such as icons or images for a splash screen,
       reside in the ``data`` subdirectory.
@@ -915,7 +916,8 @@ class GuiCreator:
 
     def _create_subdirectories(self):
         for directory in self.subdirectories:
-            self._create_directory(name=os.path.join(self._src_dir, directory))
+            self._create_directory(
+                name=os.path.join(self._src_dir, directory))
         self._create_directory(os.path.join('tests', 'gui'))
         self._create_directory(os.path.join('docs', 'api', 'gui'))
 
@@ -949,7 +951,8 @@ class GuiCreator:
                 path='code',
                 template=f'gui_{module}.j2.py',
                 context=self.configuration.to_dict(),
-                destination=os.path.join(self._src_dir, 'gui', f'{module}.py'),
+                destination=os.path.join(self._src_dir, 'gui',
+                                         f'{module}.py'),
             )
             template.create()
 
@@ -1153,11 +1156,11 @@ class GuiWindowCreator:
 
         pymeta add window mywindow
 
-    This will add the GUI window ``mywindow`` to the ``gui`` subpackage of your
-    package, together with the ``test_mywindow`` module in the ``tests.gui``
-    directory. Furthermore, the corresponding UI file (to be used with the
-    Qt Designer) gets added to the ``gui/ui`` subpackage. And even better,
-    the API documentation will be updated as well for you.
+    This will add the GUI window ``mywindow`` to the ``gui`` subpackage of
+    your package, together with the ``test_mywindow`` module in the
+    ``tests.gui`` directory. Furthermore, the corresponding UI file (to be
+    used with the Qt Designer) gets added to the ``gui/ui`` subpackage.
+    And even better, the API documentation will be updated as well for you.
 
 
 

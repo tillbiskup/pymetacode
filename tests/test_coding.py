@@ -825,7 +825,7 @@ class TestGuiCreator(unittest.TestCase):
             self.creator.create()
             with open(filepath) as file:
                 contents = file.read()
-            self.assertIn(self.package + '.gui.mainwindow', contents)
+            self.assertIn(self.package + '.gui import mainwindow', contents)
 
     def test_create_with_splash_adds_splash_in_app_module(self):
         filepath = os.path.join(self.package, 'gui', 'app.py')
