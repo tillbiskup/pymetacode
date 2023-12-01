@@ -609,6 +609,7 @@ def add_to_toctree(filename='', entries=None, sort=False, after=''):
         document. Note that the string provided is used as substring: The
         first line containing it will be used as offset.
 
+
     .. versionadded:: 0.5
 
     """
