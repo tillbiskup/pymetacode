@@ -35,22 +35,46 @@ setuptools.setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Intended Audience :: Science/Research",
         "Development Status :: 4 - Beta",
     ],
+    {%- if options.gui %}
+    entry_points = {
+        "gui_scripts": [
+            "{{ package.name }} = {{ package.name }}.gui.app:main"
+        ],
+    },
+    {%- endif %}
     install_requires=[
         {%- if package.install_requires %}
         {%- for item in package.install_requires %}
         "{{ item }}",
         {%- endfor %}
         {%- endif %}
+        {%- if options.gui %}
+        "PySide6",
+        "qtbricks",
+        {%- endif %}
     ],
     extras_require={
-        'dev': ['prospector', 'pyroma', 'bandit', 'black'],
-        'docs': ['sphinx', 'sphinx-rtd-theme', 'sphinx_multiversion'],
+        'dev': [
+            'prospector',
+            'pyroma',
+            'bandit',
+            'black',
+            'pymetacode',
+        ],
+        'docs': [
+            'sphinx',
+            'sphinx-rtd-theme',
+            'sphinx_multiversion',
+        ],
     },
     python_requires='>=3.7',
-    include_package_data = True,
+    include_package_data=True,
 )

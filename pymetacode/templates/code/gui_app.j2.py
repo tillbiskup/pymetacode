@@ -12,13 +12,15 @@ from PySide6 import QtWidgets, QtGui
 from PySide6.QtCore import Qt
 {%- endif %}
 
-from {{ package.name }}.gui import mainwindow, utils
+import qtbricks.utils
+
+from {{ package.name }}.gui import mainwindow
 
 
 {% if gui.splash -%}
 def splash_screen():
     splash = QtWidgets.QSplashScreen(
-        QtGui.QPixmap(utils.image_path("splash.svg"))
+        QtGui.QPixmap(qtbricks.utils.image_path("splash.svg"))
     )
     splash.show()
     return splash
@@ -42,7 +44,7 @@ def main():
     app.setOrganizationName("{{ gui.organisation }}")
     app.setOrganizationDomain("{{ gui.domain }}")
     app.setApplicationName("{{ package.name }}")
-    app.setWindowIcon(QtGui.QIcon(utils.image_path("icon.svg")))
+    app.setWindowIcon(QtGui.QIcon(qtbricks.utils.image_path("icon.svg")))
     window = mainwindow.MainWindow()
     window.show()
     {% if gui.splash -%}

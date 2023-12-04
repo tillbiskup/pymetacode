@@ -732,6 +732,7 @@ class TestGuiCreator(unittest.TestCase):
     def create_package_structure(self):
         pkg = coding.PackageCreator()
         pkg.name = self.package
+        pkg.configuration = self.configuration
         pkg.create()
 
     def test_instantiate_class(self):
@@ -870,12 +871,6 @@ class TestGuiCreator(unittest.TestCase):
 
     def test_create_adds_icon_image(self):
         filepath = os.path.join(self.package, 'gui', 'images', 'icon.svg')
-        with utils.change_working_dir(self.package):
-            self.creator.create()
-            self.assertTrue(os.path.exists(filepath))
-
-    def test_create_copies_utils_module(self):
-        filepath = os.path.join(self.package, 'gui', 'utils.py')
         with utils.change_working_dir(self.package):
             self.creator.create()
             self.assertTrue(os.path.exists(filepath))
@@ -1021,6 +1016,20 @@ class TestGuiCreator(unittest.TestCase):
                 contents = file.read()
             self.assertIn('setuptools.setup(', contents)
             self.assertIn('PySide6', contents)
+            self.assertIn('qtbricks', contents)
+
+    def test_create_does_not_add_already_existing_requirements(self):
+        self.tearDown()
+        self.configuration.options['gui'] = True
+        self.creator.configuration = self.configuration
+        self.create_package_structure()
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+            filepath = 'setup.py'
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertEqual(1, contents.split().count('"PySide6",'))
+            self.assertEqual(1, contents.split().count('"qtbricks",'))
 
     def test_create_adds_entry_points_to_setup_file(self):
         with utils.change_working_dir(self.package):
@@ -1031,14 +1040,17 @@ class TestGuiCreator(unittest.TestCase):
             self.assertIn('setuptools.setup(', contents)
             self.assertIn('gui_scripts', contents)
 
-    def test_create_adds_include_package_data_to_setup_file(self):
+    def test_create_does_not_add_already_existing_entry_point(self):
+        self.tearDown()
+        self.configuration.options['gui'] = True
+        self.creator.configuration = self.configuration
+        self.create_package_structure()
         with utils.change_working_dir(self.package):
             self.creator.create()
             filepath = 'setup.py'
             with open(filepath) as file:
                 contents = file.read()
-            self.assertIn('setuptools.setup(', contents)
-            self.assertIn('include_package_data=True', contents)
+            self.assertEqual(1, contents.split().count('"gui_scripts":'))
 
 
 class TestGuiWindowCreator(unittest.TestCase):

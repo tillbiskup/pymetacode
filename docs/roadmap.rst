@@ -19,8 +19,6 @@ For version 0.5
 
     * Two separate commands, one creating ui files for use with QtDesigner, the other for programmatically laid out windows/dialogs/widgets
 
-  * Import and use qtbricks
-
   * Rearrange modules:
 
     * separation of models and views

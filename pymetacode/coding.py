@@ -945,7 +945,7 @@ class GuiCreator:
             file.write(contents)
 
     def _create_modules(self):
-        modules = ['app', 'utils', 'mainwindow']
+        modules = ['app', 'mainwindow']
         for module in modules:
             template = utils.Template(
                 path='code',
@@ -1087,29 +1087,45 @@ class GuiCreator:
         with open(filename, encoding='utf8') as file:
             contents = file.read()
         lines = contents.split('\n')
-        # Insert package(s) to install_requires
+        lines = self._insert_packages_to_install_requires(lines)
+        # Add gui_scripts entry_points
+        lines = self._add_gui_script_entry_point(lines)
+        with open(filename, "w+", encoding='utf8') as file:
+            file.write('\n'.join(lines))
+
+    @staticmethod
+    def _insert_packages_to_install_requires(lines):
+        gui_requirements = ["PySide6", "qtbricks"]
         start_of_install_requires = lines.index('    install_requires=[')
         end_of_install_requires = \
             lines[start_of_install_requires:].index('    ],')
-        lines.insert(start_of_install_requires + end_of_install_requires,
-                     '        "PySide6",')
-        # Add gui_scripts entry_points
-        package_name = self.configuration.package['name']
-        context = self.configuration.to_dict()
-        context['package'] = {'name': package_name}
-        template = utils.Template(
-            template='setup-gui-scripts.j2.py',
-            context=context,
-        )
-        entry_points = template.render()
-        lines.insert(start_of_install_requires, entry_points)
-        # Add include_package_data
-        start_of_setup = lines.index('setuptools.setup(')
-        end_of_setup = lines[start_of_setup:].index(')')
-        lines.insert(start_of_setup + end_of_setup,
-                     '    include_package_data=True,')
-        with open(filename, "w+", encoding='utf8') as file:
-            file.write('\n'.join(lines))
+        install_requires = lines[
+                           start_of_install_requires:
+                           start_of_install_requires + end_of_install_requires]
+        add_requirements = []
+        for requirement in gui_requirements:
+            if requirement not in ''.join(install_requires):
+                add_requirements.append(requirement)
+        for offset, requirement in enumerate(add_requirements):
+            lines.insert(
+                start_of_install_requires + end_of_install_requires + offset,
+                f'        "{requirement}",'
+            )
+        return lines
+
+    def _add_gui_script_entry_point(self, lines):
+        if '"gui_scripts": [' not in ''.join(lines):
+            package_name = self.configuration.package['name']
+            context = self.configuration.to_dict()
+            context['package'] = {'name': package_name}
+            template = utils.Template(
+                template='setup-gui-scripts.j2.py',
+                context=context,
+            )
+            entry_points = template.render()
+            start_of_install_requires = lines.index('    install_requires=[')
+            lines.insert(start_of_install_requires, entry_points)
+        return lines
 
 
 class GuiWindowCreator:
