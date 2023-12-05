@@ -8,7 +8,7 @@ import pymetacode.configuration
 class TestConfiguration(unittest.TestCase):
     def setUp(self):
         self.configuration = pymetacode.configuration.Configuration()
-        self.filename = 'foo.yaml'
+        self.filename = "foo.yaml"
 
     def tearDown(self):
         if os.path.exists(self.filename):
@@ -18,48 +18,63 @@ class TestConfiguration(unittest.TestCase):
         pass
 
     def test_has_package_property(self):
-        self.assertTrue(hasattr(self.configuration, 'package'))
+        self.assertTrue(hasattr(self.configuration, "package"))
 
     def test_package_property_has_keys(self):
-        self.assertListEqual(['name', 'author', 'author_email', 'year',
-                              'description', 'urls', 'keywords',
-                              'install_requires', 'license'],
-                             list(self.configuration.package.keys()))
+        self.assertListEqual(
+            [
+                "name",
+                "author",
+                "author_email",
+                "year",
+                "description",
+                "urls",
+                "keywords",
+                "install_requires",
+                "license",
+            ],
+            list(self.configuration.package.keys()),
+        )
 
     def test_package_property_year_is_set_to_current_year(self):
-        current_year = datetime.date.strftime(datetime.date.today(), '%Y')
-        self.assertEqual(current_year, self.configuration.package['year'])
+        current_year = datetime.date.strftime(datetime.date.today(), "%Y")
+        self.assertEqual(current_year, self.configuration.package["year"])
 
     def test_has_documentation_property(self):
-        self.assertTrue(hasattr(self.configuration, 'documentation'))
+        self.assertTrue(hasattr(self.configuration, "documentation"))
 
     def test_documentation_property_has_keys(self):
-        self.assertListEqual(['logo', 'favicon', 'language'],
-                             list(self.configuration.documentation.keys()))
+        self.assertListEqual(
+            ["logo", "favicon", "language"],
+            list(self.configuration.documentation.keys()),
+        )
 
     def test_default_documentation_language_is_en(self):
-        self.assertEqual('en', self.configuration.documentation['language'])
+        self.assertEqual("en", self.configuration.documentation["language"])
 
     def test_has_options_property(self):
-        self.assertTrue(hasattr(self.configuration, 'options'))
+        self.assertTrue(hasattr(self.configuration, "options"))
 
     def test_options_property_has_keys(self):
-        self.assertListEqual(['logging', 'git', 'gui'],
-                             list(self.configuration.options.keys()))
+        self.assertListEqual(
+            ["logging", "git", "gui"], list(self.configuration.options.keys())
+        )
 
     def test_has_gui_property(self):
-        self.assertTrue(hasattr(self.configuration, 'gui'))
+        self.assertTrue(hasattr(self.configuration, "gui"))
 
     def test_options_gui_has_keys(self):
-        self.assertListEqual(['splash', 'organisation', 'domain'],
-                             list(self.configuration.gui.keys()))
+        self.assertListEqual(
+            ["splash", "organisation", "domain"],
+            list(self.configuration.gui.keys()),
+        )
 
     def test_to_dict_returns_dict(self):
         result = self.configuration.to_dict()
         self.assertTrue(isinstance(result, dict))
 
     def test_to_dict_with_unknown_license_raises(self):
-        self.configuration.package['license'] = 'foo'
+        self.configuration.package["license"] = "foo"
         with self.assertRaises(ValueError):
             self.configuration.to_dict()
 
@@ -71,7 +86,7 @@ class TestConfiguration(unittest.TestCase):
         self.configuration.to_file(name=self.filename)
         with open(self.filename) as file:
             contents = file.read()
-        self.assertIn('package:', contents)
+        self.assertIn("package:", contents)
 
     def test_from_dict_without_dict_raises(self):
         with self.assertRaises(ValueError):
@@ -79,37 +94,40 @@ class TestConfiguration(unittest.TestCase):
 
     def test_from_dict_sets_properties(self):
         dict_ = {
-            'package': {
-                'name': 'foo',
-                'urls': {
-                    'main': 'https://foo.local/',
+            "package": {
+                "name": "foo",
+                "urls": {
+                    "main": "https://foo.local/",
                 },
             },
         }
         self.configuration.from_dict(dict_)
-        self.assertEqual(dict_['package']['name'],
-                         self.configuration.package['name'])
+        self.assertEqual(
+            dict_["package"]["name"], self.configuration.package["name"]
+        )
 
     def test_from_dict_does_not_set_unknown_attribute(self):
-        attribute = 'foo'
+        attribute = "foo"
         dict_ = dict()
-        dict_[attribute] = 'foo'
+        dict_[attribute] = "foo"
         self.configuration.from_dict(dict_)
         self.assertFalse(hasattr(self.configuration, attribute))
 
     def test_from_file_sets_properties(self):
-        self.configuration.package['name'] = 'foo'
-        self.configuration.package['author'] = 'John Doe'
+        self.configuration.package["name"] = "foo"
+        self.configuration.package["author"] = "John Doe"
         self.configuration.to_file(self.filename)
         new_config = pymetacode.configuration.Configuration()
         new_config.from_file(self.filename)
-        self.assertEqual(new_config.package['name'],
-                         self.configuration.package['name'])
-        self.assertEqual(new_config.package['author'],
-                         self.configuration.package['author'])
+        self.assertEqual(
+            new_config.package["name"], self.configuration.package["name"]
+        )
+        self.assertEqual(
+            new_config.package["author"], self.configuration.package["author"]
+        )
 
     def test_from_dict_with_unknown_license_raises(self):
         dict_ = self.configuration.to_dict()
-        dict_['package']['license'] = 'foo'
+        dict_["package"]["license"] = "foo"
         with self.assertRaises(ValueError):
             self.configuration.from_dict(dict_)

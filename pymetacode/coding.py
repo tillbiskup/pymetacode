@@ -1396,7 +1396,7 @@ class SubpackageCreator:
     "mysubpackage" subpackage in the "tests" subdirectory. And even better,
     the API documentation will be updated as well for you.
 
-    
+
     .. versionadded:: 0.5
 
     """
@@ -1429,7 +1429,9 @@ class SubpackageCreator:
         self._create_documentation()
 
     def _subpackage_exists(self):
-        directory = os.path.join(self.configuration.package["name"], self.name)
+        directory = os.path.join(
+            self.configuration.package["name"], self.name
+        )
         return os.path.exists(directory) and os.path.isdir(directory)
 
     def _create_directories(self):

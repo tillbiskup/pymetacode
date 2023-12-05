@@ -11,7 +11,7 @@ from pymetacode import utils
 
 class TestEnsureFileExists(unittest.TestCase):
     def setUp(self):
-        self.filename = 'foo'
+        self.filename = "foo"
 
     def tearDown(self):
         if os.path.exists(self.filename):
@@ -26,62 +26,62 @@ class TestEnsureFileExists(unittest.TestCase):
         self.assertTrue(os.path.exists(self.filename))
 
     def test_ensure_file_exists_does_not_change_existing_file(self):
-        with open(self.filename, 'a') as file:
-            file.write('foo bar')
+        with open(self.filename, "a") as file:
+            file.write("foo bar")
         utils.ensure_file_exists(self.filename)
         with open(self.filename) as file:
             file_content = file.read()
-        self.assertEqual('foo bar', file_content)
+        self.assertEqual("foo bar", file_content)
 
 
 class TestGetPackageData(unittest.TestCase):
     def setUp(self):
-        self.filename = 'bar'
-        self.data_dir = 'foo'
+        self.filename = "bar"
+        self.data_dir = "foo"
 
     def tearDown(self):
         if os.path.exists(self.data_dir):
             shutil.rmtree(self.data_dir)
 
     def create_data_dir_and_contents(self):
-        data_dir = os.path.join(self.data_dir, 'pymetacode')
+        data_dir = os.path.join(self.data_dir, "pymetacode")
         os.makedirs(data_dir)
-        with open(os.path.join(data_dir, self.filename),
-                  'w+', encoding='utf8') as file:
-            file.write('foo')
+        with open(
+            os.path.join(data_dir, self.filename), "w+", encoding="utf8"
+        ) as file:
+            file.write("foo")
 
     def test_get_package_data_without_name_raises(self):
         with self.assertRaises(ValueError):
             utils.get_package_data()
 
     def test_get_package_data_returns_content(self):
-        with patch('pkgutil.get_data', return_value="foo".encode()):
+        with patch("pkgutil.get_data", return_value="foo".encode()):
             content = utils.get_package_data(self.filename)
         self.assertTrue(content)
 
     def test_get_package_data_with_prefixed_package_returns_content(self):
-        content = utils.get_package_data('pymetacode@gitignore')
+        content = utils.get_package_data("pymetacode@gitignore")
         self.assertTrue(content)
 
     def test_get_package_data_with_foreign_package_returns_content(self):
-        content = utils.get_package_data('pip@__main__.py', directory='')
+        content = utils.get_package_data("pip@__main__.py", directory="")
         self.assertTrue(content)
 
     def test_get_package_data_with_user_data_returns_content(self):
         self.create_data_dir_and_contents()
-        with patch('platformdirs.user_data_dir', return_value=self.data_dir):
-            content = utils.get_package_data(self.filename, directory='')
+        with patch("platformdirs.user_data_dir", return_value=self.data_dir):
+            content = utils.get_package_data(self.filename, directory="")
         self.assertTrue(content)
 
     def test_get_package_data_with_site_data_returns_content(self):
         self.create_data_dir_and_contents()
-        with patch('platformdirs.site_data_dir', return_value=self.data_dir):
-            content = utils.get_package_data(self.filename, directory='')
+        with patch("platformdirs.site_data_dir", return_value=self.data_dir):
+            content = utils.get_package_data(self.filename, directory="")
         self.assertTrue(content)
 
 
 class TestToDictMixin(unittest.TestCase):
-
     def setUp(self):
         class MixedIn(utils.ToDictMixin):
             pass
@@ -218,9 +218,9 @@ class TestToDictMixin(unittest.TestCase):
         class Test(utils.ToDictMixin):
             def __init__(self):
                 super().__init__()
-                self.purpose = ''
-                self.operator = ''
-                self.labbook = ''
+                self.purpose = ""
+                self.operator = ""
+                self.labbook = ""
 
         obj = Test()
         self.assertEqual(arguments, list(obj.to_dict().keys()))
@@ -229,66 +229,63 @@ class TestToDictMixin(unittest.TestCase):
         class Test(utils.ToDictMixin):
             def __init__(self):
                 super().__init__()
-                self.purpose = ''
-                self.operator = ''
-                self._exclude_from_to_dict = ['operator']
+                self.purpose = ""
+                self.operator = ""
+                self._exclude_from_to_dict = ["operator"]
 
         obj = Test()
-        self.assertEqual(['purpose'], list(obj.to_dict().keys()))
+        self.assertEqual(["purpose"], list(obj.to_dict().keys()))
 
     def test_with_property_to_include(self):
         class Test(utils.ToDictMixin):
             def __init__(self):
                 super().__init__()
-                self.purpose = ''
+                self.purpose = ""
                 self._foo = None
-                self._include_in_to_dict = ['_foo']
+                self._include_in_to_dict = ["_foo"]
 
         obj = Test()
-        self.assertEqual(['purpose', '_foo'], list(obj.to_dict().keys()))
+        self.assertEqual(["purpose", "_foo"], list(obj.to_dict().keys()))
 
     def test_with_properties_to_include(self):
         class Test(utils.ToDictMixin):
             def __init__(self):
                 super().__init__()
-                self.purpose = ''
+                self.purpose = ""
                 self._foo = None
                 self._bar = None
-                self._include_in_to_dict = ['_foo', '_bar']
+                self._include_in_to_dict = ["_foo", "_bar"]
 
         obj = Test()
-        self.assertEqual(['purpose', '_foo', '_bar'],
-                         list(obj.to_dict().keys()))
+        self.assertEqual(
+            ["purpose", "_foo", "_bar"], list(obj.to_dict().keys())
+        )
 
 
 class TestChangeWorkingDir(unittest.TestCase):
-
     def test_change_working_dir_returns_to_original_dir(self):
         oldpwd = os.getcwd()
-        with utils.change_working_dir('..'):
+        with utils.change_working_dir(".."):
             pass
         self.assertEqual(oldpwd, os.getcwd())
 
 
 class TestCamelCaseToUnderscore(unittest.TestCase):
-
     def test_camel_case_to_underscore_converts_correctly(self):
         result = utils.camel_case_to_underscore("FooBar")
-        self.assertEqual('foo_bar', result)
+        self.assertEqual("foo_bar", result)
 
 
 class TestUnderscoreToCamelCase(unittest.TestCase):
-
     def test_underscore_to_camel_case_converts_correctly(self):
         result = utils.underscore_to_camel_case("foo_bar")
-        self.assertEqual('FooBar', result)
+        self.assertEqual("FooBar", result)
 
 
 class TestTemplate(unittest.TestCase):
-
     def setUp(self):
         self.template = utils.Template()
-        self.destination = 'foo.txt'
+        self.destination = "foo.txt"
 
     def tearDown(self):
         if os.path.exists(self.destination):
@@ -298,58 +295,63 @@ class TestTemplate(unittest.TestCase):
         pass
 
     def test_render_renders_template(self):
-        self.template.path = 'licenses'
-        self.template.template = 'bsd-2clause.j2.txt'
-        self.template.context = {'package': {'year': '2021',
-                                             'author': 'John Doe'}}
+        self.template.path = "licenses"
+        self.template.template = "bsd-2clause.j2.txt"
+        self.template.context = {
+            "package": {"year": "2021", "author": "John Doe"}
+        }
         rendered_template = self.template.render()
-        self.assertIn('Copyright (c) 2021 John Doe', rendered_template)
+        self.assertIn("Copyright (c) 2021 John Doe", rendered_template)
 
     def test_render_with_package_prefix_renders_template(self):
-        self.template.path = 'pymetacode@licenses'
-        self.template.template = 'bsd-2clause.j2.txt'
-        self.template.context = {'package': {'year': '2021',
-                                             'author': 'John Doe'}}
+        self.template.path = "pymetacode@licenses"
+        self.template.template = "bsd-2clause.j2.txt"
+        self.template.context = {
+            "package": {"year": "2021", "author": "John Doe"}
+        }
         rendered_template = self.template.render()
-        self.assertIn('Copyright (c) 2021 John Doe', rendered_template)
+        self.assertIn("Copyright (c) 2021 John Doe", rendered_template)
 
     def test_render_adds_rst_header_markup_to_context(self):
-        self.template.path = 'licenses'
-        self.template.template = 'bsd-2clause.j2.txt'
-        self.template.context = {'package': {'year': '2021',
-                                             'author': 'John Doe',
-                                             'name': 'foo'}}
+        self.template.path = "licenses"
+        self.template.template = "bsd-2clause.j2.txt"
+        self.template.context = {
+            "package": {"year": "2021", "author": "John Doe", "name": "foo"}
+        }
         self.template.render()
-        self.assertIn('rst_markup', self.template.context.keys())
+        self.assertIn("rst_markup", self.template.context.keys())
 
     def test_create_creates_file_at_destination(self):
-        self.template.path = 'licenses'
-        self.template.template = 'bsd-2clause.j2.txt'
-        self.template.context = {'package': {'year': '2021',
-                                             'author': 'John Doe'}}
+        self.template.path = "licenses"
+        self.template.template = "bsd-2clause.j2.txt"
+        self.template.context = {
+            "package": {"year": "2021", "author": "John Doe"}
+        }
         self.template.destination = self.destination
         self.template.create()
         self.assertTrue(os.path.exists(self.destination))
 
     def test_create_fills_destination(self):
-        self.template.path = 'licenses'
-        self.template.template = 'bsd-2clause.j2.txt'
-        self.template.context = {'package': {'year': '2021',
-                                             'author': 'John Doe'}}
+        self.template.path = "licenses"
+        self.template.template = "bsd-2clause.j2.txt"
+        self.template.context = {
+            "package": {"year": "2021", "author": "John Doe"}
+        }
         self.template.destination = self.destination
         self.template.create()
         with open(self.destination) as file:
             content = file.read()
-        self.assertIn('Copyright (c) 2021 John Doe', content)
+        self.assertIn("Copyright (c) 2021 John Doe", content)
 
     def test_append_appends_template_content_to_destination(self):
-        test_content = 'foo bar bla blub\n\n'
-        with open(self.destination, 'w+') as file:
+        test_content = "foo bar bla blub\n\n"
+        with open(self.destination, "w+") as file:
             file.write(test_content)
-        self.template.path = 'licenses'
-        self.template.template = 'bsd-2clause.j2.txt'
-        self.template.context = {'package': {'year': '2021',
-                                             'author': 'John Doe'}}
+        self.template.path = "licenses"
+        self.template.template = "bsd-2clause.j2.txt"
+        self.template.context = {
+            "package": {"year": "2021", "author": "John Doe"}
+        }
         self.template.destination = self.destination
         self.template.append()
         with open(self.destination) as file:
@@ -357,67 +359,65 @@ class TestTemplate(unittest.TestCase):
         self.assertIn(test_content, content)
 
     def test_append_appends_parsed_template_to_destination(self):
-        test_content = 'foo bar bla blub\n\n'
-        with open(self.destination, 'w+') as file:
+        test_content = "foo bar bla blub\n\n"
+        with open(self.destination, "w+") as file:
             file.write(test_content)
-        self.template.path = 'licenses'
-        self.template.template = 'bsd-2clause.j2.txt'
-        self.template.context = {'package': {'year': '2021',
-                                             'author': 'John Doe'}}
+        self.template.path = "licenses"
+        self.template.template = "bsd-2clause.j2.txt"
+        self.template.context = {
+            "package": {"year": "2021", "author": "John Doe"}
+        }
         self.template.destination = self.destination
         self.template.append()
         with open(self.destination) as file:
             content = file.read()
-        self.assertIn('Copyright (c) 2021 John Doe', content)
+        self.assertIn("Copyright (c) 2021 John Doe", content)
 
     def test_create_with_properties_set_on_instantiation(self):
         template = utils.Template(
-            path='licenses',
-            template='bsd-2clause.j2.txt',
-            context={'package': {'year': '2021', 'author': 'John Doe'}},
-            destination=self.destination
+            path="licenses",
+            template="bsd-2clause.j2.txt",
+            context={"package": {"year": "2021", "author": "John Doe"}},
+            destination=self.destination,
         )
         template.create()
         with open(self.destination) as file:
             content = file.read()
-        self.assertIn('Copyright (c) 2021 John Doe', content)
+        self.assertIn("Copyright (c) 2021 John Doe", content)
 
 
 class TestPackageVersionFromFile(unittest.TestCase):
-
     def test_package_version_from_file_returns_version(self):
-        with utils.change_working_dir('..'):
+        with utils.change_working_dir(".."):
             result = utils.package_version_from_file()
-        with open(os.path.join('..', 'VERSION')) as file:
+        with open(os.path.join("..", "VERSION")) as file:
             version = file.read()
         self.assertEqual(version, result)
 
 
 class TestMakeExecutable(unittest.TestCase):
-
     def setUp(self):
-        self.filename = 'foo.txt'
+        self.filename = "foo.txt"
 
     def tearDown(self):
         if os.path.exists(self.filename):
             os.remove(self.filename)
 
     def test_set_executable_makes_file_executable(self):
-        with open(self.filename, 'w+', encoding='utf8') as file:
-            file.write('')
+        with open(self.filename, "w+", encoding="utf8") as file:
+            file.write("")
         utils.make_executable(self.filename)
         self.assertTrue(os.access(self.filename, os.X_OK))
 
 
 class TestAddToToctree(unittest.TestCase):
-
     def setUp(self):
-        self.filename = 'test.rst'
+        self.filename = "test.rst"
         self.content = [
-            '.. toctree::',
-            '    :maxdepth: 1',
-            '',
-            'additional text',
+            ".. toctree::",
+            "    :maxdepth: 1",
+            "",
+            "additional text",
         ]
 
     def tearDown(self):
@@ -425,47 +425,47 @@ class TestAddToToctree(unittest.TestCase):
             os.remove(self.filename)
 
     def write_file(self):
-        with open(self.filename, 'w+', encoding='utf8') as file:
+        with open(self.filename, "w+", encoding="utf8") as file:
             for line in self.content:
-                file.write(line + '\n')
+                file.write(line + "\n")
 
     def get_file_contents(self):
-        with open(self.filename, 'r', encoding='utf8') as file:
+        with open(self.filename, "r", encoding="utf8") as file:
             content = file.read()
         return content
 
     def test_add_to_toctree_adds_line(self):
         self.write_file()
-        utils.add_to_toctree(filename=self.filename, entries=['foo'])
-        self.assertIn('foo', self.get_file_contents())
+        utils.add_to_toctree(filename=self.filename, entries=["foo"])
+        self.assertIn("foo", self.get_file_contents())
 
     def test_add_to_toctree_adds_line_in_actual_toctree(self):
         self.write_file()
-        utils.add_to_toctree(filename=self.filename, entries=['foo'])
+        utils.add_to_toctree(filename=self.filename, entries=["foo"])
         self.assertLess(
-            self.get_file_contents().index('foo'),
-            self.get_file_contents().index('additional')
+            self.get_file_contents().index("foo"),
+            self.get_file_contents().index("additional"),
         )
 
     def test_add_to_toctree_adds_empty_line_after_toctree(self):
         self.write_file()
-        utils.add_to_toctree(filename=self.filename, entries=['foo'])
-        file_contents = self.get_file_contents().split('\n')
-        index = file_contents.index('additional text') - 1
+        utils.add_to_toctree(filename=self.filename, entries=["foo"])
+        file_contents = self.get_file_contents().split("\n")
+        index = file_contents.index("additional text") - 1
         self.assertFalse(file_contents[index])
 
     def test_add_to_toctree_with_trailing_whitespace(self):
-        self.content[0] = '.. toctree:: '
+        self.content[0] = ".. toctree:: "
         self.write_file()
-        utils.add_to_toctree(filename=self.filename, entries=['foo'])
+        utils.add_to_toctree(filename=self.filename, entries=["foo"])
         self.assertLess(
-            self.get_file_contents().index('foo'),
-            self.get_file_contents().index('additional')
+            self.get_file_contents().index("foo"),
+            self.get_file_contents().index("additional"),
         )
 
     def test_add_to_toctree_adds_multiple_lines(self):
         self.write_file()
-        entries = ['foo', 'bar']
+        entries = ["foo", "bar"]
         utils.add_to_toctree(filename=self.filename, entries=entries)
         for entry in entries:
             with self.subTest(entry=entry):
@@ -473,39 +473,47 @@ class TestAddToToctree(unittest.TestCase):
 
     def test_add_to_toctree_adds_line_at_the_bottom_of_the_toctree(self):
         self.write_file()
-        utils.add_to_toctree(filename=self.filename, entries=['foo'])
-        utils.add_to_toctree(filename=self.filename, entries=['bar'])
-        file_contents = self.get_file_contents().split('\n')
-        self.assertGreater(file_contents.index('    bar'),
-                           file_contents.index('    foo'))
+        utils.add_to_toctree(filename=self.filename, entries=["foo"])
+        utils.add_to_toctree(filename=self.filename, entries=["bar"])
+        file_contents = self.get_file_contents().split("\n")
+        self.assertGreater(
+            file_contents.index("    bar"), file_contents.index("    foo")
+        )
 
     def test_add_to_toctree_sorts_entries_if_told_so(self):
         self.write_file()
-        entries = ['foo', 'bar']
-        utils.add_to_toctree(filename=self.filename, entries=entries,
-                             sort=True)
-        file_contents = self.get_file_contents().split('\n')
-        self.assertLess(file_contents.index('    bar'),
-                        file_contents.index('    foo'))
+        entries = ["foo", "bar"]
+        utils.add_to_toctree(
+            filename=self.filename, entries=entries, sort=True
+        )
+        file_contents = self.get_file_contents().split("\n")
+        self.assertLess(
+            file_contents.index("    bar"), file_contents.index("    foo")
+        )
 
     def test_add_to_toctree_sorts_all_entries(self):
         self.write_file()
-        entries = ['foo', 'bar']
-        utils.add_to_toctree(filename=self.filename, entries=['bla'])
-        utils.add_to_toctree(filename=self.filename, entries=entries,
-                             sort=True)
-        file_contents = self.get_file_contents().split('\n')
-        self.assertLess(file_contents.index('    bar'),
-                        file_contents.index('    bla'))
-        self.assertLess(file_contents.index('    bla'),
-                        file_contents.index('    foo'))
+        entries = ["foo", "bar"]
+        utils.add_to_toctree(filename=self.filename, entries=["bla"])
+        utils.add_to_toctree(
+            filename=self.filename, entries=entries, sort=True
+        )
+        file_contents = self.get_file_contents().split("\n")
+        self.assertLess(
+            file_contents.index("    bar"), file_contents.index("    bla")
+        )
+        self.assertLess(
+            file_contents.index("    bla"), file_contents.index("    foo")
+        )
 
     def test_add_to_toctree_appearing_after_string_in_file(self):
         content = self.content
-        self.content = content + ['', 'Lorem ipsum', ''] + content
+        self.content = content + ["", "Lorem ipsum", ""] + content
         self.write_file()
-        utils.add_to_toctree(filename=self.filename, entries=['bla'],
-                             after='Lorem')
-        file_contents = self.get_file_contents().split('\n')
-        self.assertGreater(file_contents.index('    bla'),
-                           file_contents.index('Lorem ipsum'))
+        utils.add_to_toctree(
+            filename=self.filename, entries=["bla"], after="Lorem"
+        )
+        file_contents = self.get_file_contents().split("\n")
+        self.assertGreater(
+            file_contents.index("    bla"), file_contents.index("Lorem ipsum")
+        )

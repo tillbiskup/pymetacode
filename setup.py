@@ -9,27 +9,27 @@ def read(fname):
 
 
 setuptools.setup(
-    name='pymetacode',
-    version=read('VERSION').strip(),
-    description='A Python package helping to write and maintain Python '
-                'packages.',
-    long_description=read('README.rst'),
+    name="pymetacode",
+    version=read("VERSION").strip(),
+    description="A Python package helping to write and maintain Python "
+    "packages.",
+    long_description=read("README.rst"),
     long_description_content_type="text/x-rst",
-    author='Till Biskup',
-    author_email='till@till-biskup.de',
-    url='https://www.meta-co.de/',
+    author="Till Biskup",
+    author_email="till@till-biskup.de",
+    url="https://www.meta-co.de/",
     project_urls={
-        "Documentation": 'https://python.docs.meta-co.de/',
-        "Source": 'https://github.com/tillbiskup/pymetacode',
+        "Documentation": "https://python.docs.meta-co.de/",
+        "Source": "https://github.com/tillbiskup/pymetacode",
     },
-    packages=setuptools.find_packages(exclude=('tests', 'docs')),
-    license='BSD',
+    packages=setuptools.find_packages(exclude=("tests", "docs")),
+    license="BSD",
     keywords=[
         "metaprogramming",
         "Python packages",
         "automation",
         "code generation",
-        ],
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
@@ -48,16 +48,16 @@ setuptools.setup(
         "jinja2",
         "pyyaml",
         "platformdirs",
-        ],
+    ],
     extras_require={
-        'dev': ['prospector', 'pyroma', 'bandit'],
-        'docs': ['sphinx', 'sphinx-rtd-theme', 'sphinx-multiversion'],
-        'deployment': ['wheel', 'twine'],
+        "dev": ["prospector", "pyroma", "bandit"],
+        "docs": ["sphinx", "sphinx-rtd-theme", "sphinx-multiversion"],
+        "deployment": ["wheel", "twine"],
     },
-    python_requires='>=3.7',
+    python_requires=">=3.7",
     entry_points={
-        'console_scripts': [
-            'pymeta = pymetacode.cli:cli',
+        "console_scripts": [
+            "pymeta = pymetacode.cli:cli",
         ],
     },
     include_package_data=True,
