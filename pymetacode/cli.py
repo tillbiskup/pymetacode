@@ -285,6 +285,13 @@ class Cli:
         creator.create()
         logger.info("Added %s to GUI", creator.name)
 
+    def _command_add_subpackage(self, conf):
+        creator = coding.SubpackageCreator()
+        creator.name = self.options[1]
+        creator.configuration = conf
+        creator.create()
+        logger.info('Added subpackage "%s"', creator.name)
+
     def _command_help(self):
         if not self.options:
             self._print_help()
