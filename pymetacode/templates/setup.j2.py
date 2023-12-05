@@ -9,20 +9,20 @@ def read(filename):
 
 
 setuptools.setup(
-    name='{{ package.name }}',
-    version=read('VERSION').strip(),
-    description='{{ package.description }}',
-    long_description=read('README.rst'),
+    name="{{ package.name }}",
+    version=read("VERSION").strip(),
+    description="{{ package.description }}",
+    long_description=read("README.rst"),
     long_description_content_type="text/x-rst",
-    author='{{ package.author }}',
-    author_email='{{ package.author_email }}',
-    url='{{ package.urls.main }}',
+    author="{{ package.author }}",
+    author_email="{{ package.author_email }}",
+    url="{{ package.urls.main }}",
     project_urls={
-        "Documentation": '{{ package.urls.documentation }}',
-        "Source": '{{ package.urls.source }}',
+        "Documentation": "{{ package.urls.documentation }}",
+        "Source": "{{ package.urls.source }}",
     },
-    packages=setuptools.find_packages(exclude=('tests', 'docs')),
-    license='BSD',
+    packages=setuptools.find_packages(exclude=("tests", "docs")),
+    license="BSD",
     keywords=[
         {%- if package.keywords %}
         {%- for item in package.keywords %}
@@ -62,19 +62,19 @@ setuptools.setup(
         {%- endif %}
     ],
     extras_require={
-        'dev': [
-            'prospector',
-            'pyroma',
-            'bandit',
-            'black',
-            'pymetacode',
+        "dev": [
+            "prospector",
+            "pyroma",
+            "bandit",
+            "black",
+            "pymetacode",
         ],
-        'docs': [
-            'sphinx',
-            'sphinx-rtd-theme',
-            'sphinx_multiversion',
+        "docs": [
+            "sphinx",
+            "sphinx-rtd-theme",
+            "sphinx_multiversion",
         ],
     },
-    python_requires='>=3.7',
+    python_requires=">=3.7",
     include_package_data=True,
 )
