@@ -753,6 +753,7 @@ class TestFunctionCreator(unittest.TestCase):
         self.package = "bar"
         self.module = "foo"
         self.name = "foo_bar"
+        self.subpackage = ""
         self.configuration = pymetacode.configuration.Configuration()
         self.configuration.package["name"] = self.package
         self.creator.configuration = self.configuration
@@ -772,9 +773,15 @@ class TestFunctionCreator(unittest.TestCase):
         os.mkdir("tests")
         os.makedirs(os.path.join("docs", "api"))
 
-    def create_module(self):
+    def create_module(self, module=""):
         creator = coding.ModuleCreator()
-        creator.name = self.module
+        creator.name = module or self.module
+        creator.configuration = self.configuration
+        creator.create()
+
+    def create_subpackage(self):
+        creator = coding.SubpackageCreator()
+        creator.name = self.subpackage
         creator.configuration = self.configuration
         creator.create()
 
@@ -839,6 +846,37 @@ class TestFunctionCreator(unittest.TestCase):
                 f"Function {self.name} exists already in " f"{self.module}.",
                 str(w[0].message),
             )
+
+    def test_create_with_subpackage_creates_function_in_module(self):
+        self.subpackage = "foobar"
+        self.create_subpackage()
+        self.create_module(module=".".join([self.subpackage, self.module]))
+        self.creator.create(
+            name=self.name, module=".".join([self.subpackage, self.module])
+        )
+        path = os.path.join(
+            self.package, self.subpackage, self.module + ".py"
+        )
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn('def {}():\n    """'.format(self.name), contents)
+
+    def test_create_with_subpackage_creates_test_class_in_test_module(self):
+        self.subpackage = "foobar"
+        self.create_subpackage()
+        self.create_module(module=".".join([self.subpackage, self.module]))
+        self.creator.create(
+            name=self.name, module=".".join([self.subpackage, self.module])
+        )
+        path = os.path.join(
+            "tests", self.subpackage, "test_{}.py".format(self.module)
+        )
+        with open(path) as file:
+            contents = file.read()
+        camel = utils.underscore_to_camel_case(self.name)
+        self.assertIn(
+            "class Test{}(unittest.TestCase):".format(camel), contents
+        )
 
 
 class TestGuiCreator(unittest.TestCase):

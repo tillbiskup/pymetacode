@@ -23,12 +23,6 @@ For version 0.5
 
     * separation of models and views
 
-* Add subpackage command
-
-  * Helpful for organising packages
-  * ``pymeta add subpackage <name>``
-  * Needs changes in ``add`` command, dealing with subpackages (dot notation: ``pymeta add class|function foo to bar.baz``)
-
 * Update command (*e.g.*, for configuration, setup.py)
 
   * Configuration: useful when newer versions of pymetacode change the structure of the configuration file.

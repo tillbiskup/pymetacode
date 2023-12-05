@@ -21,6 +21,8 @@ New features
 * GUI code based on package qtbricks
 * Creating/adding subpackages
 
+  * Adding modules, classes, and functions to subpackages using dot notation separating subpackage and module: mysubpackage.mymodule
+
 
 Changes
 -------

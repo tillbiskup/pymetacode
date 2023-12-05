@@ -576,6 +576,14 @@ class ClassCreator:
     module : :class:`str`
         Name of the module the class should be added to
 
+    subpackage : :class:`str`
+        Name of the subpackage (if any).
+
+        If the name of a module contains a dot, the part before the dot is
+        interpreted as subpackage.
+
+        If the subpackage does not exist, an exception is raised.
+
     configuration : :class:`pymetacode.configuration.Configuration`
         Configuration as usually read from the configuration file.
 
@@ -735,6 +743,14 @@ class FunctionCreator:
     module : :class:`str`
         Name of the module the function should be added to
 
+    subpackage : :class:`str`
+        Name of the subpackage (if any).
+
+        If the name of a module contains a dot, the part before the dot is
+        interpreted as subpackage.
+
+        If the subpackage does not exist, an exception is raised.
+
     configuration : :class:`pymetacode.configuration.Configuration`
         Configuration as usually read from the configuration file.
 
@@ -764,11 +780,27 @@ class FunctionCreator:
     will come with a basic docstring, and the test class with a
     minimalistic first test that gets you started with writing further tests.
 
+    Suppose you have a subpackage "mysubpackage" and would want to add
+    a function to a module of this subpackage. In this case, simply use the
+    familiar dot notation for separating subpackage and module:
+
+    .. code-block:: bash
+
+        pymeta add function my_function to mysubpackage.mymodule
+
+    This will add the function "my_function" to the module "mymodule" in the
+    subpackage "mysubpackage", together with a test class in the
+    "test_mymodule" module in the respective "mysubpackage" directory. The
+    function will come with a basic docstring, and the test class with a
+    minimalistic setup and first test that gets you started with writing
+    further tests.
+
     """
 
     def __init__(self):
         self.name = ""
         self.module = ""
+        self.subpackage = ""
         self.configuration = configuration.Configuration()
         self._module_filename = ""
         self._package_version = ""
@@ -808,8 +840,12 @@ class FunctionCreator:
             self.module = module
         elif not self.module:
             raise ValueError("Module name missing")
+        if "." in self.module:
+            self.subpackage, self.module = self.module.split(".")
         package = self.configuration.package["name"]
-        self._module_filename = os.path.join(package, f"{self.module}.py")
+        self._module_filename = os.path.join(
+            package, self.subpackage, f"{self.module}.py"
+        )
         if not os.path.exists(self._module_filename):
             raise ValueError(f"Module {self.module} does not exist")
         if not self._package_version:
@@ -840,7 +876,9 @@ class FunctionCreator:
             "name_camelcase": utils.underscore_to_camel_case(self.name),
         }
         context["module"] = {"name": self.module}
-        filename = os.path.join("tests", f"test_{self.module}.py")
+        filename = os.path.join(
+            "tests", self.subpackage, f"test_{self.module}.py"
+        )
         template = utils.Template(
             path="code",
             template="test_function.j2.py",
