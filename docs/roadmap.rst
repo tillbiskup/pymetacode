@@ -10,6 +10,9 @@ For version 0.5
 
 * GUI code
 
+  * Refactor to use SubpackageCreator for gui subpackage
+  * Update documentation to reflect transition to qtbricks (and no ui files)
+
   * additional subcommands for non-windows (dialogs, widgets)
 
     * ``pymeta add dialog``
@@ -23,6 +26,14 @@ For version 0.5
 
     * separation of models and views
 
+* Using black for code style
+
+  * Add git hook (pre-commit) coping with modifying staged files
+
+
+For version 0.6
+===============
+
 * Update command (*e.g.*, for configuration, setup.py)
 
   * Configuration: useful when newer versions of pymetacode change the structure of the configuration file.
@@ -30,10 +41,6 @@ For version 0.5
 * CITATION.cff template?
 
   * Would possibly need much more information in .package_config.yaml
-
-* Using black for code style?
-
-  * If used, should go into git hook (pre-commit?)
 
 * Command for copying templates to user-specific/site-wide directory
 
