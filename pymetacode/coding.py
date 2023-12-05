@@ -408,7 +408,7 @@ class ModuleCreator:
     "test_mymodule" module in the "tests" subdirectory. And even better,
     the API documentation will be updated as well for you.
 
-    Suppose you would have a subpackage mysubpackage and would want to add
+    Suppose you would have a subpackage "mysubpackage" and would want to add
     a module to this subpackage. In this case, simply use the familiar dot
     notation for separating subpackage and module:
 
@@ -605,6 +605,21 @@ class ClassCreator:
     with a basic docstring, and the test class with a minimalistic setup
     and first test (for implementation of the class) that gets you started
     with writing further tests.
+
+    Suppose you have a subpackage "mysubpackage" and would want to add
+    a class to a module of this subpackage. In this case, simply use the
+    familiar dot notation for separating subpackage and module:
+
+    .. code-block:: bash
+
+        pymeta add class MyClass to mysubpackage.mymodule
+
+    This will add the class "MyClass" to the module "mymodule" in the
+    subpackage "mysubpackage", together with a test class in the
+    "test_mymodule" module in the respective "mysubpackage" directory. The
+    class will come with a basic docstring, and the test class with a
+    minimalistic setup and first test (for implementation of the class)
+    that gets you started with writing further tests.
 
     """
 
