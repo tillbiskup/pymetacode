@@ -611,6 +611,7 @@ class ClassCreator:
     def __init__(self):
         self.name = ""
         self.module = ""
+        self.subpackage = ""
         self.configuration = configuration.Configuration()
         self._module_filename = ""
         self._package_version = ""
@@ -651,7 +652,11 @@ class ClassCreator:
         elif not self.module:
             raise ValueError("Module name missing")
         package = self.configuration.package["name"]
-        self._module_filename = os.path.join(package, f"{self.module}.py")
+        if "." in self.module:
+            self.subpackage, self.module = self.module.split(".")
+        self._module_filename = os.path.join(
+            package, self.subpackage, f"{self.module}.py"
+        )
         if not os.path.exists(self._module_filename):
             raise ValueError(f"Module {self.module} does not exist")
         if not self._package_version:
@@ -682,7 +687,9 @@ class ClassCreator:
             "instance": utils.camel_case_to_underscore(self.name),
         }
         context["module"] = {"name": self.module}
-        filename = os.path.join("tests", f"test_{self.module}.py")
+        filename = os.path.join(
+            "tests", self.subpackage, f"test_{self.module}.py"
+        )
         template = utils.Template(
             path="code",
             template="test_class.j2.py",
