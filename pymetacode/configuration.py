@@ -19,8 +19,8 @@ from pymetacode import utils
 
 
 LICENSES = (
-    'BSD',
-    'GPLv3',
+    "BSD",
+    "GPLv3",
 )
 
 
@@ -85,34 +85,34 @@ class Configuration(utils.ToDictMixin):
     def __init__(self):
         super().__init__()
         self.package = {
-            'name': '',
-            'author': '',
-            'author_email': '',
-            'year': datetime.date.strftime(datetime.date.today(), '%Y'),
-            'description': '',
-            'urls': {
-                'main': '',
-                'documentation': '',
-                'source': '',
+            "name": "",
+            "author": "",
+            "author_email": "",
+            "year": datetime.date.strftime(datetime.date.today(), "%Y"),
+            "description": "",
+            "urls": {
+                "main": "",
+                "documentation": "",
+                "source": "",
             },
-            'keywords': [],
-            'install_requires': [],
-            'license': 'BSD',
+            "keywords": [],
+            "install_requires": [],
+            "license": "BSD",
         }
         self.documentation = {
-            'logo': '',
-            'favicon': '',
-            'language': 'en',
+            "logo": "",
+            "favicon": "",
+            "language": "en",
         }
         self.options = {
-            'logging': False,
-            'git': False,
-            'gui': False,
+            "logging": False,
+            "git": False,
+            "gui": False,
         }
         self.gui = {
-            'splash': True,
-            'organisation': '',
-            'domain': '',
+            "splash": True,
+            "organisation": "",
+            "domain": "",
         }
 
     def to_dict(self):
@@ -159,7 +159,7 @@ class Configuration(utils.ToDictMixin):
                     setattr(self, key, value)
         self._check_values()
 
-    def to_file(self, name=''):
+    def to_file(self, name=""):
         """
         Write to YAML file.
 
@@ -169,10 +169,10 @@ class Configuration(utils.ToDictMixin):
             Name of the YAML file to write to.
 
         """
-        with open(name, 'w+', encoding='utf8') as file:
+        with open(name, "w+", encoding="utf8") as file:
             yaml.dump(self.to_dict(), file, sort_keys=False)
 
-    def from_file(self, name=''):
+    def from_file(self, name=""):
         """
         Read from YAML file.
 
@@ -182,11 +182,13 @@ class Configuration(utils.ToDictMixin):
             Name of the YAML file to read from.
 
         """
-        with open(name, 'r', encoding='utf8') as file:
+        with open(name, "r", encoding="utf8") as file:
             dict_ = yaml.load(file, Loader=yaml.SafeLoader)
         self.from_dict(dict_)
 
     def _check_values(self):
-        if 'license' in self.package \
-                and self.package['license'] not in LICENSES:
+        if (
+            "license" in self.package
+            and self.package["license"] not in LICENSES
+        ):
             raise ValueError

@@ -39,8 +39,8 @@ import warnings
 from pymetacode import configuration, utils
 
 LICENSES = {
-    'BSD': 'bsd-2clause.j2.txt',
-    'GPLv3': 'gpl-v3-boilerplate.j2.txt',
+    "BSD": "bsd-2clause.j2.txt",
+    "GPLv3": "gpl-v3-boilerplate.j2.txt",
 }
 
 
@@ -112,18 +112,26 @@ class PackageCreator:
     """
 
     def __init__(self):
-        self.name = ''
+        self.name = ""
         self.subdirectories = [
-            'tests',
-            os.path.join('docs', 'api'),
-            'bin']
+            "tests",
+            os.path.join("docs", "api"),
+            "bin",
+        ]
         self.configuration = configuration.Configuration()
         self.documentation = {
-            'pages': ['audience', 'changelog', 'developers', 'installing',
-                      'people', 'roadmap', 'usecases']
+            "pages": [
+                "audience",
+                "changelog",
+                "developers",
+                "installing",
+                "people",
+                "roadmap",
+                "usecases",
+            ]
         }
 
-    def create(self, name=''):
+    def create(self, name=""):
         """
         Generate the basic package structure.
 
@@ -160,82 +168,85 @@ class PackageCreator:
             self._create_directory(name=os.path.join(self.name, directory))
 
     @staticmethod
-    def _create_directory(name=''):
+    def _create_directory(name=""):
         if os.path.exists(name):
             warnings.warn("Directory '" + name + "' exists already.")
         else:
             os.makedirs(name)
 
     def _create_init_files(self):
-        for directory in [self.name, 'tests']:
-            init_filename = os.path.join(self.name, directory, '__init__.py')
+        for directory in [self.name, "tests"]:
+            init_filename = os.path.join(self.name, directory, "__init__.py")
             utils.ensure_file_exists(init_filename)
 
     def _create_gitignore(self):
-        contents = utils.get_package_data('gitignore')
-        with open(os.path.join(self.name, '.gitignore'), 'w+',
-                  encoding='utf8') as file:
+        contents = utils.get_package_data("gitignore")
+        with open(
+            os.path.join(self.name, ".gitignore"), "w+", encoding="utf8"
+        ) as file:
             file.write(contents)
 
     def _create_prospector_profile(self):
-        contents = utils.get_package_data('prospector.yaml')
-        with open(os.path.join(self.name, '.prospector.yaml'), 'w+',
-                  encoding='utf8') as file:
+        contents = utils.get_package_data("prospector.yaml")
+        with open(
+            os.path.join(self.name, ".prospector.yaml"), "w+", encoding="utf8"
+        ) as file:
             file.write(contents)
 
     def _create_manifest_file(self):
         template = utils.Template(
-            path='',
-            template='MANIFEST.j2.in',
+            path="",
+            template="MANIFEST.j2.in",
             context=self.configuration.to_dict(),
-            destination=os.path.join(self.name, 'MANIFEST.in'),
+            destination=os.path.join(self.name, "MANIFEST.in"),
         )
         template.create()
 
     def _create_version_file(self):
-        with open(os.path.join(self.name, 'VERSION'), 'w+', encoding='utf8') \
-                as file:
-            file.write('0.1.0.dev0\n')
+        with open(
+            os.path.join(self.name, "VERSION"), "w+", encoding="utf8"
+        ) as file:
+            file.write("0.1.0.dev0\n")
 
     def _create_license_file(self):
         template = utils.Template(
-            path='licenses',
-            template=LICENSES[self.configuration.package['license']],
+            path="licenses",
+            template=LICENSES[self.configuration.package["license"]],
             context=self.configuration.to_dict(),
-            destination=os.path.join(self.name, 'LICENSE'),
+            destination=os.path.join(self.name, "LICENSE"),
         )
         template.create()
-        if self.configuration.package['license'] == 'GPLv3':
+        if self.configuration.package["license"] == "GPLv3":
             template = utils.Template(
-                path='licenses',
-                template='gpl-v3.txt',
+                path="licenses",
+                template="gpl-v3.txt",
                 context=self.configuration.to_dict(),
-                destination=os.path.join(self.name, 'COPYING'),
+                destination=os.path.join(self.name, "COPYING"),
             )
             template.create()
 
     def _create_setup_py_file(self):
         template = utils.Template(
-            path='',
-            template='setup.j2.py',
+            path="",
+            template="setup.j2.py",
             context=self.configuration.to_dict(),
-            destination=os.path.join(self.name, 'setup.py'),
+            destination=os.path.join(self.name, "setup.py"),
         )
         template.create()
 
     def _create_readme_file(self):
         template = utils.Template(
-            path='',
-            template='README.j2.rst',
+            path="",
+            template="README.j2.rst",
             context=self.configuration.to_dict(),
-            destination=os.path.join(self.name, 'README.rst'),
+            destination=os.path.join(self.name, "README.rst"),
         )
         template.create()
 
     def _create_version_updater_file(self):
-        contents = utils.get_package_data('incrementVersion.sh')
-        destination = os.path.join(self.name, 'bin', 'incrementVersion.sh')
-        with open(destination, 'w+', encoding='utf8') as file:
+        contents = utils.get_package_data("incrementVersion.sh")
+        destination = os.path.join(self.name, "bin", "incrementVersion.sh")
+        with open(destination, "w+", encoding="utf8") as file:
             file.write(contents)
         os.chmod(destination, os.stat(destination).st_mode | stat.S_IXUSR)
 
@@ -248,84 +259,83 @@ class PackageCreator:
         self._create_documentation_multiversion_templates()
 
     def _create_documentation_generator_files(self):
-        make_files = ['make.bat', 'Makefile']
+        make_files = ["make.bat", "Makefile"]
         for file in make_files:
-            contents = \
-                utils.get_package_data('/'.join(['docs', file]))
-            destination = os.path.join(self.name, 'docs', file)
-            with open(destination, 'w+', encoding='utf8') as doc_file:
+            contents = utils.get_package_data("/".join(["docs", file]))
+            destination = os.path.join(self.name, "docs", file)
+            with open(destination, "w+", encoding="utf8") as doc_file:
                 doc_file.write(contents)
 
     def _create_documentation_index(self):
         template = utils.Template(
-            path='docs',
-            template='index.j2.rst',
+            path="docs",
+            template="index.j2.rst",
             context=self.configuration.to_dict(),
-            destination=os.path.join(self.name, 'docs', 'index.rst'),
+            destination=os.path.join(self.name, "docs", "index.rst"),
         )
         template.create()
         template = utils.Template(
-            path='docs',
-            template='main-toctree.j2.rst',
+            path="docs",
+            template="main-toctree.j2.rst",
             context=self.configuration.to_dict(),
-            destination=os.path.join(self.name, 'docs', 'index.rst'),
+            destination=os.path.join(self.name, "docs", "index.rst"),
         )
         template.append()
 
     def _create_documentation_config(self):
         template = utils.Template(
-            path='docs',
-            template='conf.j2.py',
+            path="docs",
+            template="conf.j2.py",
             context=self.configuration.to_dict(),
-            destination=os.path.join(self.name, 'docs', 'conf.py'),
+            destination=os.path.join(self.name, "docs", "conf.py"),
         )
         template.create()
 
     def _create_documentation_api_index(self):
         context = self.configuration.to_dict()
-        context['package'] = {'name': self.name}
+        context["package"] = {"name": self.name}
         template = utils.Template(
-            path='docs',
-            template='api_index.j2.rst',
+            path="docs",
+            template="api_index.j2.rst",
             context=context,
-            destination=os.path.join(self.name, 'docs', 'api', 'index.rst'),
+            destination=os.path.join(self.name, "docs", "api", "index.rst"),
         )
         template.create()
 
     def _create_documentation_contents(self):
-        for name in self.documentation['pages']:
+        for name in self.documentation["pages"]:
             template = utils.Template(
-                path='docs',
-                template=f'{name}.j2.rst',
+                path="docs",
+                template=f"{name}.j2.rst",
                 context=self.configuration.to_dict(),
-                destination=os.path.join(self.name, 'docs',
-                                         f'{name}.rst'),
+                destination=os.path.join(self.name, "docs", f"{name}.rst"),
             )
             template.create()
 
     def _create_documentation_multiversion_templates(self):
-        os.mkdir(os.path.join(self.name, 'docs', '_templates'))
-        make_files = ['page.html', 'versions.html']
+        os.mkdir(os.path.join(self.name, "docs", "_templates"))
+        make_files = ["page.html", "versions.html"]
         for file in make_files:
-            contents = \
-                utils.get_package_data(
-                    '/'.join(['docs', '_templates', file]))
-            destination = os.path.join(self.name, 'docs', '_templates', file)
-            with open(destination, 'w+', encoding='utf8') as doc_file:
+            contents = utils.get_package_data(
+                "/".join(["docs", "_templates", file])
+            )
+            destination = os.path.join(self.name, "docs", "_templates", file)
+            with open(destination, "w+", encoding="utf8") as doc_file:
                 doc_file.write(contents)
 
     def _git_init(self):
-        if self.configuration.options['git']:
+        if self.configuration.options["git"]:
             subprocess.run(["git", "init"], cwd=self.name, check=False)
-            with utils.change_working_dir(os.path.join(self.name, '.git',
-                                                       'hooks')):
-                with open('pre-commit', 'w+', encoding='utf8') as file:
-                    file.write('#!/bin/sh\n')
-                    file.write('./bin/incrementVersion.sh\n')
-                utils.make_executable('pre-commit')
+            with utils.change_working_dir(
+                os.path.join(self.name, ".git", "hooks")
+            ):
+                with open("pre-commit", "w+", encoding="utf8") as file:
+                    file.write("#!/bin/sh\n")
+                    file.write("./bin/incrementVersion.sh\n")
+                utils.make_executable("pre-commit")
 
     def _create_gui(self):
-        if self.configuration.options['gui']:
+        if self.configuration.options["gui"]:
             with utils.change_working_dir(self.name):
                 gui = GuiCreator()
                 gui.configuration = self.configuration
@@ -380,10 +390,10 @@ class ModuleCreator:
     """
 
     def __init__(self):
-        self.name = ''
+        self.name = ""
         self.configuration = configuration.Configuration()
 
-    def create(self, name=''):
+    def create(self, name=""):
         """
         Add a module to an existing package.
 
@@ -406,62 +416,64 @@ class ModuleCreator:
         self._add_api_documentation_to_toctree()
 
     def _create_module(self):
-        filename = os.path.join(self.configuration.package['name'],
-                                self.name + '.py')
+        filename = os.path.join(
+            self.configuration.package["name"], self.name + ".py"
+        )
         if os.path.exists(filename):
             warnings.warn(f"Module '{filename}' exists already")
             return
         context = self.configuration.to_dict()
-        context['module'] = {'name': self.name}
+        context["module"] = {"name": self.name}
         template = utils.Template(
-            path='code',
-            template='module.j2.py',
+            path="code",
+            template="module.j2.py",
             context=context,
             destination=filename,
         )
         template.create()
 
     def _create_test_module(self):
-        filename = os.path.join('tests', f'test_{self.name}.py')
+        filename = os.path.join("tests", f"test_{self.name}.py")
         if os.path.exists(filename):
             warnings.warn(f"Module '{filename}' exists already")
             return
         context = self.configuration.to_dict()
-        context['module'] = {'name': self.name}
+        context["module"] = {"name": self.name}
         template = utils.Template(
-            path='code',
-            template='test_module.j2.py',
+            path="code",
+            template="test_module.j2.py",
             context=context,
             destination=filename,
         )
         template.create()
 
     def _create_api_documentation(self):
-        package = self.configuration.package['name']
-        filename = os.path.join('docs', 'api', f'{package}.{self.name}.rst')
+        package = self.configuration.package["name"]
+        filename = os.path.join("docs", "api", f"{package}.{self.name}.rst")
         if os.path.exists(filename):
             warnings.warn(f"File '{filename}' exists already")
             return
         context = self.configuration.to_dict()
-        context['module'] = {'name': self.name}
-        context['header_extension'] = \
-            (len(package) + len(self.name) + 1) * '='
+        context["module"] = {"name": self.name}
+        context["header_extension"] = (
+            len(package) + len(self.name) + 1
+        ) * "="
         template = utils.Template(
-            path='docs',
-            template='api_module.j2.rst',
+            path="docs",
+            template="api_module.j2.rst",
             context=context,
             destination=filename,
         )
         template.create()
 
     def _add_api_documentation_to_toctree(self):
-        index_filename = os.path.join('docs', 'api', 'index.rst')
+        index_filename = os.path.join("docs", "api", "index.rst")
         if not os.path.exists(index_filename):
             return
-        package = self.configuration.package['name']
+        package = self.configuration.package["name"]
         utils.add_to_toctree(
             filename=index_filename,
-            entries=[f'{package}.{self.name}'],
+            entries=[f"{package}.{self.name}"],
             sort=True,
         )
 
@@ -520,13 +532,13 @@ class ClassCreator:
     """
 
     def __init__(self):
-        self.name = ''
-        self.module = ''
+        self.name = ""
+        self.module = ""
         self.configuration = configuration.Configuration()
-        self._module_filename = ''
-        self._package_version = ''
+        self._module_filename = ""
+        self._package_version = ""
 
-    def create(self, name='', module=''):
+    def create(self, name="", module=""):
         """
         Create actual code stub for the class.
 
@@ -546,7 +558,7 @@ class ClassCreator:
         """
         self._check_prerequisites(module, name)
         if self._class_exists_in_module():
-            msg = f'Class {self.name} exists already in {self.module}.'
+            msg = f"Class {self.name} exists already in {self.module}."
             warnings.warn(msg)
             return
         self._create_class()
@@ -556,32 +568,31 @@ class ClassCreator:
         if name:
             self.name = name
         elif not self.name:
-            raise ValueError('Class name missing')
+            raise ValueError("Class name missing")
         if module:
             self.module = module
         elif not self.module:
-            raise ValueError('Module name missing')
-        package = self.configuration.package['name']
-        self._module_filename = os.path.join(package,
-                                             f'{self.module}.py')
+            raise ValueError("Module name missing")
+        package = self.configuration.package["name"]
+        self._module_filename = os.path.join(package, f"{self.module}.py")
         if not os.path.exists(self._module_filename):
-            raise ValueError(f'Module {self.module} does not exist')
+            raise ValueError(f"Module {self.module} does not exist")
         if not self._package_version:
             version = utils.package_version_from_file()
-            self._package_version = '.'.join(version.split('.')[0:2])
+            self._package_version = ".".join(version.split(".")[0:2])
 
     def _class_exists_in_module(self):
-        with open(self._module_filename, encoding='utf8') as file:
+        with open(self._module_filename, encoding="utf8") as file:
             contents = file.read()
-        return f'class {self.name}' in contents
+        return f"class {self.name}" in contents
 
     def _create_class(self):
         context = self.configuration.to_dict()
-        context['class'] = {'name': self.name}
-        context['package']['version'] = self._package_version
+        context["class"] = {"name": self.name}
+        context["package"]["version"] = self._package_version
         template = utils.Template(
-            path='code',
-            template='class.j2.py',
+            path="code",
+            template="class.j2.py",
             context=context,
             destination=self._module_filename,
         )
@@ -589,15 +600,15 @@ class ClassCreator:
 
     def _create_test_class(self):
         context = self.configuration.to_dict()
-        context['class'] = {
-            'name': self.name,
-            'instance': utils.camel_case_to_underscore(self.name),
+        context["class"] = {
+            "name": self.name,
+            "instance": utils.camel_case_to_underscore(self.name),
         }
-        context['module'] = {'name': self.module}
-        filename = os.path.join('tests', f'test_{self.module}.py')
+        context["module"] = {"name": self.module}
+        filename = os.path.join("tests", f"test_{self.module}.py")
         template = utils.Template(
-            path='code',
-            template='test_class.j2.py',
+            path="code",
+            template="test_class.j2.py",
             context=context,
             destination=filename,
         )
@@ -657,13 +668,13 @@ class FunctionCreator:
     """
 
     def __init__(self):
-        self.name = ''
-        self.module = ''
+        self.name = ""
+        self.module = ""
         self.configuration = configuration.Configuration()
-        self._module_filename = ''
-        self._package_version = ''
+        self._module_filename = ""
+        self._package_version = ""
 
-    def create(self, name='', module=''):
+    def create(self, name="", module=""):
         """
         Create actual code stub for the function.
 
@@ -683,7 +694,7 @@ class FunctionCreator:
         """
         self._check_prerequisites(module, name)
         if self._function_exists_in_module():
-            msg = f'Function {self.name} exists already in {self.module}.'
+            msg = f"Function {self.name} exists already in {self.module}."
             warnings.warn(msg)
             return
         self._create_function()
@@ -693,32 +704,31 @@ class FunctionCreator:
         if name:
             self.name = name
         elif not self.name:
-            raise ValueError('Function name missing')
+            raise ValueError("Function name missing")
         if module:
             self.module = module
         elif not self.module:
-            raise ValueError('Module name missing')
-        package = self.configuration.package['name']
-        self._module_filename = os.path.join(package,
-                                             f'{self.module}.py')
+            raise ValueError("Module name missing")
+        package = self.configuration.package["name"]
+        self._module_filename = os.path.join(package, f"{self.module}.py")
         if not os.path.exists(self._module_filename):
-            raise ValueError(f'Module {self.module} does not exist')
+            raise ValueError(f"Module {self.module} does not exist")
         if not self._package_version:
             version = utils.package_version_from_file()
-            self._package_version = '.'.join(version.split('.')[0:2])
+            self._package_version = ".".join(version.split(".")[0:2])
 
     def _function_exists_in_module(self):
-        with open(self._module_filename, encoding='utf8') as file:
+        with open(self._module_filename, encoding="utf8") as file:
             contents = file.read()
-        return f'def {self.name}' in contents
+        return f"def {self.name}" in contents
 
     def _create_function(self):
         context = self.configuration.to_dict()
-        context['function'] = {'name': self.name}
-        context['package']['version'] = self._package_version
+        context["function"] = {"name": self.name}
+        context["package"]["version"] = self._package_version
         template = utils.Template(
-            path='code',
-            template='function.j2.py',
+            path="code",
+            template="function.j2.py",
             context=context,
             destination=self._module_filename,
         )
@@ -726,15 +736,15 @@ class FunctionCreator:
 
     def _create_test_class(self):
         context = self.configuration.to_dict()
-        context['function'] = {
-            'name': self.name,
-            'name_camelcase': utils.underscore_to_camel_case(self.name),
+        context["function"] = {
+            "name": self.name,
+            "name_camelcase": utils.underscore_to_camel_case(self.name),
         }
-        context['module'] = {'name': self.module}
-        filename = os.path.join('tests', f'test_{self.module}.py')
+        context["module"] = {"name": self.module}
+        filename = os.path.join("tests", f"test_{self.module}.py")
         template = utils.Template(
-            path='code',
-            template='test_function.j2.py',
+            path="code",
+            template="test_function.j2.py",
             context=context,
             destination=filename,
         )
@@ -886,10 +896,10 @@ class GuiCreator:
     def __init__(self):
         self.configuration = configuration.Configuration()
         self.subdirectories = [
-            os.path.join('gui', 'images'),
-            os.path.join('gui', 'ui'),
+            os.path.join("gui", "images"),
+            os.path.join("gui", "ui"),
         ]
-        self._src_dir = ''
+        self._src_dir = ""
 
     def create(self):
         """
@@ -899,8 +909,8 @@ class GuiCreator:
         as mentioned in the :class:`GuiCreator` class documentation.
 
         """
-        self._src_dir = self.configuration.package['name']
-        if os.path.exists(os.path.join(self._src_dir, 'gui')):
+        self._src_dir = self.configuration.package["name"]
+        if os.path.exists(os.path.join(self._src_dir, "gui")):
             warnings.warn("GUI directory exists already... nothing done.")
             return
         self._create_subdirectories()
@@ -917,12 +927,13 @@ class GuiCreator:
     def _create_subdirectories(self):
         for directory in self.subdirectories:
             self._create_directory(
-                name=os.path.join(self._src_dir, directory))
-        self._create_directory(os.path.join('tests', 'gui'))
-        self._create_directory(os.path.join('docs', 'api', 'gui'))
+                name=os.path.join(self._src_dir, directory)
+            )
+        self._create_directory(os.path.join("tests", "gui"))
+        self._create_directory(os.path.join("docs", "api", "gui"))
 
     @staticmethod
-    def _create_directory(name=''):
+    def _create_directory(name=""):
         if os.path.exists(name):
             warnings.warn("Directory '" + name + "' exists already.")
         else:
@@ -930,200 +941,203 @@ class GuiCreator:
 
     def _create_init_files(self):
         directories = [
-            os.path.join(self._src_dir, 'gui'),
-            os.path.join(self._src_dir, 'gui', 'ui'),
-            os.path.join('tests', 'gui')
+            os.path.join(self._src_dir, "gui"),
+            os.path.join(self._src_dir, "gui", "ui"),
+            os.path.join("tests", "gui"),
         ]
         for directory in directories:
-            init_filename = os.path.join(directory, '__init__.py')
+            init_filename = os.path.join(directory, "__init__.py")
             utils.ensure_file_exists(init_filename)
 
     def _create_makefile(self):
-        contents = utils.get_package_data('Makefile_gui')
-        filepath = os.path.join(self._src_dir, 'gui', 'Makefile')
-        with open(filepath, 'w+', encoding='utf8') as file:
+        contents = utils.get_package_data("Makefile_gui")
+        filepath = os.path.join(self._src_dir, "gui", "Makefile")
+        with open(filepath, "w+", encoding="utf8") as file:
             file.write(contents)
 
     def _create_modules(self):
-        modules = ['app', 'mainwindow']
+        modules = ["app", "mainwindow"]
         for module in modules:
             template = utils.Template(
-                path='code',
-                template=f'gui_{module}.j2.py',
+                path="code",
+                template=f"gui_{module}.j2.py",
                 context=self.configuration.to_dict(),
-                destination=os.path.join(self._src_dir, 'gui',
-                                         f'{module}.py'),
+                destination=os.path.join(
+                    self._src_dir, "gui", f"{module}.py"
+                ),
             )
             template.create()
 
     def _create_test_modules(self):
-        modules = ['app', 'utils', 'mainwindow']
+        modules = ["app", "utils", "mainwindow"]
         for module in modules:
             context = self.configuration.to_dict()
-            context['module'] = {'name': module}
+            context["module"] = {"name": module}
             template = utils.Template(
-                path='code',
-                template='test_guimodule.j2.py',
+                path="code",
+                template="test_guimodule.j2.py",
                 context=context,
-                destination=os.path.join('tests', 'gui', f'test_{module}.py'),
+                destination=os.path.join("tests", "gui", f"test_{module}.py"),
             )
             template.create()
 
     def _create_splash_file(self):
-        if not self.configuration.gui['splash']:
+        if not self.configuration.gui["splash"]:
             return
         template = utils.Template(
-            path='',
-            template='splash.j2.svg',
+            path="",
+            template="splash.j2.svg",
             context=self.configuration.to_dict(),
-            destination=os.path.join(self._src_dir, 'gui', 'images',
-                                     'splash.svg'),
+            destination=os.path.join(
+                self._src_dir, "gui", "images", "splash.svg"
+            ),
         )
         template.create()
 
     def _copy_images(self):
-        images = ['icon.svg']
+        images = ["icon.svg"]
         for image in images:
             contents = utils.get_package_data(image)
-            filepath = os.path.join(self._src_dir, 'gui', 'images', image)
-            with open(filepath, 'w+', encoding='utf8') as file:
+            filepath = os.path.join(self._src_dir, "gui", "images", image)
+            with open(filepath, "w+", encoding="utf8") as file:
                 file.write(contents)
 
     def _create_documentation(self):
         self._create_documentation_index()
         self._add_submodule_documentation()
-        modules = ['app', 'mainwindow']
+        modules = ["app", "mainwindow"]
         for module in modules:
             self._create_api_documentation(module)
         self._add_api_documentation_to_toctree()
 
     def _create_documentation_index(self):
-        package_name = self.configuration.package['name']
+        package_name = self.configuration.package["name"]
         context = self.configuration.to_dict()
-        context['subpackage'] = {'name': f"{package_name}.gui"}
-        context['header_extension'] = \
-            (len(package_name) + 4) * '='
+        context["subpackage"] = {"name": f"{package_name}.gui"}
+        context["header_extension"] = (len(package_name) + 4) * "="
         template = utils.Template(
-            path='docs',
-            template='api_subpackage_index.j2.rst',
+            path="docs",
+            template="api_subpackage_index.j2.rst",
             context=context,
-            destination=os.path.join('docs', 'api', 'gui', 'index.rst'),
+            destination=os.path.join("docs", "api", "gui", "index.rst"),
         )
         template.create()
 
     def _add_submodule_documentation(self):
-        package_name = self.configuration.package['name']
+        package_name = self.configuration.package["name"]
         context = self.configuration.to_dict()
-        context['package'] = {'name': package_name}
+        context["package"] = {"name": package_name}
         template = utils.Template(
-            path='docs',
-            template='api_index_subpackages_block.j2.rst',
+            path="docs",
+            template="api_index_subpackages_block.j2.rst",
             context=context,
-            destination=os.path.join('docs', 'api', 'index.rst'),
+            destination=os.path.join("docs", "api", "index.rst"),
         )
         template.append()
 
     def _create_api_documentation(self, module):
-        package = self.configuration.package['name'] + '.gui'
-        filename = os.path.join('docs', 'api', 'gui',
-                                f'{package}.{module}.rst')
+        package = self.configuration.package["name"] + ".gui"
+        filename = os.path.join(
+            "docs", "api", "gui", f"{package}.{module}.rst"
+        )
         if os.path.exists(filename):
             warnings.warn(f"File '{filename}' exists already")
             return
         context = self.configuration.to_dict()
-        context['package'] = {'name': package}
-        context['module'] = {'name': module}
-        context['header_extension'] = \
-            (len(package) + len(module) + 1) * '='
+        context["package"] = {"name": package}
+        context["module"] = {"name": module}
+        context["header_extension"] = (len(package) + len(module) + 1) * "="
         template = utils.Template(
-            path='docs',
-            template='api_gui_module.j2.rst',
+            path="docs",
+            template="api_gui_module.j2.rst",
             context=context,
             destination=filename,
         )
         template.create()
 
     def _add_api_documentation_to_toctree(self):
-        index_filename = os.path.join('docs', 'api', 'index.rst')
+        index_filename = os.path.join("docs", "api", "index.rst")
         if not os.path.exists(index_filename):
             return
         utils.add_to_toctree(
             filename=index_filename,
-            entries=['gui/index'],
+            entries=["gui/index"],
             sort=True,
-            after='Subpackages'
+            after="Subpackages",
         )
-        index_filename = os.path.join('docs', 'api', 'gui', 'index.rst')
+        index_filename = os.path.join("docs", "api", "gui", "index.rst")
         if not os.path.exists(index_filename):
             return
-        modules = ['app', 'mainwindow']
-        package = self.configuration.package['name'] + '.gui'
+        modules = ["app", "mainwindow"]
+        package = self.configuration.package["name"] + ".gui"
         utils.add_to_toctree(
             filename=index_filename,
-            entries=[f'{package}.{module}' for module in modules],
-            sort=True
+            entries=[f"{package}.{module}" for module in modules],
+            sort=True,
         )
 
     def _create_mainwindow(self):
         window_creator = GuiWindowCreator()
         window_creator.configuration = self.configuration
-        window_creator.create(name='main')
+        window_creator.create(name="main")
 
     def _update_manifest(self):
-        package_name = self.configuration.package['name']
+        package_name = self.configuration.package["name"]
         context = self.configuration.to_dict()
-        context['package'] = {'name': package_name}
+        context["package"] = {"name": package_name}
         template = utils.Template(
-            template='MANIFEST-gui.j2.in',
+            template="MANIFEST-gui.j2.in",
             context=context,
-            destination='MANIFEST.in',
+            destination="MANIFEST.in",
         )
         template.append()
 
     def _update_setup(self):
-        filename = os.path.join('setup.py')
+        filename = os.path.join("setup.py")
         if not os.path.exists(filename):
             return
-        with open(filename, encoding='utf8') as file:
+        with open(filename, encoding="utf8") as file:
             contents = file.read()
-        lines = contents.split('\n')
+        lines = contents.split("\n")
         lines = self._insert_packages_to_install_requires(lines)
         # Add gui_scripts entry_points
         lines = self._add_gui_script_entry_point(lines)
-        with open(filename, "w+", encoding='utf8') as file:
-            file.write('\n'.join(lines))
+        with open(filename, "w+", encoding="utf8") as file:
+            file.write("\n".join(lines))
 
     @staticmethod
     def _insert_packages_to_install_requires(lines):
         gui_requirements = ["PySide6", "qtbricks"]
-        start_of_install_requires = lines.index('    install_requires=[')
-        end_of_install_requires = \
-            lines[start_of_install_requires:].index('    ],')
+        start_of_install_requires = lines.index("    install_requires=[")
+        end_of_install_requires = lines[start_of_install_requires:].index(
+            "    ],"
+        )
         install_requires = lines[
-                           start_of_install_requires:
-                           start_of_install_requires + end_of_install_requires]
+            start_of_install_requires : start_of_install_requires
+            + end_of_install_requires
+        ]
         add_requirements = []
         for requirement in gui_requirements:
-            if requirement not in ''.join(install_requires):
+            if requirement not in "".join(install_requires):
                 add_requirements.append(requirement)
         for offset, requirement in enumerate(add_requirements):
             lines.insert(
                 start_of_install_requires + end_of_install_requires + offset,
-                f'        "{requirement}",'
+                f'        "{requirement}",',
             )
         return lines
 
     def _add_gui_script_entry_point(self, lines):
-        if '"gui_scripts": [' not in ''.join(lines):
-            package_name = self.configuration.package['name']
+        if '"gui_scripts": [' not in "".join(lines):
+            package_name = self.configuration.package["name"]
             context = self.configuration.to_dict()
-            context['package'] = {'name': package_name}
+            context["package"] = {"name": package_name}
             template = utils.Template(
-                template='setup-gui-scripts.j2.py',
+                template="setup-gui-scripts.j2.py",
                 context=context,
             )
             entry_points = template.render()
-            start_of_install_requires = lines.index('    install_requires=[')
+            start_of_install_requires = lines.index("    install_requires=[")
             lines.insert(start_of_install_requires, entry_points)
         return lines
 
@@ -1187,8 +1201,8 @@ class GuiWindowCreator:
 
     def __init__(self):
         self.configuration = configuration.Configuration()
-        self._name = ''
-        self._class_name = ''
+        self._name = ""
+        self._class_name = ""
 
     @property
     def name(self):
@@ -1207,16 +1221,16 @@ class GuiWindowCreator:
         return self._name
 
     @name.setter
-    def name(self, name=''):
+    def name(self, name=""):
         if not name:
-            self._name = ''
-            self._class_name = ''
-        elif name.lower().endswith('window'):
+            self._name = ""
+            self._class_name = ""
+        elif name.lower().endswith("window"):
             self._name = name.lower()
-            self._class_name = f'{self.name[:-6].capitalize()}Window'
+            self._class_name = f"{self.name[:-6].capitalize()}Window"
         else:
-            self._name = f'{name}window'.lower()
-            self._class_name = f'{name.capitalize()}Window'
+            self._name = f"{name}window".lower()
+            self._class_name = f"{name.capitalize()}Window"
 
     @property
     def class_name(self):
@@ -1234,7 +1248,7 @@ class GuiWindowCreator:
         """
         return self._class_name
 
-    def create(self, name=''):
+    def create(self, name=""):
         """
         Create actual code stub for the GUI window.
 
@@ -1251,43 +1265,43 @@ class GuiWindowCreator:
         if name:
             self.name = name
         elif not self.name:
-            raise ValueError('No window name given')
+            raise ValueError("No window name given")
         window_module = os.path.join(
-            self.configuration.package['name'], 'gui', f'{self.name}.py'
+            self.configuration.package["name"], "gui", f"{self.name}.py"
         )
         if os.path.exists(window_module):
-            warnings.warn(f'Window {self.name} exists already. Nothing done.')
+            warnings.warn(f"Window {self.name} exists already. Nothing done.")
             return
         self._create_window()
         self._create_api_documentation()
         self._add_api_documentation_to_toctree()
 
     def _create_window(self):
-        gui_dir = os.path.join(self.configuration.package['name'], 'gui')
-        test_dir = os.path.join('tests', 'gui')
+        gui_dir = os.path.join(self.configuration.package["name"], "gui")
+        test_dir = os.path.join("tests", "gui")
         files = [
             {
-                'template': 'gui_window.j2.py',
-                'path': os.path.join(gui_dir, f'{self.name}.py')
+                "template": "gui_window.j2.py",
+                "path": os.path.join(gui_dir, f"{self.name}.py"),
             },
             {
-                'template': 'gui_window.j2.ui',
-                'path': os.path.join(gui_dir, 'ui', f'{self.name}.ui')
+                "template": "gui_window.j2.ui",
+                "path": os.path.join(gui_dir, "ui", f"{self.name}.ui"),
             },
             {
-                'template': 'test_guimodule.j2.py',
-                'path': os.path.join(test_dir, f'test_{self.name}.py')
+                "template": "test_guimodule.j2.py",
+                "path": os.path.join(test_dir, f"test_{self.name}.py"),
             },
         ]
         context = self.configuration.to_dict()
-        context['module'] = {'name': self.name}
-        context['class'] = {'name': self.class_name}
+        context["module"] = {"name": self.name}
+        context["class"] = {"name": self.class_name}
         for file in files:
             template = utils.Template(
-                path='code',
-                template=file['template'],
+                path="code",
+                template=file["template"],
                 context=context,
-                destination=file['path'],
+                destination=file["path"],
             )
             template.create()
         # Decide whether to auto-generate these files or whether to postpone
@@ -1299,33 +1313,35 @@ class GuiWindowCreator:
         # )
 
     def _create_api_documentation(self):
-        package = self.configuration.package['name'] + '.gui'
-        filename = os.path.join('docs', 'api', 'gui',
-                                f'{package}.{self.name}.rst')
+        package = self.configuration.package["name"] + ".gui"
+        filename = os.path.join(
+            "docs", "api", "gui", f"{package}.{self.name}.rst"
+        )
         if os.path.exists(filename):
             warnings.warn(f"File '{filename}' exists already")
             return
         context = self.configuration.to_dict()
-        context['package'] = {'name': package}
-        context['module'] = {'name': self.name}
-        context['header_extension'] = \
-            (len(package) + len(self.name) + 1) * '='
+        context["package"] = {"name": package}
+        context["module"] = {"name": self.name}
+        context["header_extension"] = (
+            len(package) + len(self.name) + 1
+        ) * "="
         template = utils.Template(
-            path='docs',
-            template='api_module.j2.rst',
+            path="docs",
+            template="api_module.j2.rst",
             context=context,
             destination=filename,
         )
         template.create()
 
     def _add_api_documentation_to_toctree(self):
-        index_filename = os.path.join('docs', 'api', 'gui', 'index.rst')
+        index_filename = os.path.join("docs", "api", "gui", "index.rst")
         if not os.path.exists(index_filename):
             return
 
-        package = self.configuration.package['name']
+        package = self.configuration.package["name"]
         utils.add_to_toctree(
             filename=index_filename,
-            entries=[f'{package}.gui.{self.name}'],
-            sort=True
+            entries=[f"{package}.gui.{self.name}"],
+            sort=True,
         )

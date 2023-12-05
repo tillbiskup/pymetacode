@@ -82,7 +82,7 @@ import platformdirs
 import jinja2
 
 
-def ensure_file_exists(name=''):
+def ensure_file_exists(name=""):
     """
     Create an (empty) file if it does not exist already.
 
@@ -102,12 +102,12 @@ def ensure_file_exists(name=''):
 
     """
     if not name:
-        raise ValueError('No filename given.')
-    with open(name, 'a', encoding='utf8'):
+        raise ValueError("No filename given.")
+    with open(name, "a", encoding="utf8"):
         pass
 
 
-def get_package_data(name='', directory='templates'):
+def get_package_data(name="", directory="templates"):
     """
     Obtain contents from a non-code file ("package data").
 
@@ -181,23 +181,25 @@ def get_package_data(name='', directory='templates'):
 
     """
     if not name:
-        raise ValueError('No filename given.')
+        raise ValueError("No filename given.")
     package = __package__
-    if '@' in name:
-        package, name = name.split('@')
-    path = \
-        os.path.join(package, os.path.sep.join(directory.split('/')), name)
+    if "@" in name:
+        package, name = name.split("@")
+    path = os.path.join(package, os.path.sep.join(directory.split("/")), name)
     if os.path.exists(os.path.join(platformdirs.user_data_dir(), path)):
-        with open(os.path.join(platformdirs.user_data_dir(), path),
-                  encoding='utf8') as file:
+        with open(
+            os.path.join(platformdirs.user_data_dir(), path), encoding="utf8"
+        ) as file:
             contents = file.read()
     elif os.path.exists(os.path.join(platformdirs.site_data_dir(), path)):
-        with open(os.path.join(platformdirs.site_data_dir(), path),
-                  encoding='utf8') as file:
+        with open(
+            os.path.join(platformdirs.site_data_dir(), path), encoding="utf8"
+        ) as file:
             contents = file.read()
     else:
-        contents = \
-            pkgutil.get_data(package, '/'.join([directory, name])).decode()
+        contents = pkgutil.get_data(
+            package, "/".join([directory, name])
+        ).decode()
     return contents
 
 
@@ -263,8 +265,10 @@ class ToDictMixin:
     def _traverse_dict(self, instance_dict):
         output = {}
         for key, value in instance_dict.items():
-            if str(key).startswith('_') \
-                    or str(key) in self._exclude_from_to_dict:
+            if (
+                str(key).startswith("_")
+                or str(key) in self._exclude_from_to_dict
+            ):
                 pass
             else:
                 output[key] = self._traverse(key, value)
@@ -277,12 +281,13 @@ class ToDictMixin:
             result = value.to_dict()
         elif isinstance(value, (dict, collections.OrderedDict)):
             result = self._traverse_dict(value)
-        elif hasattr(value, '__dict__'):
+        elif hasattr(value, "__dict__"):
             result = self._traverse_dict(value.__dict__)
         elif isinstance(value, list):
             result = [self._traverse(key, i) for i in value]
-        elif isinstance(value, (datetime.datetime, datetime.date,
-                                datetime.time)):
+        elif isinstance(
+            value, (datetime.datetime, datetime.date, datetime.time)
+        ):
             result = str(value)
         else:
             result = value
@@ -290,7 +295,7 @@ class ToDictMixin:
 
 
 @contextlib.contextmanager
-def change_working_dir(path=''):
+def change_working_dir(path=""):
     """
     Context manager for temporarily changing the working directory.
 
@@ -328,7 +333,7 @@ def change_working_dir(path=''):
         os.chdir(oldpwd)
 
 
-def camel_case_to_underscore(name=''):
+def camel_case_to_underscore(name=""):
     """
     Change string from camel case to using underscores.
 
@@ -346,11 +351,11 @@ def camel_case_to_underscore(name=''):
         Name changed from camel case to using underscores.
 
     """
-    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+    name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
 
 
-def underscore_to_camel_case(name=''):
+def underscore_to_camel_case(name=""):
     """
     Change string from underscores to using camel case.
 
@@ -368,7 +373,7 @@ def underscore_to_camel_case(name=''):
         Name changed from underscores to using camel case.
 
     """
-    name = ''.join(char.capitalize() for char in name.split('_'))
+    name = "".join(char.capitalize() for char in name.split("_"))
     return name
 
 
@@ -436,8 +441,7 @@ class Template:
 
     """
 
-    def __init__(self, path='', template='', context=None,
-                 destination=''):
+    def __init__(self, path="", template="", context=None, destination=""):
         self.path = path
         self.template = template
         self.context = context
@@ -476,7 +480,8 @@ class Template:
         """
         self._add_rst_markup_to_context()
         template = self.environment.get_template(
-            os.path.join(self.path, self.template))
+            os.path.join(self.path, self.template)
+        )
         return template.render(self.context)
 
     def create(self):
@@ -487,7 +492,7 @@ class Template:
         file, you should use :meth:`append` instead.
 
         """
-        with open(self.destination, 'w+', encoding='utf8') as file:
+        with open(self.destination, "w+", encoding="utf8") as file:
             file.write(self.render())
 
     def append(self):
@@ -499,19 +504,19 @@ class Template:
         :meth:`create` instead.
 
         """
-        with open(self.destination, 'a', encoding='utf8') as file:
+        with open(self.destination, "a", encoding="utf8") as file:
             file.write(self.render())
 
     def _add_rst_markup_to_context(self):
-        if 'package' in self.context and 'name' in self.context['package']:
-            length = len(self.context['package']['name'])
+        if "package" in self.context and "name" in self.context["package"]:
+            length = len(self.context["package"]["name"])
             rst_markup = {
-                'header_hash': length * '#',
-                'header_equal': length * '=',
-                'header_minus': length * '-',
-                'header_tilde': length * '~',
+                "header_hash": length * "#",
+                "header_equal": length * "=",
+                "header_minus": length * "-",
+                "header_tilde": length * "~",
             }
-            self.context['rst_markup'] = rst_markup
+            self.context["rst_markup"] = rst_markup
 
 
 def package_version_from_file():
@@ -528,12 +533,12 @@ def package_version_from_file():
         Version string as contained in file "VERSION" in current directory
 
     """
-    with open('VERSION', encoding='utf8') as file:
+    with open("VERSION", encoding="utf8") as file:
         version = file.read()
     return version
 
 
-def make_executable(path=''):
+def make_executable(path=""):
     """
     Make a file executable, *i.e.*, set its executable flag.
 
@@ -554,7 +559,7 @@ def make_executable(path=''):
     os.chmod(path, mode)
 
 
-def add_to_toctree(filename='', entries=None, sort=False, after=''):
+def add_to_toctree(filename="", entries=None, sort=False, after=""):
     """
     Add entries to toc tree.
 
@@ -613,30 +618,36 @@ def add_to_toctree(filename='', entries=None, sort=False, after=''):
     .. versionadded:: 0.5
 
     """
-    with open(filename, 'r', encoding='utf8') as file:
+    with open(filename, "r", encoding="utf8") as file:
         contents = file.read()
-    contents = contents.split('\n')
+    contents = contents.split("\n")
     contents = [line.rstrip() for line in contents]
 
     offset = 0
     if after:
         offset = contents.index(
-            [entry for entry in contents if after in entry][0])
-    toctree_start = \
-        contents.index('', contents.index('.. toctree::', offset)) + 1
-    if contents[toctree_start].startswith('  '):
-        toctree_end = contents.index('', toctree_start)
+            [entry for entry in contents if after in entry][0]
+        )
+    toctree_start = (
+        contents.index("", contents.index(".. toctree::", offset)) + 1
+    )
+    if contents[toctree_start].startswith("  "):
+        toctree_end = contents.index("", toctree_start)
     else:
         toctree_end = toctree_start
 
-    entries = [f'    {line.lstrip()}' for line in entries]
+    entries = [f"    {line.lstrip()}" for line in entries]
     toctree = contents[toctree_start:toctree_end] + entries
     if sort:
         toctree.sort()
-    empty_line = [''] if contents[toctree_end] else []
+    empty_line = [""] if contents[toctree_end] else []
 
-    contents = contents[:toctree_start] + toctree + empty_line \
+    contents = (
+        contents[:toctree_start]
+        + toctree
+        + empty_line
         + contents[toctree_end:]
-    with open(filename, 'w+', encoding='utf8') as file:
+    )
+    with open(filename, "w+", encoding="utf8") as file:
         for line in contents:
-            file.write(f'{line}\n')
+            file.write(f"{line}\n")
