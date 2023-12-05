@@ -546,13 +546,13 @@ class TestModuleCreator(unittest.TestCase):
         )
 
     def test_create_with_dot_creates_module_in_subpackage(self):
-        subpackage = 'foobar'
+        subpackage = "foobar"
         self.creator.create(name=".".join([subpackage, self.name]))
         path = os.path.join(self.package, subpackage, self.name + ".py")
         self.assertTrue(os.path.exists(path), f"{path} does not exist")
 
     def test_create_with_dot_creates_test_module_in_subpackage(self):
-        subpackage = 'foobar'
+        subpackage = "foobar"
         self.creator.create(name=".".join([subpackage, self.name]))
         path = os.path.join("tests", subpackage, f"test_{self.name}.py")
         self.assertTrue(os.path.exists(path), f"{path} does not exist")
