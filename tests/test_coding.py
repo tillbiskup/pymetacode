@@ -1254,3 +1254,132 @@ class TestGuiWindowCreator(unittest.TestCase):
                 self.creator.create(name=self.name)
                 self.assertTrue(w)
             self.assertFalse(os.path.exists(ui_file))
+
+
+class TestSubpackageCreator(unittest.TestCase):
+
+    def setUp(self):
+        self.creator = coding.SubpackageCreator()
+        self.package = "bar"
+        self.name = "foo"
+        self.configuration = pymetacode.configuration.Configuration()
+        self.configuration.package["name"] = self.package
+        self.creator.configuration = self.configuration
+        self.create_package_structure()
+
+    def tearDown(self):
+        if os.path.exists(self.configuration.package["name"]):
+            shutil.rmtree(self.configuration.package["name"])
+        if os.path.exists("tests"):
+            shutil.rmtree("tests")
+        if os.path.exists("docs"):
+            shutil.rmtree("docs")
+
+    def create_package_structure(self):
+        os.mkdir(self.configuration.package["name"])
+        os.mkdir("tests")
+        os.makedirs(os.path.join("docs", "api"))
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_create_method(self):
+        self.assertTrue(hasattr(self.creator, "create"))
+        self.assertTrue(callable(self.creator.create))
+
+    def test_create_without_name_raises(self):
+        with self.assertRaises(ValueError):
+            self.creator.create()
+
+    def test_create_with_name_property_set(self):
+        self.creator.name = self.name
+        self.creator.create()
+
+    def test_create_with_name_sets_name_property(self):
+        self.creator.create(name=self.name)
+        self.assertEqual(self.name, self.creator.name)
+
+    def test_create_creates_subpackage(self):
+        self.creator.create(name=self.name)
+        path = os.path.join(self.package, self.name)
+        self.assertTrue(os.path.exists(path))
+        self.assertTrue(os.path.isdir(path))
+
+    def test_create_with_name_property_set_creates_subpackage(self):
+        self.creator.name = self.name
+        self.creator.create()
+        path = os.path.join(self.package, self.name)
+        self.assertTrue(os.path.exists(path))
+        self.assertTrue(os.path.isdir(path))
+
+    def test_create_creates_init_in_subpackage(self):
+        self.creator.create(name=self.name)
+        path = os.path.join(self.package, self.name, "__init__.py")
+        self.assertTrue(os.path.exists(path))
+
+    def test_create_with_name_property_set_creates_tests_subpackage(self):
+        self.creator.name = self.name
+        self.creator.create()
+        path = os.path.join("tests", self.name)
+        self.assertTrue(os.path.exists(path))
+        self.assertTrue(os.path.isdir(path))
+
+    def test_create_creates_init_in_tests_subpackage(self):
+        self.creator.create(name=self.name)
+        path = os.path.join("tests", self.name, "__init__.py")
+        self.assertTrue(os.path.exists(path))
+
+    def test_create_does_not_change_existing_file(self):
+        directory = os.path.join(self.package, self.name)
+        os.mkdir(directory)
+        filename = os.path.join(directory, "__init__.py")
+        with open(filename, "a") as file:
+            file.write("foo bar")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.creator.create(name=self.name)
+        with open(filename) as file:
+            file_content = file.read()
+        self.assertEqual("foo bar", file_content)
+
+    def test_create_warns_if_subpackage_exists(self):
+        directory = os.path.join(self.package, self.name)
+        os.mkdir(directory)
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.creator.create(name=self.name)
+            self.assertTrue(w)
+
+    def test_create_creates_docs_subdirectory(self):
+        directory = os.path.join("docs", "api", self.name)
+        self.creator.create(name=self.name)
+        self.assertTrue(os.path.exists(directory))
+        self.assertTrue(os.path.isdir(directory))
+
+    def test_create_populates_docs_api_subdirectory(self):
+        self.creator.create(name=self.name)
+        filename = os.path.join("docs", "api", self.name, "index.rst")
+        self.assertTrue(os.path.exists(filename),
+                        f"'{filename}' has not been created")
+
+    def test_create_adds_subpackages_section_to_api_doc_index(self):
+        self.creator.create(name=self.name)
+        filename = os.path.join("docs", "api", "index.rst")
+        with open(filename, encoding="utf8") as file:
+            contents = file.read()
+        self.assertIn("Subpackages", contents)
+
+    def test_create_doesnt_add_subpackages_section_twice(self):
+        self.creator.create(name="foo")
+        self.creator.create(name="bar")
+        filename = os.path.join("docs", "api", "index.rst")
+        with open(filename, encoding="utf8") as file:
+            contents = file.read().split()
+        self.assertEqual(1, contents.count("Subpackages"))
+
+    def test_create_adds_subpackage_to_api_doc_index_toctree(self):
+        self.creator.create(name=self.name)
+        filename = os.path.join("docs", "api", "index.rst")
+        with open(filename, encoding="utf8") as file:
+            contents = file.read()
+        self.assertIn(f"{self.name}/index", contents)

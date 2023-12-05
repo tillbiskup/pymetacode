@@ -27,6 +27,10 @@ Currently, there are the following types of code generators:
 
   Add a PySide6-based (Qt6) GUI window to an existing GUI subpackage.
 
+* :class:`pymetacode.coding.SubpackageCreator`
+
+  Add a subpackage to an existing package.
+
 Each of these generators uses templates in the ``templates`` subdirectory of
 the pymetacode package.
 
@@ -1004,7 +1008,7 @@ class GuiCreator:
 
     def _create_documentation(self):
         self._create_documentation_index()
-        self._add_submodule_documentation()
+        self._add_subpackage_documentation()
         modules = ["app", "mainwindow"]
         for module in modules:
             self._create_api_documentation(module)
@@ -1023,7 +1027,7 @@ class GuiCreator:
         )
         template.create()
 
-    def _add_submodule_documentation(self):
+    def _add_subpackage_documentation(self):
         package_name = self.configuration.package["name"]
         context = self.configuration.to_dict()
         context["package"] = {"name": package_name}
@@ -1075,11 +1079,6 @@ class GuiCreator:
             entries=[f"{package}.{module}" for module in modules],
             sort=True,
         )
-
-    def _create_mainwindow(self):
-        window_creator = GuiWindowCreator()
-        window_creator.configuration = self.configuration
-        window_creator.create(name="main")
 
     def _update_manifest(self):
         package_name = self.configuration.package["name"]
@@ -1266,15 +1265,18 @@ class GuiWindowCreator:
             self.name = name
         elif not self.name:
             raise ValueError("No window name given")
-        window_module = os.path.join(
-            self.configuration.package["name"], "gui", f"{self.name}.py"
-        )
-        if os.path.exists(window_module):
+        if self._window_exists():
             warnings.warn(f"Window {self.name} exists already. Nothing done.")
             return
         self._create_window()
         self._create_api_documentation()
         self._add_api_documentation_to_toctree()
+
+    def _window_exists(self):
+        window_module = os.path.join(
+            self.configuration.package["name"], "gui", f"{self.name}.py"
+        )
+        return os.path.exists(window_module)
 
     def _create_window(self):
         gui_dir = os.path.join(self.configuration.package["name"], "gui")
@@ -1344,4 +1346,142 @@ class GuiWindowCreator:
             filename=index_filename,
             entries=[f"{package}.gui.{self.name}"],
             sort=True,
+        )
+
+
+class SubpackageCreator:
+    """
+    Add a subpackage to an existing package.
+
+    Actually, adding a subpackage consists of creating three directories and
+    three files: the subpackage itself, an accompanying test subpackage,
+    and the API documentation subdirectory. The latter gets added to the API
+    toctree directive as well. Furthermore, in the subpackage and test
+    subpackage directories ``__init__.py`` files are created, and an index
+    file for the subpackage API documentation.
+
+    If you try to add an already existing subpackage, a warning is raised
+    and no further action taken, in order *not* to overwrite existing code.
+
+    Attributes
+    ----------
+    name : :class:`str`
+        Name of the subpackage to be created.
+
+    configuration : :class:`pymetacode.configuration.Configuration`
+        Configuration as usually read from the configuration file.
+
+    Raises
+    ------
+    ValueError
+        Raised if no name is provided
+
+
+    Examples
+    --------
+    The following examples demonstrate how to use the CLI from the terminal,
+    rather than how to use this class programmatically.
+
+    Prerequisite for using the CLI is to have the package configuration
+    stored within the package root directory in the file
+    ".project_configuration.yaml". This will be the case if the package has
+    been created by the CLI as well. Furthermore, all following commands
+    need to be issued from *within* the root directory of your package.
+
+    .. code-block:: bash
+
+        pymeta add subpackage mysubpackage
+
+    This will add a module "mysubpackage" to your package, together with a
+    "mysubpackage" subpackage in the "tests" subdirectory. And even better,
+    the API documentation will be updated as well for you.
+
+    
+    .. versionadded:: 0.5
+
+    """
+
+    def __init__(self):
+        self.name = ""
+        self.configuration = configuration.Configuration()
+
+    def create(self, name=""):
+        """
+        Add a subpackage to an existing package.
+
+        Parameters
+        ----------
+        name : :class:`str`
+            Name of the subpackage to add.
+
+            If provided, this will set the :attr:`name` attribute of the
+            class.
+
+        """
+        if name:
+            self.name = name
+        if not self.name:
+            raise ValueError
+        if self._subpackage_exists():
+            warnings.warn(f"Subpackage '{self.name}' exists already")
+            return
+        self._create_directories()
+        self._create_documentation()
+
+    def _subpackage_exists(self):
+        directory = os.path.join(self.configuration.package["name"], self.name)
+        return os.path.exists(directory) and os.path.isdir(directory)
+
+    def _create_directories(self):
+        directories = [self.configuration.package["name"], "tests"]
+        for directory in directories:
+            directory = os.path.join(directory, self.name)
+            os.mkdir(directory)
+            init_filename = os.path.join(directory, "__init__.py")
+            utils.ensure_file_exists(init_filename)
+
+    def _create_documentation(self):
+        os.mkdir(os.path.join("docs", "api", self.name))
+        self._create_documentation_index()
+        self._add_subpackage_block_to_documentation_index()
+        self._add_api_documentation_to_toctree()
+
+    def _create_documentation_index(self):
+        package_name = self.configuration.package["name"]
+        context = self.configuration.to_dict()
+        context["subpackage"] = {"name": f"{package_name}.{self.name}"}
+        context["header_extension"] = (len(package_name) + 4) * "="
+        template = utils.Template(
+            path="docs",
+            template="api_subpackage_index.j2.rst",
+            context=context,
+            destination=os.path.join("docs", "api", self.name, "index.rst"),
+        )
+        template.create()
+
+    def _add_subpackage_block_to_documentation_index(self):
+        destination = os.path.join("docs", "api", "index.rst")
+        if os.path.exists(destination):
+            with open(destination, encoding="utf8") as file:
+                contents = file.read()
+            if "Subpackages" in contents:
+                return
+        context = self.configuration.to_dict()
+        template = utils.Template(
+            path="docs",
+            template="api_index_subpackages_block.j2.rst",
+            context=context,
+            destination=destination,
+        )
+        template.append()
+
+    def _add_api_documentation_to_toctree(self):
+        index_filename = os.path.join("docs", "api", "index.rst")
+        if not os.path.exists(index_filename):
+            return
+        utils.add_to_toctree(
+            filename=index_filename,
+            entries=[f"{self.name}/index"],
+            sort=True,
+            after="Subpackages",
         )

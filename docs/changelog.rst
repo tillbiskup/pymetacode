@@ -18,6 +18,8 @@ New features
 
   * Added GPLv3 as possible license
 
+* GUI code based on package qtbricks
+
 
 Changes
 -------
