@@ -153,7 +153,7 @@ class TestPackageCreator(unittest.TestCase):
         self.creator.create(name=self.name)
         with open(os.path.join(self.name, "setup.py")) as file:
             contents = file.read()
-        content_line = "author='{}'".format(configuration.package["author"])
+        content_line = 'author="{}"'.format(configuration.package["author"])
         self.assertIn(content_line, contents)
 
     def test_create_creates_readme_file(self):
@@ -471,10 +471,10 @@ class TestModuleCreator(unittest.TestCase):
 
     def test_create_creates_api_documentation(self):
         self.creator.create(name=self.name)
-        filename = os.path.join(
+        path = os.path.join(
             "docs", "api", "{}.{}.rst".format(self.package, self.name)
         )
-        self.assertTrue(os.path.exists(filename))
+        self.assertTrue(os.path.exists(path), f"{path} does not exist")
 
     def test_create_warns_if_api_documentation_exists(self):
         filename = os.path.join(
@@ -547,15 +547,68 @@ class TestModuleCreator(unittest.TestCase):
 
     def test_create_with_dot_creates_module_in_subpackage(self):
         subpackage = "foobar"
+        os.mkdir(os.path.join(self.configuration.package["name"], subpackage))
+        os.mkdir(os.path.join("tests", subpackage))
+        os.mkdir(os.path.join("docs", "api", subpackage))
         self.creator.create(name=".".join([subpackage, self.name]))
         path = os.path.join(self.package, subpackage, self.name + ".py")
         self.assertTrue(os.path.exists(path), f"{path} does not exist")
 
     def test_create_with_dot_creates_test_module_in_subpackage(self):
         subpackage = "foobar"
+        os.mkdir(os.path.join(self.configuration.package["name"], subpackage))
+        os.mkdir(os.path.join("tests", subpackage))
+        os.mkdir(os.path.join("docs", "api", subpackage))
         self.creator.create(name=".".join([subpackage, self.name]))
         path = os.path.join("tests", subpackage, f"test_{self.name}.py")
         self.assertTrue(os.path.exists(path), f"{path} does not exist")
+
+    def test_create_with_dot_and_missing_subpackage_issues_warning(self):
+        subpackage = "foobar"
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.creator.create(name=".".join([subpackage, self.name]))
+            self.assertTrue(w)
+
+    def test_create_with_subpackage_creates_api_documentation(self):
+        subpackage = "foobar"
+        os.mkdir(os.path.join(self.configuration.package["name"], subpackage))
+        os.mkdir(os.path.join("tests", subpackage))
+        os.mkdir(os.path.join("docs", "api", subpackage))
+        self.creator.create(name=".".join([subpackage, self.name]))
+        path = os.path.join(
+            "docs",
+            "api",
+            subpackage,
+            ".".join([self.package, subpackage, f"{self.name}.rst"]),
+        )
+        self.assertTrue(os.path.exists(path), f"{path} does not exist")
+
+    def test_create_with_subpackage_adds_documentation_to_api_toctree(self):
+        subpackage = "foobar"
+        os.mkdir(os.path.join(self.configuration.package["name"], subpackage))
+        os.mkdir(os.path.join("tests", subpackage))
+        os.mkdir(os.path.join("docs", "api", subpackage))
+        index_filename = os.path.join("docs", "api", subpackage, "index.rst")
+        index_contents = """
+
+        .. toctree::
+            :maxdepth: 1
+
+
+
+        Index
+        -----
+        """.replace(
+            "        ", ""
+        )
+        with open(index_filename, "w+") as file:
+            file.write(index_contents)
+        self.creator.create(name=".".join([subpackage, self.name]))
+        toctree_entry = f"{self.package}.{subpackage}.{self.name}"
+        with open(index_filename) as file:
+            contents = file.read()
+        self.assertIn(toctree_entry, contents)
 
 
 class TestClassCreator(unittest.TestCase):

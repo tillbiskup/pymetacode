@@ -37,7 +37,7 @@ the pymetacode package.
 """
 import os
 import stat
-import subprocess
+import subprocess  # noqa: bandit B404
 import warnings
 
 from pymetacode import configuration, utils
@@ -357,11 +357,28 @@ class ModuleCreator:
     If you try to add an already existing module, a warning is raised and no
     further action taken, in order *not* to overwrite existing code.
 
+    If the module name contains a dot, the first part will be interpreted
+    as subpackage and the second as module name. In this case, the module
+    is added to the subpackage, and the API documentation handled
+    accordingly.
+
+    If you try to add a module to a nonexisting subpackage, a warning is
+    raised and no further action taken. In such case, first create the
+    subpackage. See the :class:`SubpackageCreator` class for further details.
 
     Attributes
     ----------
     name : :class:`str`
         Name of the module to be created.
+
+    subpackage : :class:`str`
+        Name of the subpackage (if any).
+
+        If the name of a module contains a dot, the part before the dot is
+        interpreted as subpackage.
+
+        If the subpackage does not exist, a warning is issued and no
+        module created.
 
     configuration : :class:`pymetacode.configuration.Configuration`
         Configuration as usually read from the configuration file.
@@ -391,10 +408,24 @@ class ModuleCreator:
     "test_mymodule" module in the "tests" subdirectory. And even better,
     the API documentation will be updated as well for you.
 
+    Suppose you would have a subpackage mysubpackage and would want to add
+    a module to this subpackage. In this case, simply use the familiar dot
+    notation for separating subpackage and module:
+
+    .. code-block:: bash
+
+        pymeta add module mysubpackage.mymodule
+
+    This will add a module "mymodule" to the subpackage "mysubpackage" of
+    your package, together with a "test_mymodule" module in the
+    "mysubpackage" subirectory of the "tests" directory. And even better,
+    the API documentation will be updated as well for you.
+
     """
 
     def __init__(self):
         self.name = ""
+        self.subpackage = ""
         self.configuration = configuration.Configuration()
 
     def create(self, name=""):
@@ -414,14 +445,33 @@ class ModuleCreator:
             self.name = name
         elif not self.name:
             raise ValueError
+        self._assign_subpackage()
+        if not self._subpackage_exists():
+            warnings.warn(
+                f"Subpackage '{self.subpackage}' does not exist. "
+                f"Module not created."
+            )
+            return
         self._create_module()
         self._create_test_module()
         self._create_api_documentation()
         self._add_api_documentation_to_toctree()
 
+    def _assign_subpackage(self):
+        if "." in self.name:
+            self.subpackage, self.name = self.name.split(".")
+
+    def _subpackage_exists(self):
+        subpackage_path = os.path.join(
+            self.configuration.package["name"], self.subpackage
+        )
+        return os.path.exists(subpackage_path)
+
     def _create_module(self):
         filename = os.path.join(
-            self.configuration.package["name"], self.name + ".py"
+            self.configuration.package["name"],
+            self.subpackage,
+            self.name + ".py",
         )
         if os.path.exists(filename):
             warnings.warn(f"Module '{filename}' exists already")
@@ -437,7 +487,9 @@ class ModuleCreator:
         template.create()
 
     def _create_test_module(self):
-        filename = os.path.join("tests", f"test_{self.name}.py")
+        filename = os.path.join(
+            "tests", self.subpackage, f"test_{self.name}.py"
+        )
         if os.path.exists(filename):
             warnings.warn(f"Module '{filename}' exists already")
             return
@@ -453,7 +505,18 @@ class ModuleCreator:
 
     def _create_api_documentation(self):
         package = self.configuration.package["name"]
-        filename = os.path.join("docs", "api", f"{package}.{self.name}.rst")
+        filename = os.path.join(
+            "docs",
+            "api",
+            self.subpackage,
+            ".".join(
+                [
+                    item
+                    for item in [package, self.subpackage, f"{self.name}.rst"]
+                    if item
+                ]
+            ),
+        )
         if os.path.exists(filename):
             warnings.warn(f"File '{filename}' exists already")
             return
@@ -471,13 +534,23 @@ class ModuleCreator:
         template.create()
 
     def _add_api_documentation_to_toctree(self):
-        index_filename = os.path.join("docs", "api", "index.rst")
+        index_filename = os.path.join(
+            "docs", "api", self.subpackage, "index.rst"
+        )
         if not os.path.exists(index_filename):
             return
         package = self.configuration.package["name"]
         utils.add_to_toctree(
             filename=index_filename,
-            entries=[f"{package}.{self.name}"],
+            entries=[
+                ".".join(
+                    [
+                        item
+                        for item in [package, self.subpackage, self.name]
+                        if item
+                    ]
+                )
+            ],
             sort=True,
         )
 
