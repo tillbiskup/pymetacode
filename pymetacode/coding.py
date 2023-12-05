@@ -380,6 +380,8 @@ class ModuleCreator:
         If the subpackage does not exist, a warning is issued and no
         module created.
 
+        .. versionadded:: 0.5
+
     configuration : :class:`pymetacode.configuration.Configuration`
         Configuration as usually read from the configuration file.
 
@@ -584,6 +586,8 @@ class ClassCreator:
 
         If the subpackage does not exist, an exception is raised.
 
+        .. versionadded:: 0.5
+
     configuration : :class:`pymetacode.configuration.Configuration`
         Configuration as usually read from the configuration file.
 
@@ -750,6 +754,8 @@ class FunctionCreator:
         interpreted as subpackage.
 
         If the subpackage does not exist, an exception is raised.
+
+        .. versionadded:: 0.5
 
     configuration : :class:`pymetacode.configuration.Configuration`
         Configuration as usually read from the configuration file.
