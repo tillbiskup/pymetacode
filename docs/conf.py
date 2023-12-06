@@ -237,6 +237,7 @@ epub_exclude_files = ["search.html"]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
+    "qtbricks": ("https://qtbricks.docs.till-biskup.de/", None),
 }
 
 # -- Options for todo extension ----------------------------------------------

@@ -23,6 +23,10 @@ New features
 
   * Adding modules, classes, and functions to subpackages using dot notation separating subpackage and module: mysubpackage.mymodule
 
+* Automatic code formatting using Black
+
+  * A git pre-commit hook is added formatting all currently staged files.
+
 
 Changes
 -------

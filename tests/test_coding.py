@@ -238,6 +238,26 @@ class TestPackageCreator(unittest.TestCase):
         file_path = os.path.join(self.name, "bin", "incrementVersion.sh")
         self.assertTrue(os.access(file_path, os.X_OK))
 
+    def test_create_creates_python_formatter_file(self):
+        self.creator.create(name=self.name)
+        self.assertTrue(
+            os.path.exists(
+                os.path.join(self.name, "bin", "formatPythonCode.sh")
+            )
+        )
+
+    def test_create_fills_python_formatter_file(self):
+        self.creator.create(name=self.name)
+        file_path = os.path.join(self.name, "bin", "formatPythonCode.sh")
+        with open(file_path) as file:
+            contents = file.read()
+        self.assertIn("Autoformat Python files", contents)
+
+    def test_python_formatter_is_executable(self):
+        self.creator.create(name=self.name)
+        file_path = os.path.join(self.name, "bin", "formatPythonCode.sh")
+        self.assertTrue(os.access(file_path, os.X_OK))
+
     def test_create_populates_docs_subdirectory(self):
         self.creator.create(name=self.name)
         files = ["make.bat", "Makefile", "index.rst", "conf.py"]
@@ -323,6 +343,7 @@ class TestPackageCreator(unittest.TestCase):
         ) as file:
             content = file.read()
         self.assertIn("./bin/incrementVersion.sh", content)
+        self.assertIn("./bin/formatPythonFile.sh", content)
         self.assertTrue(
             os.access(
                 os.path.join(self.name, ".git", "hooks", "pre-commit"),

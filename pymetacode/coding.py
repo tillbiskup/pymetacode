@@ -67,7 +67,8 @@ class PackageCreator:
     a git repository is initialised within the package root directory. In
     this case, a pre-commit hook is installed as well incrementing the
     version number for each commit, using the file "incrementVersion.sh"
-    from the "bin" directory.
+    from the "bin" directory, and auto-formatting Python code using Black on
+    each commit.
 
     In case of the ``gui`` option in the :attr:`configuration` being set,
     a scaffold for a complete GUI (based on Qt6, PySide6) is added. See the
@@ -162,6 +163,7 @@ class PackageCreator:
         self._create_setup_py_file()
         self._create_readme_file()
         self._create_version_updater_file()
+        self._create_python_formatter_file()
         self._create_documentation_stub()
         self._git_init()
         self._create_gui()
@@ -254,6 +256,13 @@ class PackageCreator:
             file.write(contents)
         os.chmod(destination, os.stat(destination).st_mode | stat.S_IXUSR)
 
+    def _create_python_formatter_file(self):
+        contents = utils.get_package_data("formatPythonCode.sh")
+        destination = os.path.join(self.name, "bin", "formatPythonCode.sh")
+        with open(destination, "w+", encoding="utf8") as file:
+            file.write(contents)
+        os.chmod(destination, os.stat(destination).st_mode | stat.S_IXUSR)
+
     def _create_documentation_stub(self):
         self._create_documentation_generator_files()
         self._create_documentation_config()
@@ -336,6 +345,7 @@ class PackageCreator:
                 with open("pre-commit", "w+", encoding="utf8") as file:
                     file.write("#!/bin/sh\n")
                     file.write("./bin/incrementVersion.sh\n")
+                    file.write("./bin/formatPythonFile.sh\n")
                 utils.make_executable("pre-commit")
 
     def _create_gui(self):
@@ -969,6 +979,11 @@ class GuiCreator:
     * The ``mainwindow.py`` module contains all relevant code for the main GUI
       window.
 
+      pymetacode uses the `qtbricks <https://qtbricks.docs.till-biskup.de/>`_
+      package, hence the definition of the main window is rather minimal to
+      start with and does *not* use ui files/the Qt Designer. Have a look at
+      :mod:`qtbricks.mainwindow` for details.
+
     * The ``Makefile`` is used for convenience to generate the Python files
       from the ui files used by the Qt Designer. Simply type ``make`` in the
       ``gui`` subdirectory to have them built.
@@ -1238,7 +1253,6 @@ class GuiCreator:
             contents = file.read()
         lines = contents.split("\n")
         lines = self._insert_packages_to_install_requires(lines)
-        # Add gui_scripts entry_points
         lines = self._add_gui_script_entry_point(lines)
         with open(filename, "w+", encoding="utf8") as file:
             file.write("\n".join(lines))

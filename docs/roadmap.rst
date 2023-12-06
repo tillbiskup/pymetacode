@@ -10,9 +10,6 @@ For version 0.5
 
 * GUI code
 
-  * Refactor to use SubpackageCreator for gui subpackage
-  * Update documentation to reflect transition to qtbricks (and no ui files)
-
   * additional subcommands for non-windows (dialogs, widgets)
 
     * ``pymeta add dialog``
@@ -25,10 +22,6 @@ For version 0.5
   * Rearrange modules:
 
     * separation of models and views
-
-* Using black for code style
-
-  * Add git hook (pre-commit) coping with modifying staged files
 
 
 For version 0.6
