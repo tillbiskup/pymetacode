@@ -124,12 +124,12 @@ html_theme = "sphinx_rtd_theme"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "./pymetacode-logo.png"
+html_logo = "./images/pymetacode-logo.png"
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = "./favicon.ico"
+html_favicon = "./images/favicon.ico"
 
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -239,8 +239,3 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "qtbricks": ("https://qtbricks.docs.till-biskup.de/", None),
 }
-
-# -- Options for todo extension ----------------------------------------------
-
-# If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
