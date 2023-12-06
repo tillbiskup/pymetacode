@@ -22,7 +22,7 @@ docs:
 
 tests:
 	@echo "Run unittests"
-	cd tests && python -m unittest discover -s . -t .
+	cd tests/ && python -m unittest discover -s . -t .
 
 check:
 	@echo "Check code using prospector... this may take a while"
@@ -30,4 +30,4 @@ check:
 
 black:
 	@echo "Automatically format code using Black"
-	black -l 78 .
+	black -l 78 . --extend-exclude templates
