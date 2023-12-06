@@ -1127,7 +1127,7 @@ class GuiCreator:
             template.create()
 
     def _create_test_modules(self):
-        modules = ["app", "utils", "mainwindow"]
+        modules = ["app", "mainwindow"]
         for module in modules:
             context = self.configuration.to_dict()
             context["module"] = {"name": module}

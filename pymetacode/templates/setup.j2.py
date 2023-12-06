@@ -44,10 +44,8 @@ setuptools.setup(
         "Development Status :: 4 - Beta",
     ],
     {%- if options.gui %}
-    entry_points = {
-        "gui_scripts": [
-            "{{ package.name }} = {{ package.name }}.gui.app:main"
-        ],
+    entry_points={
+        "gui_scripts": ["{{ package.name }} = {{ package.name }}.gui.app:main"],
     },
     {%- endif %}
     install_requires=[
