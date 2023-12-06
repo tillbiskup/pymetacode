@@ -38,7 +38,7 @@ The version number is contained in the file ``VERSION`` in the project root dire
 .. code-block:: bash
 
     #!/bin/sh
-    bash bin/incrementVersion.sh
+    ./bin/incrementVersion.sh
 
 
 Make sure to set it to executable and have a line break (aka: new or empty line) at the end of the file. Otherwise, you man run into trouble, i.e., not having your version number updated automatically with each commit.
@@ -86,6 +86,12 @@ In case you are installing the {{ package.name }} package in editable fashion (a
 .. code-block::
 
     pip install -e .[dev]
+
+To automatically format your Python code with every commit, use a git hook that calls the file ``bin/formatPythonFile.sh``. Git hooks reside in the directory ``.git/hooks``. The simplest would be to create a new file ``pre-commit`` with/add to the existing file in this directory the following content:
+
+.. code-block:: bash
+
+    ./bin/formatPythonFile.sh
 
 For static code analysis using Prospector, see the respective :ref:`section <sec_prospector>`.
 
