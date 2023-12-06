@@ -1076,6 +1076,7 @@ class GuiCreator:
         self._create_makefile()
         self._create_modules()
         self._create_test_modules()
+        self._add_tests()
         self._create_splash_file()
         self._copy_images()
         self._create_documentation()
@@ -1138,6 +1139,21 @@ class GuiCreator:
                 destination=os.path.join("tests", "gui", f"test_{module}.py"),
             )
             template.create()
+
+    def _add_tests(self):
+        classname = "MainWindow"
+        modulename = "mainwindow"
+        context = self.configuration.to_dict()
+        context["class"] = {"name": classname}
+        context["module"] = {"name": modulename}
+        filename = os.path.join("tests", "gui", f"test_{modulename}.py")
+        template = utils.Template(
+            path="code",
+            template="test_guiclass.j2.py",
+            context=context,
+            destination=filename,
+        )
+        template.append()
 
     def _create_splash_file(self):
         if not self.configuration.gui["splash"]:

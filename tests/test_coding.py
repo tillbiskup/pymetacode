@@ -1088,7 +1088,10 @@ class TestGuiCreator(unittest.TestCase):
             with open(filepath) as file:
                 contents = file.read()
             self.assertIn(
-                f"from {self.package} import gui.mainwindow", contents
+                f"from {self.package}.gui import mainwindow", contents
+            )
+            self.assertIn(
+                f"class TestMainWindow(unittest.TestCase)", contents
             )
 
     def test_create_creates_docs_subdirectory(self):
@@ -1406,7 +1409,7 @@ class TestGuiWindowCreator(unittest.TestCase):
             with open(filepath) as file:
                 contents = file.read()
             self.assertIn(
-                f"from {self.package} import gui.{self.creator.name}",
+                f"from {self.package}.gui import {self.creator.name}",
                 contents,
             )
 

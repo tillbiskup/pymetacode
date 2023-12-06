@@ -1,6 +1,5 @@
 import unittest
 
-import PySide6.QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from {{ package.name }}.gui import {{ module.name }}
-
