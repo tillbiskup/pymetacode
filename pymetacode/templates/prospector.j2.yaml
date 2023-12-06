@@ -22,6 +22,9 @@ pylint:
   options:
     max-attributes: 10
     max-module-lines: 1500
+    {%- if options.gui %}
+    extension-pkg-allow-list: PySide6
+    {%- endif %}
 
 pycodestyle:
   disable:

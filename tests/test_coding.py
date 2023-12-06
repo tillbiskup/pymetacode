@@ -360,6 +360,16 @@ class TestPackageCreator(unittest.TestCase):
         gui_path = os.path.join(self.name, self.name, "gui")
         self.assertTrue(os.path.exists(gui_path))
 
+    def test_create_with_gui_true_modifies_prospector_profile(self):
+        configuration = pymetacode.configuration.Configuration()
+        configuration.package["name"] = self.name
+        configuration.options["gui"] = True
+        self.creator.configuration = configuration
+        self.creator.create(name=self.name)
+        with open(os.path.join(self.name, ".prospector.yaml")) as file:
+            content = file.read()
+        self.assertIn("extension-pkg-allow-list: PySide6", content)
+
 
 class TestModuleCreator(unittest.TestCase):
     def setUp(self):

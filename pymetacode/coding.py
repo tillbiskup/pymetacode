@@ -193,11 +193,13 @@ class PackageCreator:
             file.write(contents)
 
     def _create_prospector_profile(self):
-        contents = utils.get_package_data("prospector.yaml")
-        with open(
-            os.path.join(self.name, ".prospector.yaml"), "w+", encoding="utf8"
-        ) as file:
-            file.write(contents)
+        template = utils.Template(
+            path="",
+            template="prospector.j2.yaml",
+            context=self.configuration.to_dict(),
+            destination=os.path.join(self.name, ".prospector.yaml"),
+        )
+        template.create()
 
     def _create_manifest_file(self):
         template = utils.Template(
