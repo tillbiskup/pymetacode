@@ -16,7 +16,6 @@ package:
   ]
   install_requires: [
     'jinja2',
-    'oyaml',
   ]
   git: True
 documentation:

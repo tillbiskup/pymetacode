@@ -113,6 +113,12 @@ class TestConfiguration(unittest.TestCase):
         self.configuration.from_dict(dict_)
         self.assertFalse(hasattr(self.configuration, attribute))
 
+    def test_from_dict_updates_dicts(self):
+        dict_ = self.configuration.to_dict()
+        dict_["package"].pop("license")
+        self.configuration.from_dict(dict_)
+        self.assertIn("license", self.configuration.package)
+
     def test_from_file_sets_properties(self):
         self.configuration.package["name"] = "foo"
         self.configuration.package["author"] = "John Doe"

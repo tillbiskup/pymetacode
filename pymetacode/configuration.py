@@ -155,6 +155,8 @@ class Configuration(utils.ToDictMixin):
                             getattr(self, key).append(element)
                     else:
                         getattr(self, key).append(value)
+                elif isinstance(getattr(self, key), dict):
+                    getattr(self, key).update(value)
                 else:
                     setattr(self, key, value)
         self._check_values()
