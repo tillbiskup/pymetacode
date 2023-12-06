@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Increment version number (last part of version string)
 # read from a file containing only the version number.
@@ -19,8 +19,8 @@
 # containing the version string will be checked for manual changes
 # and if there are any, the script will exit immediately.
 #
-# Copyright (c) 2017-21, Till Biskup
-# 2021-04-18
+# Copyright (c) 2017-23, Till Biskup
+# 2023-12-06
 
 # Some configuration
 VERSIONFILE="VERSION"
