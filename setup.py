@@ -50,7 +50,7 @@ setuptools.setup(
         "platformdirs",
     ],
     extras_require={
-        "dev": ["prospector", "pyroma", "bandit"],
+        "dev": ["prospector", "pyroma", "bandit", "black"],
         "docs": ["sphinx", "sphinx-rtd-theme", "sphinx-multiversion"],
         "deployment": ["wheel", "twine"],
     },
