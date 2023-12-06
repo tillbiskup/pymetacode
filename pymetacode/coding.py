@@ -162,6 +162,7 @@ class PackageCreator:
         self._create_manifest_file()
         self._create_setup_py_file()
         self._create_readme_file()
+        self._create_makefile()
         self._create_version_updater_file()
         self._create_python_formatter_file()
         self._create_documentation_stub()
@@ -250,6 +251,12 @@ class PackageCreator:
             destination=os.path.join(self.name, "README.rst"),
         )
         template.create()
+
+    def _create_makefile(self):
+        contents = utils.get_package_data("Makefile")
+        destination = os.path.join(self.name, "Makefile")
+        with open(destination, "w+", encoding="utf8") as file:
+            file.write(contents)
 
     def _create_version_updater_file(self):
         contents = utils.get_package_data("incrementVersion.sh")

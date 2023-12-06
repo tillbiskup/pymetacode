@@ -218,6 +218,10 @@ class TestPackageCreator(unittest.TestCase):
             contents = file.read()
         self.assertIn(self.name, contents)
 
+    def test_create_creates_makefile(self):
+        self.creator.create(name=self.name)
+        self.assertTrue(os.path.exists(os.path.join(self.name, "Makefile")))
+
     def test_create_creates_version_updater_file(self):
         self.creator.create(name=self.name)
         self.assertTrue(

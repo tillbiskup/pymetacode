@@ -27,6 +27,13 @@ New features
 
   * A git pre-commit hook is added formatting all currently staged files.
 
+* Makefile for automating recurring tasks during development
+
+  * create documentation using Sphinx
+  * run unittests
+  * check code using prospector
+  * format code using Black
+
 
 Changes
 -------
