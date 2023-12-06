@@ -15,8 +15,6 @@ For version 0.5
     * ``pymeta add dialog``
     * ``pymeta add widget``
 
-  * CLI command for GUI windows: add test class
-
   * Discriminate between ui and non-ui windows/dialogs/widgets
 
     * Two separate commands, one creating ui files for use with QtDesigner, the other for programmatically laid out windows/dialogs/widgets
