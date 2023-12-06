@@ -1447,6 +1447,7 @@ class GuiWindowCreator:
             warnings.warn(f"Window {self.name} exists already. Nothing done.")
             return
         self._create_window()
+        self._add_tests()
         self._create_api_documentation()
         self._add_api_documentation_to_toctree()
 
@@ -1491,6 +1492,19 @@ class GuiWindowCreator:
         #      '-o',
         #      os.path.join(self._src_dir, 'gui', 'ui', f'{self.name}.py')]
         # )
+
+    def _add_tests(self):
+        context = self.configuration.to_dict()
+        context["module"] = {"name": self.name}
+        context["class"] = {"name": self.class_name}
+        filename = os.path.join("tests", "gui", f"test_{self.name}.py")
+        template = utils.Template(
+            path="code",
+            template="test_guiclass.j2.py",
+            context=context,
+            destination=filename,
+        )
+        template.append()
 
     def _create_api_documentation(self):
         package = self.configuration.package["name"] + ".gui"

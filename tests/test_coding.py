@@ -1426,6 +1426,10 @@ class TestGuiWindowCreator(unittest.TestCase):
                 f"from {self.package}.gui import {self.creator.name}",
                 contents,
             )
+            self.assertIn(
+                f"class Test{self.creator.class_name}(unittest.TestCase)",
+                contents,
+            )
 
     def test_create_creates_api_documentation(self):
         with utils.change_working_dir(self.package):
