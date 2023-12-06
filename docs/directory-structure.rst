@@ -34,6 +34,8 @@ As there are different ways of how to eventually structure your package director
     │   └── __init__.py
     ├── .gitignore
     ├── LICENSE
+    ├── Makefile
+    ├── MANIFEST.in
     ├── .package_config.yaml
     ├── README.rst
     ├── setup.py
@@ -68,5 +70,6 @@ If you add a graphical user interface (GUI) to your package, the following addit
     └── tests
         ├── gui
         │   ├── __init__.py
+        │   ├── test_app.py
         │   └── test_mainwindow.py
         └── ...
