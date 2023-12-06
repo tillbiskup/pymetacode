@@ -1,7 +1,6 @@
 
 
 class Test{{ class.name }}(unittest.TestCase):
-
     def setUp(self):
         self.app = (
             QtWidgets.QApplication.instance() or QtWidgets.QApplication()
