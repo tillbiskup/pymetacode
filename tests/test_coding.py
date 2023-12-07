@@ -165,6 +165,7 @@ class TestPackageCreator(unittest.TestCase):
             contents = file.read()
         content_line = f'license="{configuration.package["license"]}"'
         self.assertIn(content_line, contents)
+        self.assertNotIn("BSD License", contents)
 
     def test_create_creates_readme_file(self):
         self.creator.create(name=self.name)

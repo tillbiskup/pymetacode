@@ -236,10 +236,18 @@ class PackageCreator:
             template.create()
 
     def _create_setup_py_file(self):
+        license_classifiers = {
+            "BSD": "BSD License",
+            "GPLv3": "GNU General Public License v3 (GPLv3)",
+        }
+        context = self.configuration.to_dict()
+        context["package"]["license_classifier"] = license_classifiers[
+            context["package"]["license"]
+        ]
         template = utils.Template(
             path="",
             template="setup.j2.py",
-            context=self.configuration.to_dict(),
+            context=context,
             destination=os.path.join(self.name, "setup.py"),
         )
         template.create()
@@ -260,7 +268,14 @@ class PackageCreator:
             file.write(contents)
 
     def _create_citation_cff_file(self):
+        license_classifiers = {
+            "BSD": "BSD-2-Clause",
+            "GPLv3": "GPL-3.0",
+        }
         context = self.configuration.to_dict()
+        context["package"]["license_classifier"] = license_classifiers[
+            context["package"]["license"]
+        ]
         author_entries = self.configuration.package["author"].split(",")
         context["authors"] = [
             {
@@ -268,6 +283,7 @@ class PackageCreator:
                 "given_names": name.rsplit(maxsplit=1)[0],
             }
             for name in author_entries
+            if name
         ]
         template = utils.Template(
             path="",
