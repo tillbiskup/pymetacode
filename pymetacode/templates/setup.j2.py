@@ -22,7 +22,7 @@ setuptools.setup(
         "Source": "{{ package.urls.source }}",
     },
     packages=setuptools.find_packages(exclude=("tests", "docs")),
-    license="BSD",
+    license="{{ package.license }}",
     keywords=[
         {%- if package.keywords %}
         {%- for item in package.keywords %}

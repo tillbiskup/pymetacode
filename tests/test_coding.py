@@ -156,6 +156,16 @@ class TestPackageCreator(unittest.TestCase):
         content_line = 'author="{}"'.format(configuration.package["author"])
         self.assertIn(content_line, contents)
 
+    def test_set_correct_license_in_setup_py_file(self):
+        configuration = pymetacode.configuration.Configuration()
+        configuration.package["license"] = "GPLv3"
+        self.creator.configuration = configuration
+        self.creator.create(name=self.name)
+        with open(os.path.join(self.name, "setup.py")) as file:
+            contents = file.read()
+        content_line = f'license="{configuration.package["license"]}"'
+        self.assertIn(content_line, contents)
+
     def test_create_creates_readme_file(self):
         self.creator.create(name=self.name)
         self.assertTrue(os.path.exists(os.path.join(self.name, "README.rst")))
