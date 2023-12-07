@@ -1,8 +1,11 @@
+import contextlib
 import datetime
+import io
 import os
 import shutil
 import unittest
 import warnings
+from unittest import mock
 
 from pymetacode import coding, utils
 import pymetacode.configuration
@@ -1270,7 +1273,9 @@ class TestGuiCreator(unittest.TestCase):
         self.creator.configuration = self.configuration
         self.create_package_structure()
         with utils.change_working_dir(self.package):
-            self.creator.create()
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                self.creator.create()
             filepath = "setup.py"
             with open(filepath) as file:
                 contents = file.read()
@@ -1292,7 +1297,9 @@ class TestGuiCreator(unittest.TestCase):
         self.creator.configuration = self.configuration
         self.create_package_structure()
         with utils.change_working_dir(self.package):
-            self.creator.create()
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                self.creator.create()
             filepath = "setup.py"
             with open(filepath) as file:
                 contents = file.read()
