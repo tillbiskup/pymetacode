@@ -232,6 +232,31 @@ class TestPackageCreator(unittest.TestCase):
         self.creator.create(name=self.name)
         self.assertTrue(os.path.exists(os.path.join(self.name, "Makefile")))
 
+    def test_create_creates_citation_cff_file(self):
+        self.creator.create(name=self.name)
+        self.assertTrue(
+            os.path.exists(os.path.join(self.name, "CITATION.cff"))
+        )
+
+    def test_create_fills_citation_cff_file(self):
+        self.creator.create(name=self.name)
+        with open(os.path.join(self.name, "CITATION.cff")) as file:
+            contents = file.read()
+        self.assertIn("cff-version:", contents)
+
+    def test_create_replaces_placeholders_in_citation_cff_file(self):
+        configuration = pymetacode.configuration.Configuration()
+        configuration.package["name"] = self.name
+        configuration.package["author"] = "John Doe"
+        self.creator.configuration = configuration
+        self.creator.create(name=self.name)
+        with open(os.path.join(self.name, "CITATION.cff")) as file:
+            contents = file.read()
+        author_family_names_line = "family-names: Doe"
+        author_given_names_line = "given-names: John"
+        self.assertIn(author_family_names_line, contents)
+        self.assertIn(author_given_names_line, contents)
+
     def test_create_creates_version_updater_file(self):
         self.creator.create(name=self.name)
         self.assertTrue(

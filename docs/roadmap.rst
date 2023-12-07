@@ -31,10 +31,6 @@ For version 0.6
 
   * Configuration: useful when newer versions of pymetacode change the structure of the configuration file.
 
-* CITATION.cff template?
-
-  * Would possibly need much more information in .package_config.yaml
-
 * Command for copying templates to user-specific/site-wide directory
 
 

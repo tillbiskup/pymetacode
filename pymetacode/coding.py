@@ -163,6 +163,7 @@ class PackageCreator:
         self._create_setup_py_file()
         self._create_readme_file()
         self._create_makefile()
+        self._create_citation_cff_file()
         self._create_version_updater_file()
         self._create_python_formatter_file()
         self._create_documentation_stub()
@@ -257,6 +258,24 @@ class PackageCreator:
         destination = os.path.join(self.name, "Makefile")
         with open(destination, "w+", encoding="utf8") as file:
             file.write(contents)
+
+    def _create_citation_cff_file(self):
+        context = self.configuration.to_dict()
+        author_entries = self.configuration.package["author"].split(",")
+        context["authors"] = [
+            {
+                "family_names": name.rsplit(maxsplit=1)[1],
+                "given_names": name.rsplit(maxsplit=1)[0],
+            }
+            for name in author_entries
+        ]
+        template = utils.Template(
+            path="",
+            template="CITATION.j2.cff",
+            context=context,
+            destination=os.path.join(self.name, "CITATION.cff"),
+        )
+        template.create()
 
     def _create_version_updater_file(self):
         contents = utils.get_package_data("incrementVersion.sh")

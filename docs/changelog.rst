@@ -34,6 +34,8 @@ New features
   * check code using prospector
   * format code using Black
 
+* CITATION.cff file with basic content
+
 
 Changes
 -------
