@@ -19,6 +19,24 @@ from {{ package.name }}.gui import mainwindow
 
 {% if gui.splash -%}
 def splash_screen():
+    """
+    Create a splash screen normally used during GUI startup.
+
+    Depending on the complexity of a GUI main window, startup may take some
+    time. Hence, it is good practice to present the user with a splash
+    screen as immediate feedback that something is happening in the background.
+
+    Usually, a splash screen will present an image and perhaps a message.
+
+    Returns
+    -------
+    splash : :class:`PySide6.QtWidgets.QSplashScreen`
+        Splash screen object
+
+        Necessary to interact with the splash screen, *e.g.*, set messages
+        and finally remove it from the screen.
+
+    """
     splash = QtWidgets.QSplashScreen(
         QtGui.QPixmap(qtbricks.utils.image_path("splash.svg"))
     )
