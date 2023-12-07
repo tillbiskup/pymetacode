@@ -383,7 +383,7 @@ class TestPackageCreator(unittest.TestCase):
         ) as file:
             content = file.read()
         self.assertIn("./bin/incrementVersion.sh", content)
-        self.assertIn("./bin/formatPythonFile.sh", content)
+        self.assertIn("./bin/formatPythonCode.sh", content)
         self.assertTrue(
             os.access(
                 os.path.join(self.name, ".git", "hooks", "pre-commit"),

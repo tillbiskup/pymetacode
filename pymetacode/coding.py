@@ -389,7 +389,7 @@ class PackageCreator:
                 with open("pre-commit", "w+", encoding="utf8") as file:
                     file.write("#!/bin/sh\n")
                     file.write("./bin/incrementVersion.sh\n")
-                    file.write("./bin/formatPythonFile.sh\n")
+                    file.write("./bin/formatPythonCode.sh\n")
                 utils.make_executable("pre-commit")
 
     def _create_gui(self):
