@@ -1,11 +1,8 @@
-import contextlib
 import datetime
-import io
 import os
 import shutil
 import unittest
 import warnings
-from unittest import mock
 
 from pymetacode import coding, utils
 import pymetacode.configuration

@@ -97,6 +97,8 @@ This would write the default configuration to "mypackage_config.yaml". You may w
 
 Now, you have a complete package that is installable and deployable. If you would like to know what directories and files have been created, have a look at the :doc:`package directory structure <directory-structure>`. Next is to add some modules to your newly created package.
 
+But before you add modules to your new package, you may want to make yourself familiar with the (helper) files created and double-check that the ``CITATION.cff`` file contains correct contents. In particular, check the author names in there, as the ``CITATION.cff`` format separates given and family names, whereas ``setup.py`` (and the pymetacode configuration file) do not. Furthermore, you may want to add your ORCID.
+
 
 .. hint::
 
