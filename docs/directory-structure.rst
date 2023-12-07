@@ -10,6 +10,7 @@ As there are different ways of how to eventually structure your package director
 
     mypackage
     ├── bin
+    │   ├── formatPythonCode.sh
     │   └── incrementVersion.sh
     ├── docs
     │   ├── api
@@ -32,6 +33,7 @@ As there are different ways of how to eventually structure your package director
     │   └── __init__.py
     ├── tests
     │   └── __init__.py
+    ├── CITATION.cff
     ├── .gitignore
     ├── LICENSE
     ├── Makefile
