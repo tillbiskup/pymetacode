@@ -432,6 +432,41 @@ class TestCli(unittest.TestCase):
                 self.cli.call(command="add", options=["subpackage", "foo"])
         self.assertIn('Added subpackage "foo"', cm.output[0])
 
+    def test_call_add_widget_adds_widget(self):
+        conf = configuration.Configuration()
+        conf.package["name"] = self.package_name
+        conf.to_file(self.config_filename)
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            self.cli.call(
+                command="create",
+                options=["package", "from", self.config_filename],
+            )
+        with utils.change_working_dir(self.package_name):
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.cli.call(command="add", options=["gui"])
+                self.cli.call(command="add", options=["widget", "test"])
+            self.assertTrue(
+                os.path.exists(
+                    os.path.join(self.package_name, "gui", "testwidget.py")
+                )
+            )
+
+    def test_call_add_widget_logs_success_message(self):
+        conf = configuration.Configuration()
+        conf.package["name"] = self.package_name
+        conf.to_file(self.config_filename)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.cli.call(
+                command="create",
+                options=["package", "from", self.config_filename],
+            )
+        with utils.change_working_dir(self.package_name):
+            with self.assertLogs(__package__, level="INFO") as cm:
+                self.cli.call(command="add", options=["gui"])
+                self.cli.call(command="add", options=["widget", "test"])
+        self.assertIn("Added testwidget to GUI", cm.output[1])
+
 
 class TestConsoleEntryPoint(unittest.TestCase):
     def tearDown(self):

@@ -292,6 +292,13 @@ class Cli:
         creator.create()
         logger.info('Added subpackage "%s"', creator.name)
 
+    def _command_add_widget(self, conf):
+        creator = coding.GuiWidgetCreator()
+        creator.name = self.options[1]
+        creator.configuration = conf
+        creator.create()
+        logger.info("Added %s to GUI", creator.name)
+
     def _command_help(self):
         if not self.options:
             self._print_help()
@@ -356,6 +363,7 @@ class Cli:
             command_name add <item>
             command_name add <item> to <module>
             command_name add window <window>
+            command_name add widget <widget>
 
         Possible items are:
             module
@@ -363,11 +371,13 @@ class Cli:
             function
             gui
             window
+            widget
 
         For "class" and "function", you need to provide the name of an 
         existing module these items should be added to.
 
-        For "window", you need to provide a name for the GUI window.
+        For "window" and "widget", you need to provide a name for the 
+        GUI window or widget, respectively.
         """
         self._output_help_text(help_text)
 

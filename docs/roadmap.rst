@@ -10,10 +10,9 @@ For version 0.5
 
 * GUI code
 
-  * additional subcommands for non-windows (dialogs, widgets)
+  * additional subcommand for dialogs
 
     * ``pymeta add dialog``
-    * ``pymeta add widget``
 
   * Discriminate between ui and non-ui windows/dialogs/widgets
 
@@ -37,7 +36,7 @@ For version 0.6
 For later versions
 ==================
 
-* Transition to ``pyproject.toml`` file
+* Transition config to ``pyproject.toml`` file
 
 * Templates specific to packages (*e.g.*, ASpecD)
 
