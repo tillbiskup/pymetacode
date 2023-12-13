@@ -1902,7 +1902,7 @@ class GuiWidgetCreator:
         ) * "="
         template = utils.Template(
             path="docs",
-            template="api_module.j2.rst",
+            template="api_gui_module.j2.rst",
             context=context,
             destination=filename,
         )

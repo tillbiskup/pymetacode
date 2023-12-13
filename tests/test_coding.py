@@ -1812,6 +1812,19 @@ class TestGuiWidgetCreator(unittest.TestCase):
             )
             self.assertTrue(os.path.exists(filename))
 
+    def test_api_documentation_does_not_show_inherited_members(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filename = os.path.join(
+                "docs",
+                "api",
+                "gui",
+                f"{self.package}.gui.{self.creator.name}.rst",
+            )
+            with open(filename) as file:
+                contents = file.read()
+            self.assertNotIn("inherited-members", contents)
+
     def test_create_warns_if_api_documentation_exists(self):
         with utils.change_working_dir(self.package):
             filename = os.path.join(
