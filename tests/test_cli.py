@@ -448,7 +448,7 @@ class TestCli(unittest.TestCase):
                 self.cli.call(command="add", options=["widget", "test"])
             self.assertTrue(
                 os.path.exists(
-                    os.path.join(self.package_name, "gui", "testwidget.py")
+                    os.path.join(self.package_name, "gui", "test_widget.py")
                 )
             )
 
@@ -465,7 +465,7 @@ class TestCli(unittest.TestCase):
             with self.assertLogs(__package__, level="INFO") as cm:
                 self.cli.call(command="add", options=["gui"])
                 self.cli.call(command="add", options=["widget", "test"])
-        self.assertIn("Added testwidget to GUI", cm.output[1])
+        self.assertIn("Added test_widget to GUI", cm.output[1])
 
 
 class TestConsoleEntryPoint(unittest.TestCase):
