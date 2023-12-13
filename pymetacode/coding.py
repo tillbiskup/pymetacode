@@ -1405,9 +1405,7 @@ class GuiWindowCreator:
     And even better, the API documentation will be updated as well for you.
 
 
-
     .. versionadded:: 0.4
-
 
     """
 
@@ -1713,4 +1711,211 @@ class SubpackageCreator:
             entries=[f"{self.name}/index"],
             sort=True,
             after="Subpackages",
+        )
+
+
+class GuiWidgetCreator:
+    """
+    Add a PySide6-based (Qt6) GUI widget to an existing GUI subpackage.
+
+    Actually, adding a GUI window consists of creating a number of files:
+
+    #. the module used to call the GUI window
+    #. the corresponding ui file defining the Qt layout of the window
+    #. an accompanying test module
+    #. the API documentation file
+
+    The latter gets added to the API toctree directive as well.
+
+    If you try to add an already existing GUI widget, a warning is raised
+    and no further action taken, in order *not* to overwrite existing code.
+
+
+    Attributes
+    ----------
+    configuration : :class:`pymetacode.configuration.Configuration`
+        Configuration as usually read from the configuration file.
+
+    Raises
+    ------
+    ValueError
+        Raised if no name is provided
+
+
+    Examples
+    --------
+    The following example demonstrates how to use the CLI from the terminal,
+    rather than how to use this class programmatically, as this is the
+    preferred and intended use case.
+
+    Prerequisite for using the CLI is to have the package configuration
+    stored within the package root directory in the file
+    ".project_configuration.yaml". This will be the case if the package has
+    been created by the CLI as well. Furthermore, all following CLI commands
+    need to be issued from *within* the root directory of your package.
+
+    .. code-block:: bash
+
+        pymeta add widget mywidget
+
+    This will add the GUI widget ``mywidget`` to the ``gui`` subpackage of
+    your package, together with the ``test_mywidget`` module in the
+    ``tests.gui`` directory. Furthermore, the API documentation will be
+    updated as well for you.
+
+
+    .. versionadded:: 0.5
+
+    """
+
+    def __init__(self):
+        self._name = ""
+        self._class_name = ""
+        self.configuration = configuration.Configuration()
+
+    @property
+    def name(self):
+        """
+        Name of the GUI widget to be created.
+
+        A suffix "widget" gets added if not present, and the name is
+        ensured to be in lowercase letters.
+
+        Returns
+        -------
+        name : :class:`str`
+            Name of the GUI widget to be created.
+
+        """
+        return self._name
+
+    @name.setter
+    def name(self, name=""):
+        if not name:
+            self._name = ""
+            self._class_name = ""
+        elif name.lower().endswith("widget"):
+            self._name = name.lower()
+            self._class_name = f"{self.name[:-6].capitalize()}Widget"
+        else:
+            self._name = f"{name}widget".lower()
+            self._class_name = f"{name.capitalize()}Widget"
+
+    @property
+    def class_name(self):
+        """
+        The name of the class containing the GUI widget.
+
+        Similar to :attr:`name`, but in CamelCase with the first letter
+        capitalised and the suffix "Widget".
+
+        Returns
+        -------
+        class_name : :class:`str`
+            The name of the class containing the GUI widget.
+
+        """
+        return self._class_name
+
+    def create(self, name=""):
+        """
+        Add a widget to an existing GUI.
+
+        Parameters
+        ----------
+        name : :class:`str`
+            Name of the widget to add.
+
+            If provided, this will set the :attr:`name` attribute of the
+            class.
+
+        """
+        if name:
+            self.name = name
+        if not self.name:
+            raise ValueError
+        if self._widget_exists():
+            warnings.warn(f"Window {self.name} exists already. Nothing done.")
+            return
+        self._create_widget()
+        self._add_tests()
+        self._create_api_documentation()
+        self._add_api_documentation_to_toctree()
+
+    def _widget_exists(self):
+        window_module = os.path.join(
+            self.configuration.package["name"], "gui", f"{self.name}.py"
+        )
+        return os.path.exists(window_module)
+
+    def _create_widget(self):
+        gui_dir = os.path.join(self.configuration.package["name"], "gui")
+        test_dir = os.path.join("tests", "gui")
+        files = [
+            {
+                "template": "gui_widget.j2.py",
+                "path": os.path.join(gui_dir, f"{self.name}.py"),
+            },
+            {
+                "template": "test_guimodule.j2.py",
+                "path": os.path.join(test_dir, f"test_{self.name}.py"),
+            },
+        ]
+        context = self.configuration.to_dict()
+        context["module"] = {"name": self.name}
+        context["class"] = {"name": self.class_name}
+        for file in files:
+            template = utils.Template(
+                path="code",
+                template=file["template"],
+                context=context,
+                destination=file["path"],
+            )
+            template.create()
+
+    def _add_tests(self):
+        context = self.configuration.to_dict()
+        context["module"] = {"name": self.name}
+        context["class"] = {"name": self.class_name}
+        filename = os.path.join("tests", "gui", f"test_{self.name}.py")
+        template = utils.Template(
+            path="code",
+            template="test_guiclass.j2.py",
+            context=context,
+            destination=filename,
+        )
+        template.append()
+
+    def _create_api_documentation(self):
+        package = self.configuration.package["name"] + ".gui"
+        filename = os.path.join(
+            "docs", "api", "gui", f"{package}.{self.name}.rst"
+        )
+        if os.path.exists(filename):
+            warnings.warn(f"File '{filename}' exists already")
+            return
+        context = self.configuration.to_dict()
+        context["package"] = {"name": package}
+        context["module"] = {"name": self.name}
+        context["header_extension"] = (
+            len(package) + len(self.name) + 1
+        ) * "="
+        template = utils.Template(
+            path="docs",
+            template="api_module.j2.rst",
+            context=context,
+            destination=filename,
+        )
+        template.create()
+
+    def _add_api_documentation_to_toctree(self):
+        index_filename = os.path.join("docs", "api", "gui", "index.rst")
+        if not os.path.exists(index_filename):
+            return
+
+        package = self.configuration.package["name"]
+        utils.add_to_toctree(
+            filename=index_filename,
+            entries=[f"{package}.gui.{self.name}"],
+            sort=True,
         )

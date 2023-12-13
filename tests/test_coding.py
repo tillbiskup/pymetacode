@@ -1661,3 +1661,200 @@ class TestSubpackageCreator(unittest.TestCase):
         with open(filename, encoding="utf8") as file:
             contents = file.read()
         self.assertIn(f"{self.name}/index", contents)
+
+
+class TestGuiWidgetCreator(unittest.TestCase):
+    def setUp(self):
+        self.creator = coding.GuiWidgetCreator()
+        self.package = "bar"
+        self.name = "foo"
+        self.configuration = pymetacode.configuration.Configuration()
+        self.configuration.package["name"] = self.package
+        self.creator.configuration = self.configuration
+        self.create_package_structure()
+
+    def tearDown(self):
+        if os.path.exists(self.configuration.package["name"]):
+            shutil.rmtree(self.configuration.package["name"])
+
+    def create_package_structure(self):
+        pkg = coding.PackageCreator()
+        pkg.name = self.package
+        pkg.create()
+        with utils.change_working_dir(self.package):
+            gui = coding.GuiCreator()
+            gui.configuration = self.configuration
+            gui.create()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_create_method(self):
+        self.assertTrue(hasattr(self.creator, "create"))
+        self.assertTrue(callable(self.creator.create))
+
+    def test_create_without_name_raises(self):
+        with self.assertRaises(ValueError):
+            self.creator.create()
+
+    def test_create_with_name_property_set(self):
+        self.creator.name = self.name
+        with utils.change_working_dir(self.package):
+            self.creator.create()
+
+    def test_setting_name_property_adds_widget_suffix(self):
+        self.creator.name = self.name
+        self.assertEqual(f"{self.name}widget", self.creator.name)
+
+    def test_setting_name_property_with_window_suffix(self):
+        self.creator.name = f"{self.name}widget"
+        self.assertEqual(f"{self.name}widget", self.creator.name)
+
+    def test_create_with_name_sets_name_property(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            self.assertEqual(f"{self.name}widget", self.creator.name)
+
+    def test_setting_name_sets_lowercase_name(self):
+        self.creator.name = "CamelCase"
+        self.assertEqual(f"{self.creator.name}".lower(), self.creator.name)
+
+    def test_setting_empty_name(self):
+        self.creator.name = "CamelCase"
+        self.creator.name = ""
+        self.assertEqual("", self.creator.name)
+
+    def test_setting_name_property_with_window_suffix_sets_lowercase(self):
+        self.creator.name = "CamelCaseWidget"
+        self.assertEqual("camelcasewidget", self.creator.name)
+
+    def test_set_class_name_from_window_name(self):
+        self.creator.name = f"{self.name}"
+        self.assertEqual(
+            f"{self.name.capitalize()}Widget", self.creator.class_name
+        )
+
+    def test_set_class_name_from_window_name_with_suffix(self):
+        self.creator.name = f"{self.name}widget"
+        self.assertEqual(
+            f"{self.name.capitalize()}Widget", self.creator.class_name
+        )
+
+    def test_set_empty_class_name_from_empty_name(self):
+        self.creator.name = "foo"
+        self.creator.name = ""
+        self.assertEqual("", self.creator.class_name)
+
+    def test_create_creates_widget_module(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            gui_path = os.path.join(self.package, "gui")
+            filepaths = [
+                os.path.join(gui_path, self.creator.name + ".py"),
+                os.path.join(
+                    "tests", "gui", "test_" + self.creator.name + ".py"
+                ),
+            ]
+            for filepath in filepaths:
+                with self.subTest(filepath=filepath):
+                    self.assertTrue(os.path.exists(filepath))
+
+    def test_create_fills_widget_module(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filepath = os.path.join(
+                self.package, "gui", self.creator.name + ".py"
+            )
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn("class ", contents)
+
+    def test_create_replaces_variables_in_widget_module(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filepath = os.path.join(
+                self.package, "gui", self.creator.name + ".py"
+            )
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn(
+                f"class {self.creator.class_name}(QtWidgets.QWidget)",
+                contents,
+            )
+
+    def test_create_fills_widget_unittest_file(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filepath = os.path.join(
+                "tests", "gui", "test_" + self.creator.name + ".py"
+            )
+            with open(filepath) as file:
+                contents = file.read()
+            self.assertIn(
+                f"from {self.package}.gui import {self.creator.name}",
+                contents,
+            )
+            self.assertIn(
+                f"class Test{self.creator.class_name}(unittest.TestCase)",
+                contents,
+            )
+
+    def test_create_creates_api_documentation(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filename = os.path.join(
+                "docs",
+                "api",
+                "gui",
+                f"{self.package}.gui.{self.creator.name}.rst",
+            )
+            self.assertTrue(os.path.exists(filename))
+
+    def test_create_warns_if_api_documentation_exists(self):
+        with utils.change_working_dir(self.package):
+            filename = os.path.join(
+                "docs",
+                "api",
+                "gui",
+                f"{self.package}.gui.{self.name}widget.rst",
+            )
+            with open(filename, "a") as file:
+                file.write("foo bar")
+            with warnings.catch_warnings(record=True) as w:
+                warnings.simplefilter("always")
+                self.creator.create(name=self.name)
+                self.assertTrue(w)
+
+    def test_create_replaces_placeholders_in_api_documentation(self):
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            filename = os.path.join(
+                "docs",
+                "api",
+                "gui",
+                f"{self.package}.gui.{self.creator.name}.rst",
+            )
+            with open(filename) as file:
+                contents = file.read()
+            content_line = f"{self.package}.gui.{self.creator.name}"
+            self.assertIn(content_line, contents)
+
+    def test_create_adds_documentation_to_api_toctree(self):
+        index_filename = os.path.join("docs", "api", "gui", "index.rst")
+        with utils.change_working_dir(self.package):
+            self.creator.create(name=self.name)
+            toctree_entry = f"{self.package}.gui.{self.creator.name}"
+            with open(index_filename) as file:
+                contents = file.read()
+            self.assertIn(toctree_entry, contents)
+
+    def test_create_already_existing_widget_warns_and_does_nothing(self):
+        gui_path = os.path.join(self.package, "gui")
+        widget_module = os.path.join(gui_path, self.name + "widget.py")
+        with utils.change_working_dir(self.package):
+            with open(widget_module, "w+", encoding="utf8") as file:
+                file.write("")
+            with warnings.catch_warnings(record=True) as w:
+                warnings.simplefilter("always")
+                self.creator.create(name=self.name)
+                self.assertTrue(w)
