@@ -1796,10 +1796,10 @@ class GuiWidgetCreator:
             self._class_name = ""
         elif name.lower().endswith("widget"):
             self._name = name.lower()
-            self._class_name = f"{self.name[:-6].capitalize()}Widget"
+            self._class_name = utils.underscore_to_camel_case(self.name)
         else:
-            self._name = f"{name}widget".lower()
-            self._class_name = f"{name.capitalize()}Widget"
+            self._name = f"{name}_widget".lower()
+            self._class_name = utils.underscore_to_camel_case(self.name)
 
     @property
     def class_name(self):

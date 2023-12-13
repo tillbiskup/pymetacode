@@ -1667,7 +1667,7 @@ class TestGuiWidgetCreator(unittest.TestCase):
     def setUp(self):
         self.creator = coding.GuiWidgetCreator()
         self.package = "bar"
-        self.name = "foo"
+        self.name = "foo_bar"
         self.configuration = pymetacode.configuration.Configuration()
         self.configuration.package["name"] = self.package
         self.creator.configuration = self.configuration
@@ -1704,16 +1704,16 @@ class TestGuiWidgetCreator(unittest.TestCase):
 
     def test_setting_name_property_adds_widget_suffix(self):
         self.creator.name = self.name
-        self.assertEqual(f"{self.name}widget", self.creator.name)
+        self.assertEqual(f"{self.name}_widget", self.creator.name)
 
     def test_setting_name_property_with_window_suffix(self):
-        self.creator.name = f"{self.name}widget"
-        self.assertEqual(f"{self.name}widget", self.creator.name)
+        self.creator.name = f"{self.name}_widget"
+        self.assertEqual(f"{self.name}_widget", self.creator.name)
 
     def test_create_with_name_sets_name_property(self):
         with utils.change_working_dir(self.package):
             self.creator.create(name=self.name)
-            self.assertEqual(f"{self.name}widget", self.creator.name)
+            self.assertEqual(f"{self.name}_widget", self.creator.name)
 
     def test_setting_name_sets_lowercase_name(self):
         self.creator.name = "CamelCase"
@@ -1724,20 +1724,22 @@ class TestGuiWidgetCreator(unittest.TestCase):
         self.creator.name = ""
         self.assertEqual("", self.creator.name)
 
-    def test_setting_name_property_with_window_suffix_sets_lowercase(self):
+    def test_setting_name_property_with_widget_suffix_sets_lowercase(self):
         self.creator.name = "CamelCaseWidget"
         self.assertEqual("camelcasewidget", self.creator.name)
 
-    def test_set_class_name_from_window_name(self):
+    def test_set_class_name_from_widget_name(self):
         self.creator.name = f"{self.name}"
         self.assertEqual(
-            f"{self.name.capitalize()}Widget", self.creator.class_name
+            f"{utils.underscore_to_camel_case(self.name)}Widget",
+            self.creator.class_name,
         )
 
-    def test_set_class_name_from_window_name_with_suffix(self):
-        self.creator.name = f"{self.name}widget"
+    def test_set_class_name_from_widget_name_with_suffix(self):
+        self.creator.name = f"{self.name}_widget"
         self.assertEqual(
-            f"{self.name.capitalize()}Widget", self.creator.class_name
+            f"{utils.underscore_to_camel_case(self.name)}Widget",
+            self.creator.class_name,
         )
 
     def test_set_empty_class_name_from_empty_name(self):
@@ -1816,7 +1818,7 @@ class TestGuiWidgetCreator(unittest.TestCase):
                 "docs",
                 "api",
                 "gui",
-                f"{self.package}.gui.{self.name}widget.rst",
+                f"{self.package}.gui.{self.name}_widget.rst",
             )
             with open(filename, "a") as file:
                 file.write("foo bar")
@@ -1850,7 +1852,7 @@ class TestGuiWidgetCreator(unittest.TestCase):
 
     def test_create_already_existing_widget_warns_and_does_nothing(self):
         gui_path = os.path.join(self.package, "gui")
-        widget_module = os.path.join(gui_path, self.name + "widget.py")
+        widget_module = os.path.join(gui_path, self.name + "_widget.py")
         with utils.change_working_dir(self.package):
             with open(widget_module, "w+", encoding="utf8") as file:
                 file.write("")
