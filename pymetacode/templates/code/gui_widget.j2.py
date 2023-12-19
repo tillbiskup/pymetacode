@@ -13,9 +13,6 @@ class {{ class.name }}(QtWidgets.QWidget):
     attr : :class:`None`
         Short description
 
-    cls.signal_name : :class:`QtCore.Signal`
-        Signal emitted when ...
-
     """
 
     def __init__(self):
