@@ -18,7 +18,11 @@ New features
 
   * Added GPLv3 as possible license
 
-* GUI code based on package qtbricks
+* GUI
+
+  * GUI code based on package qtbricks
+  * Creating/adding GUI widgets
+
 * Creating/adding subpackages
 
   * Adding modules, classes, and functions to subpackages using dot notation separating subpackage and module: mysubpackage.mymodule
@@ -36,12 +40,15 @@ New features
 
 * CITATION.cff file with basic content
 
+* Logo
+
 
 Changes
 -------
 
 * Rename gui subdirectory: 'data' -> 'images'
 * README and documentation index are now independent and differ slightly in their content.
+* Code reformatted using Black
 
 
 Fixes
