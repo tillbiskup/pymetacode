@@ -27,6 +27,10 @@ Currently, there are the following types of code generators:
 
   Add a PySide6-based (Qt6) GUI window to an existing GUI subpackage.
 
+* :class:`pymetacode.coding.GuiWidgetCreator`
+
+  Add a PySide6-based (Qt6) GUI widget to an existing GUI subpackage.
+
 * :class:`pymetacode.coding.SubpackageCreator`
 
   Add a subpackage to an existing package.

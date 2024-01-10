@@ -39,6 +39,7 @@ If you ever want to add a **graphical user interface (GUI)** to your project, th
 
     pymeta add gui
     pymeta add window mysubwindow
+    pymeta add widget mywidget
 
 See :doc:`usecases` for more examples. And now - happy coding!
 

@@ -167,3 +167,19 @@ Hence, the same window as above will get added with the command
     pymeta add window mysub
 
 Therefore, use whichever way you are more comfortable with.
+
+The same strategy applies for GUI widgets. To add a GUI widget, just type
+
+.. code-block:: bash
+
+    pymeta add widget fancywidget
+
+As widgets are always suffixed with "widget", you are not required to add the suffix "widget", but in case you do, it will be handled accordingly.
+
+Hence, the same widget as above will get added with the command
+
+.. code-block:: bash
+
+    pymeta add widget fancy
+
+Therefore, use whichever way you are more comfortable with.
