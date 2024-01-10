@@ -183,3 +183,19 @@ Hence, the same widget as above will get added with the command
     pymeta add widget fancy
 
 Therefore, use whichever way you are more comfortable with.
+
+Again, if you want to add dialogs, follow the same pattern:
+
+.. code-block:: bash
+
+    pymeta add dialog fancydialog
+
+As dialogs are always suffixed with "dialog", you are not required to add the suffix "dialog", but in case you do, it will be handled accordingly.
+
+Hence, the same dialog as above will get added with the command
+
+.. code-block:: bash
+
+    pymeta add dialog fancy
+
+Therefore, use whichever way you are more comfortable with.

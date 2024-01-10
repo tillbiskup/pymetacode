@@ -22,6 +22,7 @@ New features
 
   * GUI code based on package qtbricks
   * Creating/adding GUI widgets
+  * Creating/adding GUI dialogs
 
 * Creating/adding subpackages
 

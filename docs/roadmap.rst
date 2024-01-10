@@ -10,10 +10,6 @@ For version 0.5
 
 * GUI code
 
-  * additional subcommand for dialogs
-
-    * ``pymeta add dialog``
-
   * Discriminate between ui and non-ui windows/dialogs/widgets
 
     * Two separate commands, one creating ui files for use with QtDesigner, the other for programmatically laid out windows/dialogs/widgets

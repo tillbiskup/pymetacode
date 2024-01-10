@@ -299,6 +299,13 @@ class Cli:
         creator.create()
         logger.info("Added %s to GUI", creator.name)
 
+    def _command_add_dialog(self, conf):
+        creator = coding.GuiDialogCreator()
+        creator.name = self.options[1]
+        creator.configuration = conf
+        creator.create()
+        logger.info("Added %s to GUI", creator.name)
+
     def _command_help(self):
         if not self.options:
             self._print_help()
