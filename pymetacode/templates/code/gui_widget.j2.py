@@ -1,3 +1,15 @@
+"""
+Widget for ...
+
+**Purpose:** ...
+
+**Design principles:** The dialog should be as self-contained and
+self-consistent as possible...
+
+**Limitations:** ...
+
+"""
+
 from PySide6 import QtWidgets
 
 
@@ -35,8 +47,8 @@ class {{ class.name }}(QtWidgets.QWidget):
         #. Set the layout
         #. Connect the signals and slots
 
-         A requirement is to define all widgets as non-public attributes in
-         the class constructor. This comes with the advantage to separate
+        A requirement is to define all widgets as non-public attributes in
+        the class constructor. This comes with the advantage to separate
          the different tasks into methods.
         """
         self._set_widget_properties()
