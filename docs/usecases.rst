@@ -97,6 +97,8 @@ This would write the default configuration to "mypackage_config.yaml". You may w
 
 Now, you have a complete package that is installable and deployable. If you would like to know what directories and files have been created, have a look at the :doc:`package directory structure <directory-structure>`. Next is to add some modules to your newly created package.
 
+But before you add modules to your new package, you may want to make yourself familiar with the (helper) files created and double-check that the ``CITATION.cff`` file contains correct contents. In particular, check the author names in there, as the ``CITATION.cff`` format separates given and family names, whereas ``setup.py`` (and the pymetacode configuration file) do not. Furthermore, you may want to add your ORCID.
+
 
 .. hint::
 
@@ -163,5 +165,37 @@ Hence, the same window as above will get added with the command
 .. code-block:: bash
 
     pymeta add window mysub
+
+Therefore, use whichever way you are more comfortable with.
+
+The same strategy applies for GUI widgets. To add a GUI widget, just type
+
+.. code-block:: bash
+
+    pymeta add widget fancywidget
+
+As widgets are always suffixed with "widget", you are not required to add the suffix "widget", but in case you do, it will be handled accordingly.
+
+Hence, the same widget as above will get added with the command
+
+.. code-block:: bash
+
+    pymeta add widget fancy
+
+Therefore, use whichever way you are more comfortable with.
+
+Again, if you want to add dialogs, follow the same pattern:
+
+.. code-block:: bash
+
+    pymeta add dialog fancydialog
+
+As dialogs are always suffixed with "dialog", you are not required to add the suffix "dialog", but in case you do, it will be handled accordingly.
+
+Hence, the same dialog as above will get added with the command
+
+.. code-block:: bash
+
+    pymeta add dialog fancy
 
 Therefore, use whichever way you are more comfortable with.

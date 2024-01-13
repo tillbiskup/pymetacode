@@ -1,9 +1,11 @@
 Installation
 ============
 
-Installing the {{ package.name }} package is as simple as installing any other Python package, as {{ package.name }} is available from the `Python Package Index (PyPI) <https://www.pypi.org/>`_. Simply open a terminal on your computer and type::
+Installing the {{ package.name }} package is as simple as installing any other Python package, as {{ package.name }} is available from the `Python Package Index (PyPI) <https://www.pypi.org/>`_. Simply open a terminal on your computer and type:
 
-  pip install {{ package.name }}
+.. code-block:: bash
+
+    pip install {{ package.name }}
 
 This will install the {{ package.name }} package (and all its dependencies) on your computer.
 
@@ -37,7 +39,7 @@ The good news: Creating Python virtual environments is fairly simple:
 
 .. code-block:: bash
 
-    python -m venv {{ package.name }}
+    python3 -m venv {{ package.name }}
 
 This will create a Python virtual environment named ``{{ package.name }}`` in the current directory. Of course, you can give your virtual environment any name you like. However, be careful with spaces and special characters, depending on your system.
 

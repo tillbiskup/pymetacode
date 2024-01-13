@@ -10,30 +10,40 @@ Virtual environment
 
 The whole development should take place inside a virtual python environment that should be located *outside* the project directory.
 
-To create a new virtual python environment, open a terminal and change to a a directory where the virtual environment should reside. Then type something like::
+To create a new virtual python environment, open a terminal and change to a a directory where the virtual environment should reside. Then type something like:
 
-  virtualenv pymetacode
+.. code-block:: bash
 
-or alternatively::
+    virtualenv pymetacode
 
-  python3 -m venv pymetacode
+or alternatively:
 
-This will create a virtual environment in the directory "pymetacode". To activate this virtual environment, use::
+.. code-block:: bash
 
-  source pymetacode/bin/activate
+    python3 -m venv pymetacode
 
-To deactivate, the command would simply be::
+This will create a virtual environment in the directory "pymetacode". To activate this virtual environment, use:
 
-  deactivate
+.. code-block:: bash
+
+    source pymetacode/bin/activate
+
+To deactivate, the command would simply be:
+
+.. code-block:: bash
+
+    deactivate
 
 
 Autoincrementing version numbers
 ================================
 
-The version number is contained in the file ``VERSION`` in the project root directory. To automatically increment the version number with every commit, use a git hook that calls the file ``bin/incrementVersion.sh``. Git hooks reside in the directory ``.git/hooks``. The simplest would be to create a new file ``pre-commit`` in this directory with the following content::
+The version number is contained in the file ``VERSION`` in the project root directory. To automatically increment the version number with every commit, use a git hook that calls the file ``bin/incrementVersion.sh``. Git hooks reside in the directory ``.git/hooks``. The simplest would be to create a new file ``pre-commit`` in this directory with the following content:
 
-  #!/bin/sh
-  bash bin/incrementVersion.sh
+.. code-block:: bash
+
+    #!/bin/sh
+    ./bin/incrementVersion.sh
 
 
 Make sure to set it to executable and have a line break (aka: new or empty line) at the end of the file. Otherwise, you man run into trouble, i.e., not having your version number updated automatically with each commit.
@@ -46,15 +56,49 @@ The pymetacode package follows good practice of the Python community regarding d
 
 (This) documentation resides inside the ``docs`` directory of the project root. The auto-generated :doc:`API documentation <api/index>` is in its own directory.
 
-A general overview of the overall package structure::
+A general overview of the overall package structure:
 
-  bin/
-  pymetacode/
-  docs/
-      api/
-  tests/
+.. code-block:: bash
+
+    bin/
+    pymetacode/
+    docs/
+        api/
+    tests/
 
 
+Code formatting
+===============
+
+Generally, code formatting follows :pep:`8` guidelines. Given that PySide does *not* follow these guidelines in several aspects, this leads to mixing different conventions. However, whenever own code is concerned, stick to the :pep:`8` guidelines.
+
+A consistent code formatting is enforced using `Black <https://black.readthedocs.io/>`_, with the only change to the default settings being the line width of 78 characters (as compared to the standard of 88 characters). Use ``black -l 78`` on the command line, or, preferably, configure Black in your IDE. For PyCharm (starting with 2023.2), the settings can be found in ``Preferences`` | ``Settings`` > ``Tools`` > ``Black``. Here, set ``-l 78`` as command-line options via the ``Settings`` edit field. For older PyCharm versions or other IDEs/editors see the `official Black documentation <https://black.readthedocs.io/en/stable/integrations/editors.html>`_.
+
+To use Black, it needs to be installed. Either install it separately
+
+.. code-block:: bash
+
+    pip install black
+
+or install the pymetacode package with the appropriate dependencies:
+
+.. code-block:: bash
+
+    pip install pymetacode[dev]
+
+In case you are installing the pymetacode package in editable fashion (as usual for development purposes), use the following command from *within* the package directory (*i.e.*, the one containing the ``setup.py`` file):
+
+.. code-block::
+
+    pip install -e .[dev]
+
+To automatically format your Python code with every commit, use a git hook that calls the file ``bin/formatPythonFile.sh``. Git hooks reside in the directory ``.git/hooks``. The simplest would be to create a new file ``pre-commit`` with/add to the existing file in this directory the following content:
+
+.. code-block:: bash
+
+    ./bin/formatPythonFile.sh
+
+For static code analysis using Prospector, see the respective :ref:`section <sec_prospector>`.
 
 
 Docstring format
@@ -79,11 +123,26 @@ Setting up the documentation build system
 The documentation is built using `Sphinx <https://sphinx-doc.org/>`_, `Python <https://python.org/>`_. Building requires using a shell, for example ``bash``.
 
 
-To install the necessary Python dependencies, create a virtual environment, e.g., with ``virtualenv <environment>``, and activate it afterwards with ``<environment>/bin/activate``. Then install the dependencies using ``pip``::
+To install the necessary Python dependencies, create a virtual environment, e.g., with ``virtualenv <environment>``, and activate it afterwards with ``<environment>/bin/activate``. Then install the dependencies using ``pip``:
+
+.. code-block:: bash
 
     pip install sphinx
     pip install sphinx-rtd-theme
     pip install sphinx-multiversion
+
+
+Alternatively, you may simply install pymetacode with the required dependencies:
+
+.. code-block:: bash
+
+    pip install pymetacode[docs]
+
+In case you are installing the pymetacode package in editable fashion (as usual for development purposes), use the following command from *within* the package directory (*i.e.*, the one containing the ``setup.py`` file):
+
+.. code-block::
+
+    pip install -e .[docs]
 
 
 To build the documentation:
@@ -98,16 +157,30 @@ To build the documentation for all releases and the current master branch:
   * ``cd`` to ``docs/``, then run ``make multiversion``. (To clean previously built documentation, run ``make clean`` first).
 
 
+.. _sec_prospector:
+
 Static code analysis with Prospector
 ====================================
 
-Static code analysis can be performed using `Prospector <http://prospector.landscape.io/en/master/>`_. First, install the necessary tools into the virtual environment created for the pymetacode package::
+Static code analysis can be performed using `Prospector <http://prospector.landscape.io/en/master/>`_. First, install the necessary tools into the virtual environment created for the pymetacode package:
+
+.. code-block:: bash
 
     pip install prospector[with_pyroma]
 
 The optional arguments ensure that all necessary dependencies are installed as well.
 
-Afterwards, simply run Prospector from a terminal from within your project root::
+Alternatively, you may simply install pymetacode with the relevant dependencies:
+
+.. code-block:: bash
+
+    pip install pymetacode[dev]
+
+The optional arguments ensure that all necessary dependencies are installed as well.
+
+Afterwards, simply run Prospector from a terminal from within your project root:
+
+.. code-block:: bash
 
     prospector
 

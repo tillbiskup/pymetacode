@@ -3,6 +3,7 @@
 
 ignore-paths:
   - templates
+  - build
 
 inherits:
   - strictness_high
@@ -21,6 +22,16 @@ pylint:
   options:
     max-attributes: 10
     max-module-lines: 1500
+    {%- if options.gui %}
+    extension-pkg-allow-list: PySide6
+    {%- endif %}
+
+pycodestyle:
+  disable:
+    - E203
+    - W503
+  enable:
+    - W504
 
 pyroma:
   run: true

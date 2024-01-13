@@ -15,3 +15,6 @@ The structure of this configuration file is documented below. Most of the fields
 
 .. literalinclude:: package_config.yaml
    :language: yaml
+
+
+For details of the meaning of the individual fields and settings, have a look at the documentation of the :class:`pymetacode.configuration.Configuration` class.

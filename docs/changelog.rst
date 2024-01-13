@@ -5,6 +5,62 @@ Changelog
 This page contains a summary of changes between the official pymetacode releases. Only the biggest changes are listed here. A complete and detailed log of all changes is available through the `GitHub Repository Browser <https://github.com/tillbiskup/pymetacode>`_.
 
 
+Version 0.5.0
+=============
+
+Released 2024-01-13
+
+
+New features
+------------
+
+* Configuration option for license (default: "BSD")
+
+  * Added GPLv3 as possible license
+
+* GUI
+
+  * GUI code based on package qtbricks
+  * Creating/adding GUI widgets
+  * Creating/adding GUI dialogs
+
+* Creating/adding subpackages
+
+  * Adding modules, classes, and functions to subpackages using dot notation separating subpackage and module: mysubpackage.mymodule
+
+* Automatic code formatting using Black
+
+  * A git pre-commit hook is added formatting all currently staged files.
+
+* Makefile for automating recurring tasks during development
+
+  * create documentation using Sphinx
+  * run unittests
+  * check code using prospector
+  * format code using Black
+
+* CITATION.cff file with basic content
+
+* Logo
+
+
+Changes
+-------
+
+* Rename gui subdirectory: 'data' -> 'images'
+* README and documentation index are now independent and differ slightly in their content.
+* Code reformatted using Black
+
+
+Fixes
+-----
+
+* Makefile in gui subdirectory: indentation with tabs
+* app.py: add missing imports
+* MANIFEST.in includes package name for recursive-include
+* setup.py includes "include_package_data" statement
+
+
 Version 0.4.0
 =============
 

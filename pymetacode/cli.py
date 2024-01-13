@@ -159,12 +159,12 @@ class Cli:
     """
 
     def __init__(self):
-        self.command = ''
+        self.command = ""
         self.options = []
-        self.conf_file = 'package_config.yaml'
-        self._command_name = 'pymeta'
+        self.conf_file = "package_config.yaml"
+        self._command_name = "pymeta"
 
-    def call(self, command='', options=None):
+    def call(self, command="", options=None):
         """
         Execute a given command with the given options (if any).
 
@@ -187,15 +187,18 @@ class Cli:
         if not self.command:
             self._print_help()
         else:
-            method = f'_command_{self.command}'
+            method = f"_command_{self.command}"
             if hasattr(self, method):
                 getattr(self, method)()
             else:
                 self._print_help()
 
     def _command_write(self):
-        if not self.options or not self.options[0] == "config" \
-                or (len(self.options) > 2 and not self.options[1] == "to"):
+        if (
+            not self.options
+            or not self.options[0] == "config"
+            or (len(self.options) > 2 and not self.options[1] == "to")
+        ):
             self._print_write_help()
             return
         conf = configuration.Configuration()
@@ -205,8 +208,11 @@ class Cli:
         logger.info('Wrote configuration to file "%s"', self.conf_file)
 
     def _command_create(self):
-        if not self.options or not self.options[0] == "package" \
-                or not self.options[1] == "from":
+        if (
+            not self.options
+            or not self.options[0] == "package"
+            or not self.options[1] == "from"
+        ):
             self._print_create_help()
             return
         conf_file = self.options[2]
@@ -214,21 +220,25 @@ class Cli:
         conf.from_file(conf_file)
         creator = coding.PackageCreator()
         creator.configuration = conf
-        creator.name = conf.package['name']
+        creator.name = conf.package["name"]
         creator.create()
-        shutil.copyfile(conf_file,
-                        os.path.join(conf.package['name'],
-                                     '.package_config.yaml'))
-        logger.info('Created package "%s" in directory "%s"',
-                    conf.package['name'], conf.package['name'])
+        shutil.copyfile(
+            conf_file,
+            os.path.join(conf.package["name"], ".package_config.yaml"),
+        )
+        logger.info(
+            'Created package "%s" in directory "%s"',
+            conf.package["name"],
+            conf.package["name"],
+        )
 
     def _command_add(self):
         if not self.options:
             self._print_add_help()
             return
-        method = f'_command_add_{self.options[0]}'
+        method = f"_command_add_{self.options[0]}"
         if hasattr(self, method):
-            conf_file = '.package_config.yaml'
+            conf_file = ".package_config.yaml"
             conf = configuration.Configuration()
             conf.from_file(conf_file)
             getattr(self, method)(conf)
@@ -248,8 +258,9 @@ class Cli:
         creator.name = self.options[1]
         creator.module = self.options[3]
         creator.create()
-        logger.info('Added class "%s" to module "%s"', creator.name,
-                    creator.module)
+        logger.info(
+            'Added class "%s" to module "%s"', creator.name, creator.module
+        )
 
     def _command_add_function(self, conf):
         creator = coding.FunctionCreator()
@@ -257,27 +268,49 @@ class Cli:
         creator.name = self.options[1]
         creator.module = self.options[3]
         creator.create()
-        logger.info('Added function "%s" to module "%s"', creator.name,
-                    creator.module)
+        logger.info(
+            'Added function "%s" to module "%s"', creator.name, creator.module
+        )
 
     def _command_add_gui(self, conf):
         creator = coding.GuiCreator()
         creator.configuration = conf
         creator.create()
-        logger.info('Added GUI')
+        logger.info("Added GUI")
 
     def _command_add_window(self, conf):
         creator = coding.GuiWindowCreator()
         creator.name = self.options[1]
         creator.configuration = conf
         creator.create()
-        logger.info('Added %s to GUI', creator.name)
+        logger.info("Added %s to GUI", creator.name)
+
+    def _command_add_subpackage(self, conf):
+        creator = coding.SubpackageCreator()
+        creator.name = self.options[1]
+        creator.configuration = conf
+        creator.create()
+        logger.info('Added subpackage "%s"', creator.name)
+
+    def _command_add_widget(self, conf):
+        creator = coding.GuiWidgetCreator()
+        creator.name = self.options[1]
+        creator.configuration = conf
+        creator.create()
+        logger.info("Added %s to GUI", creator.name)
+
+    def _command_add_dialog(self, conf):
+        creator = coding.GuiDialogCreator()
+        creator.name = self.options[1]
+        creator.configuration = conf
+        creator.create()
+        logger.info("Added %s to GUI", creator.name)
 
     def _command_help(self):
         if not self.options:
             self._print_help()
         else:
-            help_method = f'_print_{self.options[0]}_help'
+            help_method = f"_print_{self.options[0]}_help"
             getattr(self, help_method)()
 
     def _print_help(self):
@@ -337,6 +370,7 @@ class Cli:
             command_name add <item>
             command_name add <item> to <module>
             command_name add window <window>
+            command_name add widget <widget>
 
         Possible items are:
             module
@@ -344,17 +378,22 @@ class Cli:
             function
             gui
             window
+            widget
 
         For "class" and "function", you need to provide the name of an 
         existing module these items should be added to.
 
-        For "window", you need to provide a name for the GUI window.
+        For "window" and "widget", you need to provide a name for the 
+        GUI window or widget, respectively.
         """
         self._output_help_text(help_text)
 
-    def _output_help_text(self, help_text=''):
-        print(help_text.replace('        ', '').replace('command_name',
-                                                        self._command_name))
+    def _output_help_text(self, help_text=""):
+        print(
+            help_text.replace("        ", "").replace(
+                "command_name", self._command_name
+            )
+        )
 
 
 def cli():

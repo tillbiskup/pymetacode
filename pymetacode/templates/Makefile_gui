@@ -9,4 +9,4 @@ all: uic
 uic: $(UIPY_FILES)
 
 $(UIPY_FILES): $(UI_DIR)/%.py: $(UI_DIR)/%.ui
-    $(UIC) $< -o $@
+	$(UIC) $< -o $@

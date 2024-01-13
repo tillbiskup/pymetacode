@@ -1,5 +1,5 @@
 
-.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.8370310.svg
+.. image:: images/zenodo.8370310.svg
    :target: https://doi.org/10.5281/zenodo.8370310
    :align: right
 
@@ -33,12 +33,14 @@ Once you have your package structure, you can **add modules, classes, and functi
     pymeta add class MyClass to mymodule
     pymeta add function my_function to mymodule
 
-If you ever want to add a graphical user interface (GUI) to your project, this is (now) possible as well:
+If you ever want to add a **graphical user interface (GUI)** to your project, this is (now) possible as well:
 
 .. code-block:: bash
 
     pymeta add gui
     pymeta add window mysubwindow
+    pymeta add widget mywidget
+    pymeta add dialog mydialog
 
 See :doc:`usecases` for more examples. And now - happy coding!
 
@@ -68,6 +70,11 @@ And to make it even more convenient for users and future-proof:
 * Developed fully test-driven
 
 * Extensive user and API documentation
+
+
+.. hint::
+
+    Just in case you wondered: Yes, pymetacode is maintained using pymetacode itself.
 
 
 Where to start
@@ -114,6 +121,7 @@ This program is free software: you can redistribute it and/or modify it under th
 
    configuration
    directory-structure
+   templates
 
 .. toctree::
    :maxdepth: 2

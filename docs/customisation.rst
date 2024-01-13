@@ -18,3 +18,5 @@ Therefore, if you place a template in either of the first two places and adjust 
 
 The actual locations of the user-specific and site-wide data directories are operating-system specific. For details, see the documentation of the `platformdirs package <https://pypi.org/project/platformdirs/>`_ that gets used internally and provides paths for all major platforms (Windows, macOS, Linux/Unix).
 
+While you as a user are free to customise these templates according to your needs, regarding the pattern search and replace options you are pretty much stuck with what is implemented in the respective classes and passed as "context" to the Jinja template engine. As a rule of thumb, the entire :doc:`configuration <configuration>` is passed as context to each template.
+

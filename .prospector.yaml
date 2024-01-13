@@ -3,6 +3,7 @@
 
 ignore-paths:
   - templates
+  - pymetacode/templates
   - build
 
 inherits:
@@ -21,7 +22,14 @@ pep257:
 pylint:
   options:
     max-attributes: 10
-    max-module-lines: 1500
+    max-module-lines: 2500
+
+pycodestyle:
+  disable:
+    - E203
+    - W503
+  enable:
+    - W504
 
 pyroma:
   run: true
