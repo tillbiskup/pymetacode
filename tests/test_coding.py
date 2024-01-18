@@ -785,6 +785,13 @@ class TestClassCreator(unittest.TestCase):
                 str(w[0].message),
             )
 
+    def test_create_checks_for_exact_class_name_not_only_prefix(self):
+        self.creator.create(name=f"{self.name}Foo", module=self.module)
+        with warnings.catch_warnings(record=True) as warning:
+            warnings.simplefilter("always")
+            self.creator.create(name=self.name, module=self.module)
+            self.assertFalse(warning)
+
     def test_create_with_subpackage_creates_class_in_module(self):
         self.subpackage = "foobar"
         self.create_subpackage()

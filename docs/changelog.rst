@@ -11,6 +11,12 @@ Version 0.6.0
 Not yet released
 
 
+Fixes
+-----
+
+* :class:`pymetacode.coding.ClassCreator` properly checks for existing class, not only for an existing class starting with the name of the class to be added.
+
+
 Version 0.5.0
 =============
 
