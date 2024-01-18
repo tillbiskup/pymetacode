@@ -16,6 +16,8 @@ Fixes
 
 * :class:`pymetacode.coding.ClassCreator` properly checks for existing class, not only for an existing class starting with the name of the class to be added.
 
+* :class:`pymetacode.coding.FunctionCreator` properly checks for existing function, not only for an existing function starting with the name of the function to be added.
+
 
 Version 0.5.0
 =============
