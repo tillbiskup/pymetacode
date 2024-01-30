@@ -368,7 +368,8 @@ class Cli:
         help_text = """
         Usage for add command:
             command_name add <item>
-            command_name add <item> to <module>
+            command_name add <item> <name>
+            command_name add <item> <name> to <module>
             command_name add window <window>
             command_name add widget <widget>
 
