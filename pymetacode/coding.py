@@ -755,7 +755,10 @@ class ClassCreator:
     def _class_exists_in_module(self):
         with open(self._module_filename, encoding="utf8") as file:
             contents = file.read()
-        return f"class {self.name}" in contents
+        return any(
+            name in contents
+            for name in [f"class {self.name}:", f"class {self.name}("]
+        )
 
     def _create_class(self):
         context = self.configuration.to_dict()
@@ -923,7 +926,10 @@ class FunctionCreator:
     def _function_exists_in_module(self):
         with open(self._module_filename, encoding="utf8") as file:
             contents = file.read()
-        return f"def {self.name}" in contents
+        return any(
+            name in contents
+            for name in [f"def {self.name}:", f"def {self.name}("]
+        )
 
     def _create_function(self):
         context = self.configuration.to_dict()

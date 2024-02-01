@@ -785,6 +785,25 @@ class TestClassCreator(unittest.TestCase):
                 str(w[0].message),
             )
 
+    def test_create_checks_for_exact_class_name_not_only_prefix(self):
+        self.creator.create(name=f"{self.name}Foo", module=self.module)
+        with warnings.catch_warnings(record=True) as warning:
+            warnings.simplefilter("always")
+            self.creator.create(name=self.name, module=self.module)
+            self.assertFalse(warning)
+
+    def test_create_checks_for_exact_class_name_with_bracket(self):
+        module_name = os.path.join(self.package, f"{self.module}.py")
+        with open(module_name, "w") as file:
+            file.write(f"class {self.name}(foo):")
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.creator.create(name=self.name, module=self.module)
+            self.assertIn(
+                f"Class {self.name} exists already in " f"{self.module}.",
+                str(w[0].message),
+            )
+
     def test_create_with_subpackage_creates_class_in_module(self):
         self.subpackage = "foobar"
         self.create_subpackage()
@@ -910,6 +929,25 @@ class TestFunctionCreator(unittest.TestCase):
 
     def test_create_existing_function_in_module_issues_warning(self):
         self.creator.create(name=self.name, module=self.module)
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.creator.create(name=self.name, module=self.module)
+            self.assertIn(
+                f"Function {self.name} exists already in " f"{self.module}.",
+                str(w[0].message),
+            )
+
+    def test_create_checks_for_exact_function_name_not_only_prefix(self):
+        self.creator.create(name=f"{self.name}Foo", module=self.module)
+        with warnings.catch_warnings(record=True) as warning:
+            warnings.simplefilter("always")
+            self.creator.create(name=self.name, module=self.module)
+            self.assertFalse(warning)
+
+    def test_create_checks_for_exact_function_name_with_bracket(self):
+        module_name = os.path.join(self.package, f"{self.module}.py")
+        with open(module_name, "w") as file:
+            file.write(f"def {self.name}(foo):")
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             self.creator.create(name=self.name, module=self.module)

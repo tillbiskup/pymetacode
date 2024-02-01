@@ -72,6 +72,10 @@ setuptools.setup(
             "sphinx-rtd-theme",
             "sphinx_multiversion",
         ],
+        "deployment": [
+            "build",
+            "twine",
+        ],
     },
     python_requires=">=3.7",
     include_package_data=True,

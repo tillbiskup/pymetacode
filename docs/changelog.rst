@@ -5,6 +5,20 @@ Changelog
 This page contains a summary of changes between the official pymetacode releases. Only the biggest changes are listed here. A complete and detailed log of all changes is available through the `GitHub Repository Browser <https://github.com/tillbiskup/pymetacode>`_.
 
 
+Version 0.5.1
+=============
+
+Released 2024-02-01
+
+
+Fixes
+-----
+
+* :class:`pymetacode.coding.ClassCreator` properly checks for existing class, not only for an existing class starting with the name of the class to be added.
+
+* :class:`pymetacode.coding.FunctionCreator` properly checks for existing function, not only for an existing function starting with the name of the function to be added.
+
+
 Version 0.5.0
 =============
 
