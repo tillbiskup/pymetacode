@@ -11,6 +11,12 @@ Version 0.6.0
 Not yet released
 
 
+Version 0.5.1
+=============
+
+Released 2024-02-01
+
+
 Fixes
 -----
 
