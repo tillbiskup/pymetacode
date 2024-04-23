@@ -8,6 +8,10 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.6
 ===============
 
+* Fixes
+
+  * Submodules are not yet properly handled in import statement in test modules and in API documentation.
+
 * GUI code
 
   * Discriminate between ui and non-ui windows/dialogs/widgets
