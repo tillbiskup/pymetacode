@@ -10,7 +10,6 @@ For version 0.6
 
 * Fixes
 
-  * Submodules are not yet properly handled in import statement in test modules and in API documentation.
   * Nested submodules/subpackages do not work yet.
 
 * GUI code
