@@ -10,6 +10,11 @@ Version 0.6.0
 
 Not yet released
 
+Fixes
+-----
+
+* Submodules are properly handled in import statement in test modules and in API documentation.
+
 
 Version 0.5.1
 =============

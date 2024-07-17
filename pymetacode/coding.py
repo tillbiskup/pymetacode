@@ -559,6 +559,10 @@ class ModuleCreator:
             return
         context = self.configuration.to_dict()
         context["module"] = {"name": self.name}
+        if self.subpackage:
+            context["package"]["name"] = ".".join(
+                [context["package"]["name"], self.subpackage]
+            )
         template = utils.Template(
             path="code",
             template="test_module.j2.py",
@@ -1691,7 +1695,9 @@ class SubpackageCreator:
         package_name = self.configuration.package["name"]
         context = self.configuration.to_dict()
         context["subpackage"] = {"name": f"{package_name}.{self.name}"}
-        context["header_extension"] = (len(package_name) + 4) * "="
+        context["header_extension"] = (
+            len(package_name) + len(self.name) + 1
+        ) * "="
         template = utils.Template(
             path="docs",
             template="api_subpackage_index.j2.rst",

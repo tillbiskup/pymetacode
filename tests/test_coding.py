@@ -634,6 +634,20 @@ class TestModuleCreator(unittest.TestCase):
         path = os.path.join("tests", subpackage, f"test_{self.name}.py")
         self.assertTrue(os.path.exists(path), f"{path} does not exist")
 
+    def test_create_with_dot_adds_subpackage_to_import_in_test_module(self):
+        subpackage = "foobar"
+        os.mkdir(os.path.join(self.configuration.package["name"], subpackage))
+        os.mkdir(os.path.join("tests", subpackage))
+        os.mkdir(os.path.join("docs", "api", subpackage))
+        self.creator.create(name=".".join([subpackage, self.name]))
+        path = os.path.join("tests", subpackage, f"test_{self.name}.py")
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn(
+            ".".join([self.configuration.package["name"], subpackage]),
+            contents,
+        )
+
     def test_create_with_dot_and_missing_subpackage_issues_warning(self):
         subpackage = "foobar"
         with warnings.catch_warnings(record=True) as w:
@@ -1677,6 +1691,13 @@ class TestSubpackageCreator(unittest.TestCase):
         self.assertTrue(
             os.path.exists(filename), f"'{filename}' has not been created"
         )
+
+    def test_subpackage_api_documentation_has_correct_markup(self):
+        self.creator.create(name=self.name)
+        filename = os.path.join("docs", "api", self.name, "index.rst")
+        with open(filename) as file:
+            contents = file.readlines()
+        self.assertEqual(len(contents[0]), len(contents[1]))
 
     def test_create_adds_subpackages_section_to_api_doc_index(self):
         self.creator.create(name=self.name)
