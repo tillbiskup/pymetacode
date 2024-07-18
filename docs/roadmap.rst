@@ -8,10 +8,6 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.6
 ===============
 
-* Fixes
-
-  * Nested submodules/subpackages do not work yet.
-
 * GUI code
 
   * Discriminate between ui and non-ui windows/dialogs/widgets

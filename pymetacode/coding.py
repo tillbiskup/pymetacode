@@ -523,18 +523,18 @@ class ModuleCreator:
 
     def _assign_subpackage(self):
         if "." in self.name:
-            self.subpackage, self.name = self.name.split(".")
+            self.subpackage, self.name = self.name.rsplit(".", maxsplit=1)
 
     def _subpackage_exists(self):
         subpackage_path = os.path.join(
-            self.configuration.package["name"], self.subpackage
+            self.configuration.package["name"], *self.subpackage.split(".")
         )
         return os.path.exists(subpackage_path)
 
     def _create_module(self):
         filename = os.path.join(
             self.configuration.package["name"],
-            self.subpackage,
+            *self.subpackage.split("."),
             self.name + ".py",
         )
         if os.path.exists(filename):
@@ -552,7 +552,7 @@ class ModuleCreator:
 
     def _create_test_module(self):
         filename = os.path.join(
-            "tests", self.subpackage, f"test_{self.name}.py"
+            "tests", *self.subpackage.split("."), f"test_{self.name}.py"
         )
         if os.path.exists(filename):
             warnings.warn(f"Module '{filename}' exists already")
@@ -576,7 +576,7 @@ class ModuleCreator:
         filename = os.path.join(
             "docs",
             "api",
-            self.subpackage,
+            *self.subpackage.split("."),
             ".".join(
                 [
                     item
@@ -589,9 +589,13 @@ class ModuleCreator:
             warnings.warn(f"File '{filename}' exists already")
             return
         context = self.configuration.to_dict()
-        context["module"] = {"name": self.name}
+        if self.subpackage:
+            module_name = ".".join([self.subpackage, self.name])
+        else:
+            module_name = self.name
+        context["module"] = {"name": module_name}
         context["header_extension"] = (
-            len(package) + len(self.name) + 1
+            len(package) + len(module_name) + 1
         ) * "="
         template = utils.Template(
             path="docs",
@@ -603,7 +607,7 @@ class ModuleCreator:
 
     def _add_api_documentation_to_toctree(self):
         index_filename = os.path.join(
-            "docs", "api", self.subpackage, "index.rst"
+            "docs", "api", *self.subpackage.split("."), "index.rst"
         )
         if not os.path.exists(index_filename):
             return
@@ -1673,20 +1677,20 @@ class SubpackageCreator:
 
     def _subpackage_exists(self):
         directory = os.path.join(
-            self.configuration.package["name"], self.name
+            self.configuration.package["name"], *self.name.split(".")
         )
         return os.path.exists(directory) and os.path.isdir(directory)
 
     def _create_directories(self):
         directories = [self.configuration.package["name"], "tests"]
         for directory in directories:
-            directory = os.path.join(directory, self.name)
-            os.mkdir(directory)
+            directory = os.path.join(directory, *self.name.split("."))
+            os.makedirs(directory)
             init_filename = os.path.join(directory, "__init__.py")
             utils.ensure_file_exists(init_filename)
 
     def _create_documentation(self):
-        os.mkdir(os.path.join("docs", "api", self.name))
+        os.makedirs(os.path.join("docs", "api", *self.name.split(".")))
         self._create_documentation_index()
         self._add_subpackage_block_to_documentation_index()
         self._add_api_documentation_to_toctree()
@@ -1702,7 +1706,9 @@ class SubpackageCreator:
             path="docs",
             template="api_subpackage_index.j2.rst",
             context=context,
-            destination=os.path.join("docs", "api", self.name, "index.rst"),
+            destination=os.path.join(
+                "docs", "api", *self.name.split("."), "index.rst"
+            ),
         )
         template.create()
 
@@ -1728,7 +1734,7 @@ class SubpackageCreator:
             return
         utils.add_to_toctree(
             filename=index_filename,
-            entries=[f"{self.name}/index"],
+            entries=[f"{self.name.replace('.', '/')}/index"],
             sort=True,
             after="Subpackages",
         )

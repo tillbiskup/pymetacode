@@ -10,6 +10,13 @@ Version 0.6.0
 
 Not yet released
 
+
+New features
+------------
+
+* Support for nested submodules/subpackages
+
+
 Fixes
 -----
 
