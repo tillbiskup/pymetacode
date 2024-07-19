@@ -482,8 +482,23 @@ class ModuleCreator:
 
     This will add a module "mymodule" to the subpackage "mysubpackage" of
     your package, together with a "test_mymodule" module in the
-    "mysubpackage" subirectory of the "tests" directory. And even better,
-    the API documentation will be updated as well for you.
+    "mysubpackage" subdirectory of the "tests" directory. And even better,
+    the API documentation will be updated for you as well.
+
+    This can even be cascaded and used for nested subpackages:
+
+    .. code-block:: bash
+
+        pymeta add module mysubpackage.mysubsubpackage.mymodule
+
+    This will add a module "mymodule" to the subpackage "mysubsubpackage" of
+    the subpackage "mysubpackage" of your package, together with a
+    "test_mymodule" module in the "mysubpackage/mysubsubpackage" subdirectory
+    of the "tests" directory. And even better, the API documentation will be
+    updated for you as well.
+
+    .. versionchanged:: 0.6
+        Support for nested subpackages
 
     """
 
@@ -703,6 +718,23 @@ class ClassCreator:
     minimalistic setup and first test (for implementation of the class)
     that gets you started with writing further tests.
 
+    This can even be cascaded and used for nested subpackages:
+
+    .. code-block:: bash
+
+        pymeta add class MyClass to mysubpackage.mysubsubpackage.mymodule
+
+    This will add the class "MyClass" to the module "mymodule" in the
+    subpackage "mysubsubpackage" in the subpackage "mysubpackage", together
+    with a test class in the "test_mymodule" module in the respective
+    "mysubpackage/mysubsubpackage" directory. The class will come with a
+    basic docstring, and the test class with a minimalistic setup and first
+    test (for implementation of the class) that gets you started with
+    writing further tests.
+
+    .. versionchanged:: 0.6
+        Support for nested subpackages
+
     """
 
     def __init__(self):
@@ -750,9 +782,9 @@ class ClassCreator:
             raise ValueError("Module name missing")
         package = self.configuration.package["name"]
         if "." in self.module:
-            self.subpackage, self.module = self.module.split(".")
+            self.subpackage, self.module = self.module.rsplit(".", maxsplit=1)
         self._module_filename = os.path.join(
-            package, self.subpackage, f"{self.module}.py"
+            package, *self.subpackage.split("."), f"{self.module}.py"
         )
         if not os.path.exists(self._module_filename):
             raise ValueError(f"Module {self.module} does not exist")
@@ -788,7 +820,7 @@ class ClassCreator:
         }
         context["module"] = {"name": self.module}
         filename = os.path.join(
-            "tests", self.subpackage, f"test_{self.module}.py"
+            "tests", *self.subpackage.split("."), f"test_{self.module}.py"
         )
         template = utils.Template(
             path="code",
@@ -874,6 +906,22 @@ class FunctionCreator:
     minimalistic setup and first test that gets you started with writing
     further tests.
 
+    This can even be cascaded and used for nested subpackages:
+
+    .. code-block:: bash
+
+        pymeta add function my_function to mysubpackage.mysubsubpackage.mymodule
+
+    This will add the function "my_function" to the module "mymodule" in the
+    subpackage "mysubsubpackage" in the subpackage "mysubpackage", together
+    with a test class in the "test_mymodule" module in the respective
+    "mysubpackage/mysubsubpackage" directory. The function will come with a
+    basic docstring, and the test class with a minimalistic setup and first
+    test that gets you started with writing further tests.
+
+    .. versionchanged:: 0.6
+        Support for nested subpackages
+
     """
 
     def __init__(self):
@@ -920,10 +968,10 @@ class FunctionCreator:
         elif not self.module:
             raise ValueError("Module name missing")
         if "." in self.module:
-            self.subpackage, self.module = self.module.split(".")
+            self.subpackage, self.module = self.module.rsplit(".", maxsplit=1)
         package = self.configuration.package["name"]
         self._module_filename = os.path.join(
-            package, self.subpackage, f"{self.module}.py"
+            package, *self.subpackage.split("."), f"{self.module}.py"
         )
         if not os.path.exists(self._module_filename):
             raise ValueError(f"Module {self.module} does not exist")
@@ -959,7 +1007,7 @@ class FunctionCreator:
         }
         context["module"] = {"name": self.module}
         filename = os.path.join(
-            "tests", self.subpackage, f"test_{self.module}.py"
+            "tests", *self.subpackage.split("."), f"test_{self.module}.py"
         )
         template = utils.Template(
             path="code",
@@ -1639,12 +1687,26 @@ class SubpackageCreator:
 
         pymeta add subpackage mysubpackage
 
-    This will add a module "mysubpackage" to your package, together with a
+    This will add a subpackage "mysubpackage" to your package, together with a
     "mysubpackage" subpackage in the "tests" subdirectory. And even better,
-    the API documentation will be updated as well for you.
+    the API documentation will be updated for you as well.
 
+    This can even be cascaded and used for nested subpackages. In this case,
+    simply use the familiar dot notation for separating subpackages:
+
+    .. code-block:: bash
+
+        pymeta add subpackage mysubpackage.mysubsubpackage
+
+    This will add a subpackage "mysubsubpackage" to the subpackage
+    "mysubpackage" in your package, together with a
+    "mysubpackage/mysubsubpackage" subpackage in the "tests" subdirectory.
+    And even better, the API documentation will be updated for you as well.
 
     .. versionadded:: 0.5
+
+    .. versionchanged:: 0.6
+        Support for nested subpackages
 
     """
 

@@ -943,6 +943,37 @@ class TestClassCreator(unittest.TestCase):
             "class Test{}(unittest.TestCase):".format(self.name), contents
         )
 
+    def test_create_with_subsubpackage_creates_class_in_module(self):
+        self.subpackage = "subpkga.subpkgb"
+        self.create_subpackage()
+        self.create_module(module=".".join([self.subpackage, self.module]))
+        self.creator.create(
+            name=self.name, module=".".join([self.subpackage, self.module])
+        )
+        path = os.path.join(
+            self.package, *self.subpackage.split("."), self.module + ".py"
+        )
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn('class {}:\n    """'.format(self.name), contents)
+
+    def test_create_with_subsubpackage_creates_test_class_in_test_module(self):
+        self.subpackage = "subpkga.subpkgb"
+        self.create_subpackage()
+        self.create_module(module=".".join([self.subpackage, self.module]))
+        self.creator.create(
+            name=self.name, module=".".join([self.subpackage, self.module])
+        )
+        path = os.path.join(
+            "tests", *self.subpackage.split("."), "test_{}.py".format(
+                self.module)
+        )
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn(
+            "class Test{}(unittest.TestCase):".format(self.name), contents
+        )
+
 
 class TestFunctionCreator(unittest.TestCase):
     def setUp(self):
@@ -1088,6 +1119,38 @@ class TestFunctionCreator(unittest.TestCase):
         )
         path = os.path.join(
             "tests", self.subpackage, "test_{}.py".format(self.module)
+        )
+        with open(path) as file:
+            contents = file.read()
+        camel = utils.underscore_to_camel_case(self.name)
+        self.assertIn(
+            "class Test{}(unittest.TestCase):".format(camel), contents
+        )
+
+    def test_create_with_subsubpackage_creates_function_in_module(self):
+        self.subpackage = "subpkga.subpkgb"
+        self.create_subpackage()
+        self.create_module(module=".".join([self.subpackage, self.module]))
+        self.creator.create(
+            name=self.name, module=".".join([self.subpackage, self.module])
+        )
+        path = os.path.join(
+            self.package, *self.subpackage.split("."), self.module + ".py"
+        )
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn('def {}():\n    """'.format(self.name), contents)
+
+    def test_create_with_subsubpackage_creates_test_class_in_test_module(self):
+        self.subpackage = "subpkga.subpkgb"
+        self.create_subpackage()
+        self.create_module(module=".".join([self.subpackage, self.module]))
+        self.creator.create(
+            name=self.name, module=".".join([self.subpackage, self.module])
+        )
+        path = os.path.join(
+            "tests", *self.subpackage.split("."), "test_{}.py".format(
+                self.module)
         )
         with open(path) as file:
             contents = file.read()
