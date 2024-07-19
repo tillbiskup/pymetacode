@@ -20,6 +20,8 @@ For version 0.7
 
   * Support for nested subpackages, *i.e.* GUI subpackage not in package root
 
+  * Document templates used for GUI code
+
 * Update command (*e.g.*, for configuration, setup.py)
 
   * Configuration: useful when newer versions of pymetacode change the structure of the configuration file.

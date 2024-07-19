@@ -33,6 +33,12 @@ Once you have your package structure, you can **add modules, classes, and functi
     pymeta add class MyClass to mymodule
     pymeta add function my_function to mymodule
 
+Sometimes, **adding subpackages** to your package for further structuring the code seems sensible. Same here, from *within the package's root directory*:
+
+.. code-block:: bash
+
+    pymeta add subpackage mysubpackage
+
 If you ever want to add a **graphical user interface (GUI)** to your project, this is (now) possible as well:
 
 .. code-block:: bash
@@ -52,7 +58,7 @@ A list of features:
 
 * Create initial package structure (directory layout, files)
 
-* Add module, class, and function scaffolds to an existing project, including tests and API documentation
+* Add subpackage, module, class, and function scaffolds to an existing project, including tests and API documentation
 
 * Add initial (Qt) GUI subpackage structure (directory layout, files)
 

@@ -1703,6 +1703,11 @@ class SubpackageCreator:
     "mysubpackage/mysubsubpackage" subpackage in the "tests" subdirectory.
     And even better, the API documentation will be updated for you as well.
 
+    .. note::
+        If you like to create nested subpackages as described above,
+        make sure to sequentially create all intermediate subpackages.
+        Otherwise, you subpackage will *not* be created and a warning issued.
+
     .. versionadded:: 0.5
 
     .. versionchanged:: 0.6
@@ -1734,7 +1739,12 @@ class SubpackageCreator:
         if self._subpackage_exists():
             warnings.warn(f"Subpackage '{self.name}' exists already")
             return
-        self._create_directories()
+        try:
+            self._create_directories()
+        except FileNotFoundError:
+            warnings.warn(f"Subpackage '{self.name}' cannot be created - "
+                          f"missing intermediate directory?")
+            return
         self._create_documentation()
 
     def _subpackage_exists(self):
@@ -1747,7 +1757,7 @@ class SubpackageCreator:
         directories = [self.configuration.package["name"], "tests"]
         for directory in directories:
             directory = os.path.join(directory, *self.name.split("."))
-            os.makedirs(directory)
+            os.mkdir(directory)
             init_filename = os.path.join(directory, "__init__.py")
             utils.ensure_file_exists(init_filename)
 
@@ -1791,14 +1801,22 @@ class SubpackageCreator:
         template.append()
 
     def _add_api_documentation_to_toctree(self):
-        index_filename = os.path.join("docs", "api", "index.rst")
+        index_filename = os.path.join(
+            "docs", "api", ".".join(self.name.split(".")[:-1]), "index.rst"
+        )
         if not os.path.exists(index_filename):
             return
+        if "." in self.name:
+            path_to_docs = ".".join(self.name.split(".")[1:]).replace('.', '/')
+            after = ""
+        else:
+            path_to_docs = self.name.replace('.', '/')
+            after = "Subpackage"
         utils.add_to_toctree(
             filename=index_filename,
-            entries=[f"{self.name.replace('.', '/')}/index"],
+            entries=[f"{path_to_docs}/index"],
             sort=True,
-            after="Subpackages",
+            after=after
         )
 
 
