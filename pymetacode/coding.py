@@ -390,7 +390,9 @@ class PackageCreator:
 
     def _git_init(self):
         if self.configuration.options["git"]:
-            subprocess.run(["git", "init"], cwd=self.name, check=False)
+            subprocess.run(
+                ["git", "init"], cwd=self.name, check=False
+            )  # nosec
             with utils.change_working_dir(
                 os.path.join(self.name, ".git", "hooks")
             ):
@@ -1742,8 +1744,10 @@ class SubpackageCreator:
         try:
             self._create_directories()
         except FileNotFoundError:
-            warnings.warn(f"Subpackage '{self.name}' cannot be created - "
-                          f"missing intermediate directory?")
+            warnings.warn(
+                f"Subpackage '{self.name}' cannot be created - "
+                f"missing intermediate directory?"
+            )
             return
         self._create_documentation()
 
@@ -1807,16 +1811,18 @@ class SubpackageCreator:
         if not os.path.exists(index_filename):
             return
         if "." in self.name:
-            path_to_docs = ".".join(self.name.split(".")[1:]).replace('.', '/')
+            path_to_docs = ".".join(self.name.split(".")[1:]).replace(
+                ".", "/"
+            )
             after = ""
         else:
-            path_to_docs = self.name.replace('.', '/')
+            path_to_docs = self.name.replace(".", "/")
             after = "Subpackage"
         utils.add_to_toctree(
             filename=index_filename,
             entries=[f"{path_to_docs}/index"],
             sort=True,
-            after=after
+            after=after,
         )
 
 

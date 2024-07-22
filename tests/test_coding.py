@@ -1934,7 +1934,7 @@ class TestSubpackageCreator(unittest.TestCase):
         )
         with open(filename, encoding="utf8") as file:
             contents = file.read()
-        path_to_docs = ".".join(self.name.split(".")[1:]).replace('.', '/')
+        path_to_docs = ".".join(self.name.split(".")[1:]).replace(".", "/")
         self.assertIn(f"{path_to_docs}/index", contents)
 
 
