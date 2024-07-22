@@ -139,6 +139,32 @@ Again, function and test class will be added to your package.
 In both cases, class and function, a minimum documentation header will be created as well, just to make it easier to properly document your code.
 
 
+.. hint::
+
+    All these commands work with (nested) subpackages as well. Just use the familiar dot notation for the module names, *e.g.* ``mysubpackage.mymodule``. For details on how to create subpackages, see below.
+
+
+Adding subpackages
+==================
+
+All following commands need to be issued from *within* the root directory of your new package.
+
+.. code-block:: bash
+
+    pymeta add subpackage mysubpackage
+
+will add a subpackage "mysubpackage" to your package, together with a "mysubpackage" directory in the "tests" subdirectory. And even better, the API documentation will be updated for you as well.
+
+This works similarly for nested subpackages. However, note that you need to *first* create the intermediate subpackage(s). Hence, a possible sequence of commands would be:
+
+.. code-block:: bash
+
+    pymeta add subpackage mysubpackage
+    pymeta add subpackage mysubpackage.mysubsubpackage
+
+But why would one want to add nested subpackages? Suppose you had a rather complicated Python package in mind and wanted to separate functional and technical layers, with the former being the first line of organisation of your package. A typical layer structure for technical layers according to Jacobson would be "boundaries", "controllers", and "entities" (BCE). Hence, for each functional layer you would end up with (at least) three technical layers. All these could be modelled as subpackages in Python. In such cases, however, it might be sensible to import the facades of the individual functional layers to the main namespace of your package for easier access by the users.
+
+
 Adding a GUI and GUI windows
 ============================
 

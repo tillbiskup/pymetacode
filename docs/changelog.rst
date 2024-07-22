@@ -5,6 +5,24 @@ Changelog
 This page contains a summary of changes between the official pymetacode releases. Only the biggest changes are listed here. A complete and detailed log of all changes is available through the `GitHub Repository Browser <https://github.com/tillbiskup/pymetacode>`_.
 
 
+Version 0.6.0
+=============
+
+Released 2024-06-22
+
+
+New features
+------------
+
+* Support for nested submodules/subpackages
+
+
+Fixes
+-----
+
+* Submodules are properly handled in import statement in test modules and in API documentation.
+
+
 Version 0.5.1
 =============
 

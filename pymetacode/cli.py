@@ -374,6 +374,7 @@ class Cli:
             command_name add widget <widget>
 
         Possible items are:
+            subpackage
             module
             class
             function

@@ -390,7 +390,9 @@ class PackageCreator:
 
     def _git_init(self):
         if self.configuration.options["git"]:
-            subprocess.run(["git", "init"], cwd=self.name, check=False)
+            subprocess.run(
+                ["git", "init"], cwd=self.name, check=False
+            )  # nosec
             with utils.change_working_dir(
                 os.path.join(self.name, ".git", "hooks")
             ):
@@ -482,8 +484,23 @@ class ModuleCreator:
 
     This will add a module "mymodule" to the subpackage "mysubpackage" of
     your package, together with a "test_mymodule" module in the
-    "mysubpackage" subirectory of the "tests" directory. And even better,
-    the API documentation will be updated as well for you.
+    "mysubpackage" subdirectory of the "tests" directory. And even better,
+    the API documentation will be updated for you as well.
+
+    This can even be cascaded and used for nested subpackages:
+
+    .. code-block:: bash
+
+        pymeta add module mysubpackage.mysubsubpackage.mymodule
+
+    This will add a module "mymodule" to the subpackage "mysubsubpackage" of
+    the subpackage "mysubpackage" of your package, together with a
+    "test_mymodule" module in the "mysubpackage/mysubsubpackage" subdirectory
+    of the "tests" directory. And even better, the API documentation will be
+    updated for you as well.
+
+    .. versionchanged:: 0.6
+        Support for nested subpackages
 
     """
 
@@ -523,18 +540,18 @@ class ModuleCreator:
 
     def _assign_subpackage(self):
         if "." in self.name:
-            self.subpackage, self.name = self.name.split(".")
+            self.subpackage, self.name = self.name.rsplit(".", maxsplit=1)
 
     def _subpackage_exists(self):
         subpackage_path = os.path.join(
-            self.configuration.package["name"], self.subpackage
+            self.configuration.package["name"], *self.subpackage.split(".")
         )
         return os.path.exists(subpackage_path)
 
     def _create_module(self):
         filename = os.path.join(
             self.configuration.package["name"],
-            self.subpackage,
+            *self.subpackage.split("."),
             self.name + ".py",
         )
         if os.path.exists(filename):
@@ -552,13 +569,17 @@ class ModuleCreator:
 
     def _create_test_module(self):
         filename = os.path.join(
-            "tests", self.subpackage, f"test_{self.name}.py"
+            "tests", *self.subpackage.split("."), f"test_{self.name}.py"
         )
         if os.path.exists(filename):
             warnings.warn(f"Module '{filename}' exists already")
             return
         context = self.configuration.to_dict()
         context["module"] = {"name": self.name}
+        if self.subpackage:
+            context["package"]["name"] = ".".join(
+                [context["package"]["name"], self.subpackage]
+            )
         template = utils.Template(
             path="code",
             template="test_module.j2.py",
@@ -572,7 +593,7 @@ class ModuleCreator:
         filename = os.path.join(
             "docs",
             "api",
-            self.subpackage,
+            *self.subpackage.split("."),
             ".".join(
                 [
                     item
@@ -585,9 +606,13 @@ class ModuleCreator:
             warnings.warn(f"File '{filename}' exists already")
             return
         context = self.configuration.to_dict()
-        context["module"] = {"name": self.name}
+        if self.subpackage:
+            module_name = ".".join([self.subpackage, self.name])
+        else:
+            module_name = self.name
+        context["module"] = {"name": module_name}
         context["header_extension"] = (
-            len(package) + len(self.name) + 1
+            len(package) + len(module_name) + 1
         ) * "="
         template = utils.Template(
             path="docs",
@@ -599,7 +624,7 @@ class ModuleCreator:
 
     def _add_api_documentation_to_toctree(self):
         index_filename = os.path.join(
-            "docs", "api", self.subpackage, "index.rst"
+            "docs", "api", *self.subpackage.split("."), "index.rst"
         )
         if not os.path.exists(index_filename):
             return
@@ -695,6 +720,23 @@ class ClassCreator:
     minimalistic setup and first test (for implementation of the class)
     that gets you started with writing further tests.
 
+    This can even be cascaded and used for nested subpackages:
+
+    .. code-block:: bash
+
+        pymeta add class MyClass to mysubpackage.mysubsubpackage.mymodule
+
+    This will add the class "MyClass" to the module "mymodule" in the
+    subpackage "mysubsubpackage" in the subpackage "mysubpackage", together
+    with a test class in the "test_mymodule" module in the respective
+    "mysubpackage/mysubsubpackage" directory. The class will come with a
+    basic docstring, and the test class with a minimalistic setup and first
+    test (for implementation of the class) that gets you started with
+    writing further tests.
+
+    .. versionchanged:: 0.6
+        Support for nested subpackages
+
     """
 
     def __init__(self):
@@ -742,9 +784,9 @@ class ClassCreator:
             raise ValueError("Module name missing")
         package = self.configuration.package["name"]
         if "." in self.module:
-            self.subpackage, self.module = self.module.split(".")
+            self.subpackage, self.module = self.module.rsplit(".", maxsplit=1)
         self._module_filename = os.path.join(
-            package, self.subpackage, f"{self.module}.py"
+            package, *self.subpackage.split("."), f"{self.module}.py"
         )
         if not os.path.exists(self._module_filename):
             raise ValueError(f"Module {self.module} does not exist")
@@ -780,7 +822,7 @@ class ClassCreator:
         }
         context["module"] = {"name": self.module}
         filename = os.path.join(
-            "tests", self.subpackage, f"test_{self.module}.py"
+            "tests", *self.subpackage.split("."), f"test_{self.module}.py"
         )
         template = utils.Template(
             path="code",
@@ -866,6 +908,22 @@ class FunctionCreator:
     minimalistic setup and first test that gets you started with writing
     further tests.
 
+    This can even be cascaded and used for nested subpackages:
+
+    .. code-block:: bash
+
+        pymeta add function my_function to mysubpackage.mysubsubpackage.mymodule
+
+    This will add the function "my_function" to the module "mymodule" in the
+    subpackage "mysubsubpackage" in the subpackage "mysubpackage", together
+    with a test class in the "test_mymodule" module in the respective
+    "mysubpackage/mysubsubpackage" directory. The function will come with a
+    basic docstring, and the test class with a minimalistic setup and first
+    test that gets you started with writing further tests.
+
+    .. versionchanged:: 0.6
+        Support for nested subpackages
+
     """
 
     def __init__(self):
@@ -912,10 +970,10 @@ class FunctionCreator:
         elif not self.module:
             raise ValueError("Module name missing")
         if "." in self.module:
-            self.subpackage, self.module = self.module.split(".")
+            self.subpackage, self.module = self.module.rsplit(".", maxsplit=1)
         package = self.configuration.package["name"]
         self._module_filename = os.path.join(
-            package, self.subpackage, f"{self.module}.py"
+            package, *self.subpackage.split("."), f"{self.module}.py"
         )
         if not os.path.exists(self._module_filename):
             raise ValueError(f"Module {self.module} does not exist")
@@ -951,7 +1009,7 @@ class FunctionCreator:
         }
         context["module"] = {"name": self.module}
         filename = os.path.join(
-            "tests", self.subpackage, f"test_{self.module}.py"
+            "tests", *self.subpackage.split("."), f"test_{self.module}.py"
         )
         template = utils.Template(
             path="code",
@@ -1631,12 +1689,31 @@ class SubpackageCreator:
 
         pymeta add subpackage mysubpackage
 
-    This will add a module "mysubpackage" to your package, together with a
+    This will add a subpackage "mysubpackage" to your package, together with a
     "mysubpackage" subpackage in the "tests" subdirectory. And even better,
-    the API documentation will be updated as well for you.
+    the API documentation will be updated for you as well.
 
+    This can even be cascaded and used for nested subpackages. In this case,
+    simply use the familiar dot notation for separating subpackages:
+
+    .. code-block:: bash
+
+        pymeta add subpackage mysubpackage.mysubsubpackage
+
+    This will add a subpackage "mysubsubpackage" to the subpackage
+    "mysubpackage" in your package, together with a
+    "mysubpackage/mysubsubpackage" subpackage in the "tests" subdirectory.
+    And even better, the API documentation will be updated for you as well.
+
+    .. note::
+        If you like to create nested subpackages as described above,
+        make sure to sequentially create all intermediate subpackages.
+        Otherwise, you subpackage will *not* be created and a warning issued.
 
     .. versionadded:: 0.5
+
+    .. versionchanged:: 0.6
+        Support for nested subpackages
 
     """
 
@@ -1664,25 +1741,32 @@ class SubpackageCreator:
         if self._subpackage_exists():
             warnings.warn(f"Subpackage '{self.name}' exists already")
             return
-        self._create_directories()
+        try:
+            self._create_directories()
+        except FileNotFoundError:
+            warnings.warn(
+                f"Subpackage '{self.name}' cannot be created - "
+                f"missing intermediate directory?"
+            )
+            return
         self._create_documentation()
 
     def _subpackage_exists(self):
         directory = os.path.join(
-            self.configuration.package["name"], self.name
+            self.configuration.package["name"], *self.name.split(".")
         )
         return os.path.exists(directory) and os.path.isdir(directory)
 
     def _create_directories(self):
         directories = [self.configuration.package["name"], "tests"]
         for directory in directories:
-            directory = os.path.join(directory, self.name)
+            directory = os.path.join(directory, *self.name.split("."))
             os.mkdir(directory)
             init_filename = os.path.join(directory, "__init__.py")
             utils.ensure_file_exists(init_filename)
 
     def _create_documentation(self):
-        os.mkdir(os.path.join("docs", "api", self.name))
+        os.makedirs(os.path.join("docs", "api", *self.name.split(".")))
         self._create_documentation_index()
         self._add_subpackage_block_to_documentation_index()
         self._add_api_documentation_to_toctree()
@@ -1691,12 +1775,16 @@ class SubpackageCreator:
         package_name = self.configuration.package["name"]
         context = self.configuration.to_dict()
         context["subpackage"] = {"name": f"{package_name}.{self.name}"}
-        context["header_extension"] = (len(package_name) + 4) * "="
+        context["header_extension"] = (
+            len(package_name) + len(self.name) + 1
+        ) * "="
         template = utils.Template(
             path="docs",
             template="api_subpackage_index.j2.rst",
             context=context,
-            destination=os.path.join("docs", "api", self.name, "index.rst"),
+            destination=os.path.join(
+                "docs", "api", *self.name.split("."), "index.rst"
+            ),
         )
         template.create()
 
@@ -1717,14 +1805,24 @@ class SubpackageCreator:
         template.append()
 
     def _add_api_documentation_to_toctree(self):
-        index_filename = os.path.join("docs", "api", "index.rst")
+        index_filename = os.path.join(
+            "docs", "api", ".".join(self.name.split(".")[:-1]), "index.rst"
+        )
         if not os.path.exists(index_filename):
             return
+        if "." in self.name:
+            path_to_docs = ".".join(self.name.split(".")[1:]).replace(
+                ".", "/"
+            )
+            after = ""
+        else:
+            path_to_docs = self.name.replace(".", "/")
+            after = "Subpackage"
         utils.add_to_toctree(
             filename=index_filename,
-            entries=[f"{self.name}/index"],
+            entries=[f"{path_to_docs}/index"],
             sort=True,
-            after="Subpackages",
+            after=after,
         )
 
 

@@ -634,6 +634,20 @@ class TestModuleCreator(unittest.TestCase):
         path = os.path.join("tests", subpackage, f"test_{self.name}.py")
         self.assertTrue(os.path.exists(path), f"{path} does not exist")
 
+    def test_create_with_dot_adds_subpackage_to_import_in_test_module(self):
+        subpackage = "foobar"
+        os.mkdir(os.path.join(self.configuration.package["name"], subpackage))
+        os.mkdir(os.path.join("tests", subpackage))
+        os.mkdir(os.path.join("docs", "api", subpackage))
+        self.creator.create(name=".".join([subpackage, self.name]))
+        path = os.path.join("tests", subpackage, f"test_{self.name}.py")
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn(
+            ".".join([self.configuration.package["name"], subpackage]),
+            contents,
+        )
+
     def test_create_with_dot_and_missing_subpackage_issues_warning(self):
         subpackage = "foobar"
         with warnings.catch_warnings(record=True) as w:
@@ -655,12 +669,107 @@ class TestModuleCreator(unittest.TestCase):
         )
         self.assertTrue(os.path.exists(path), f"{path} does not exist")
 
+    def test_create_with_subpackage_adds_subpackage_name_to_api_doc(self):
+        subpackage = "foobar"
+        os.mkdir(os.path.join(self.configuration.package["name"], subpackage))
+        os.mkdir(os.path.join("tests", subpackage))
+        os.mkdir(os.path.join("docs", "api", subpackage))
+        self.creator.create(name=".".join([subpackage, self.name]))
+        path = os.path.join(
+            "docs",
+            "api",
+            subpackage,
+            ".".join([self.package, subpackage, f"{self.name}.rst"]),
+        )
+        with open(path, "r", encoding="utf8") as file:
+            contents = file.read()
+        self.assertIn(".".join([subpackage, self.name]), contents)
+
     def test_create_with_subpackage_adds_documentation_to_api_toctree(self):
         subpackage = "foobar"
         os.mkdir(os.path.join(self.configuration.package["name"], subpackage))
         os.mkdir(os.path.join("tests", subpackage))
         os.mkdir(os.path.join("docs", "api", subpackage))
         index_filename = os.path.join("docs", "api", subpackage, "index.rst")
+        index_contents = """
+
+        .. toctree::
+            :maxdepth: 1
+
+
+
+        Index
+        -----
+        """.replace(
+            "        ", ""
+        )
+        with open(index_filename, "w+") as file:
+            file.write(index_contents)
+        self.creator.create(name=".".join([subpackage, self.name]))
+        toctree_entry = f"{self.package}.{subpackage}.{self.name}"
+        with open(index_filename) as file:
+            contents = file.read()
+        self.assertIn(toctree_entry, contents)
+
+    def test_create_with_two_dots_creates_module_in_subsubpackage(self):
+        subpackage = "subpkga.subpkgb"
+        subpkg_path = os.path.join(*subpackage.split("."))
+        os.makedirs(
+            os.path.join(self.configuration.package["name"], subpkg_path)
+        )
+        os.makedirs(os.path.join("tests", subpkg_path))
+        os.makedirs(os.path.join("docs", "api", subpkg_path))
+        self.creator.create(name=".".join([subpackage, self.name]))
+        path = os.path.join(self.package, subpkg_path, self.name + ".py")
+        self.assertTrue(os.path.exists(path), f"{path} does not exist")
+
+    def test_create_with_subsubpackage_creates_api_documentation(self):
+        subpackage = "subpkga.subpkgb"
+        subpkg_path = os.path.join(*subpackage.split("."))
+        os.makedirs(
+            os.path.join(self.configuration.package["name"], subpkg_path)
+        )
+        os.makedirs(os.path.join("tests", subpkg_path))
+        os.makedirs(os.path.join("docs", "api", subpkg_path))
+        self.creator.create(name=".".join([subpackage, self.name]))
+        path = os.path.join(
+            "docs",
+            "api",
+            subpkg_path,
+            ".".join([self.package, subpackage, f"{self.name}.rst"]),
+        )
+        self.assertTrue(os.path.exists(path), f"{path} does not exist")
+
+    def test_create_with_subsubpackage_adds_subpackage_name_to_api_doc(self):
+        subpackage = "subpkga.subpkgb"
+        subpkg_path = os.path.join(*subpackage.split("."))
+        os.makedirs(
+            os.path.join(self.configuration.package["name"], subpkg_path)
+        )
+        os.makedirs(os.path.join("tests", subpkg_path))
+        os.makedirs(os.path.join("docs", "api", subpkg_path))
+        self.creator.create(name=".".join([subpackage, self.name]))
+        path = os.path.join(
+            "docs",
+            "api",
+            subpkg_path,
+            ".".join([self.package, subpackage, f"{self.name}.rst"]),
+        )
+        with open(path, "r", encoding="utf8") as file:
+            contents = file.read()
+        self.assertIn(".".join([subpackage, self.name]), contents)
+
+    def test_create_with_subsubpackage_adds_documentation_to_api_toctree(
+        self,
+    ):
+        subpackage = "subpkga.subpkgb"
+        subpkg_path = os.path.join(*subpackage.split("."))
+        os.makedirs(
+            os.path.join(self.configuration.package["name"], subpkg_path)
+        )
+        os.makedirs(os.path.join("tests", subpkg_path))
+        os.makedirs(os.path.join("docs", "api", subpkg_path))
+        index_filename = os.path.join("docs", "api", subpkg_path, "index.rst")
         index_contents = """
 
         .. toctree::
@@ -720,6 +829,10 @@ class TestClassCreator(unittest.TestCase):
 
     def create_subpackage(self):
         creator = coding.SubpackageCreator()
+        if "." in self.subpackage:
+            creator.name = ".".join(self.subpackage.split(".")[:-1])
+            creator.configuration = self.configuration
+            creator.create()
         creator.name = self.subpackage
         creator.configuration = self.configuration
         creator.create()
@@ -834,6 +947,40 @@ class TestClassCreator(unittest.TestCase):
             "class Test{}(unittest.TestCase):".format(self.name), contents
         )
 
+    def test_create_with_subsubpackage_creates_class_in_module(self):
+        self.subpackage = "subpkga.subpkgb"
+        self.create_subpackage()
+        self.create_module(module=".".join([self.subpackage, self.module]))
+        self.creator.create(
+            name=self.name, module=".".join([self.subpackage, self.module])
+        )
+        path = os.path.join(
+            self.package, *self.subpackage.split("."), self.module + ".py"
+        )
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn('class {}:\n    """'.format(self.name), contents)
+
+    def test_create_with_subsubpackage_creates_test_class_in_test_module(
+        self,
+    ):
+        self.subpackage = "subpkga.subpkgb"
+        self.create_subpackage()
+        self.create_module(module=".".join([self.subpackage, self.module]))
+        self.creator.create(
+            name=self.name, module=".".join([self.subpackage, self.module])
+        )
+        path = os.path.join(
+            "tests",
+            *self.subpackage.split("."),
+            "test_{}.py".format(self.module),
+        )
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn(
+            "class Test{}(unittest.TestCase):".format(self.name), contents
+        )
+
 
 class TestFunctionCreator(unittest.TestCase):
     def setUp(self):
@@ -871,6 +1018,10 @@ class TestFunctionCreator(unittest.TestCase):
 
     def create_subpackage(self):
         creator = coding.SubpackageCreator()
+        if "." in self.subpackage:
+            creator.name = ".".join(self.subpackage.split(".")[:-1])
+            creator.configuration = self.configuration
+            creator.create()
         creator.name = self.subpackage
         creator.configuration = self.configuration
         creator.create()
@@ -979,6 +1130,41 @@ class TestFunctionCreator(unittest.TestCase):
         )
         path = os.path.join(
             "tests", self.subpackage, "test_{}.py".format(self.module)
+        )
+        with open(path) as file:
+            contents = file.read()
+        camel = utils.underscore_to_camel_case(self.name)
+        self.assertIn(
+            "class Test{}(unittest.TestCase):".format(camel), contents
+        )
+
+    def test_create_with_subsubpackage_creates_function_in_module(self):
+        self.subpackage = "subpkga.subpkgb"
+        self.create_subpackage()
+        self.create_module(module=".".join([self.subpackage, self.module]))
+        self.creator.create(
+            name=self.name, module=".".join([self.subpackage, self.module])
+        )
+        path = os.path.join(
+            self.package, *self.subpackage.split("."), self.module + ".py"
+        )
+        with open(path) as file:
+            contents = file.read()
+        self.assertIn('def {}():\n    """'.format(self.name), contents)
+
+    def test_create_with_subsubpackage_creates_test_class_in_test_module(
+        self,
+    ):
+        self.subpackage = "subpkga.subpkgb"
+        self.create_subpackage()
+        self.create_module(module=".".join([self.subpackage, self.module]))
+        self.creator.create(
+            name=self.name, module=".".join([self.subpackage, self.module])
+        )
+        path = os.path.join(
+            "tests",
+            *self.subpackage.split("."),
+            "test_{}.py".format(self.module),
         )
         with open(path) as file:
             contents = file.read()
@@ -1575,8 +1761,8 @@ class TestGuiWindowCreator(unittest.TestCase):
 class TestSubpackageCreator(unittest.TestCase):
     def setUp(self):
         self.creator = coding.SubpackageCreator()
-        self.package = "bar"
-        self.name = "foo"
+        self.package = "pkg"
+        self.name = "subpkg"
         self.configuration = pymetacode.configuration.Configuration()
         self.configuration.package["name"] = self.package
         self.creator.configuration = self.configuration
@@ -1678,6 +1864,13 @@ class TestSubpackageCreator(unittest.TestCase):
             os.path.exists(filename), f"'{filename}' has not been created"
         )
 
+    def test_subpackage_api_documentation_has_correct_markup(self):
+        self.creator.create(name=self.name)
+        filename = os.path.join("docs", "api", self.name, "index.rst")
+        with open(filename) as file:
+            contents = file.readlines()
+        self.assertEqual(len(contents[0]), len(contents[1]))
+
     def test_create_adds_subpackages_section_to_api_doc_index(self):
         self.creator.create(name=self.name)
         filename = os.path.join("docs", "api", "index.rst")
@@ -1699,6 +1892,50 @@ class TestSubpackageCreator(unittest.TestCase):
         with open(filename, encoding="utf8") as file:
             contents = file.read()
         self.assertIn(f"{self.name}/index", contents)
+
+    def test_create_cascaded_subpackage_creates_subpackage(self):
+        self.name = "subpkga.subpkgb"
+        self.creator.create(name=".".join(self.name.split(".")[:-1]))
+        self.creator.create(name=self.name)
+        path = os.path.join(self.package, *self.name.split("."))
+        self.assertTrue(os.path.exists(path))
+        self.assertTrue(os.path.isdir(path))
+
+    def test_create_cascaded_subpackage_warns_if_subpackage_exists(self):
+        self.name = "subpkga.subpkgb"
+        directory = os.path.join(self.package, *self.name.split("."))
+        os.makedirs(directory)
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.creator.create(name=self.name)
+            self.assertTrue(w)
+
+    def test_create_cascaded_subpkg_warns_if_missing_intermediate_dirs(self):
+        self.name = "subpkga.subpkgb"
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            self.creator.create(name=self.name)
+            self.assertTrue(w)
+
+    def test_create_cascaded_subpackage_creates_docs_subdirectory(self):
+        self.name = "subpkga.subpkgb"
+        directory = os.path.join("docs", "api", *self.name.split("."))
+        self.creator.create(name=".".join(self.name.split(".")[:-1]))
+        self.creator.create(name=self.name)
+        self.assertTrue(os.path.exists(directory))
+        self.assertTrue(os.path.isdir(directory))
+
+    def test_create_cascaded_subpkg_adds_subpkg_to_api_doc_toctree(self):
+        self.name = "subpkga.subpkgb"
+        self.creator.create(name=".".join(self.name.split(".")[:-1]))
+        self.creator.create(name=self.name)
+        filename = os.path.join(
+            "docs", "api", ".".join(self.name.split(".")[:-1]), "index.rst"
+        )
+        with open(filename, encoding="utf8") as file:
+            contents = file.read()
+        path_to_docs = ".".join(self.name.split(".")[1:]).replace(".", "/")
+        self.assertIn(f"{path_to_docs}/index", contents)
 
 
 class TestGuiWidgetCreator(unittest.TestCase):

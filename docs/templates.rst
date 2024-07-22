@@ -15,7 +15,13 @@ pymetacode heavily relies on templates (and uses Jinja as template engine) for p
 * adding a class to a module
 * adding a function to a module
 
-In each case, not only code stubs are created, but stubs for **unit tests** as well. Below, the templates for these most important aspects are documented in the form currently contained in the pymetacode package otseöf. Although these templates contain some markup for the Jinja template engine, they should still be rather readable.
+In each case, not only code stubs are created, but stubs for **unit tests** as well.
+
+Another line of organisation are subpackages. Hence another, though perhaps less likely usecase in the daily use of the package is:
+
+* creating a new subpackage
+
+Below, the templates for these most important aspects are documented in the form currently contained in the pymetacode package itself. Although these templates contain some markup for the Jinja template engine, they should still be rather readable.
 
 
 Templates for modules
@@ -63,7 +69,7 @@ As the class template comes with a docstring, and the module API documentation i
 
 Classes (and corresponding test classes) are always appended to the end of the respective module.
 
-For details, see the :class:`pymetacode.coding.ClassCreator` class documentation. Note that the module does not yet have any further content.
+For details, see the :class:`pymetacode.coding.ClassCreator` class documentation.
 
 
 The class template
@@ -93,7 +99,7 @@ As the function template comes with a docstring, and the module API documentatio
 
 Functions (and corresponding test classes) are always appended to the end of the respective module.
 
-For details, see the :class:`pymetacode.coding.FunctionCreator` class documentation. Note that the module does not yet have any further content.
+For details, see the :class:`pymetacode.coding.FunctionCreator` class documentation.
 
 The function template
 ---------------------
@@ -107,6 +113,39 @@ The test_function template
 
 .. literalinclude:: ../pymetacode/templates/code/test_function.j2.py
    :language: python
+
+
+Templates for subpackages
+=========================
+
+When adding a subpackage to your package, three directories are created in their respective (sub)directories:
+
+* The subpackage directory in the package source directory (same name as the package)
+* The corresponding test subpackage directory in the tests directory
+* The subpackage directory for the API documentation in the docs/api/ directory
+
+Furthermore, in each of these directories, the respective files are created:
+
+* ``__init__.py`` in the subpackage and tests subpackage (empty files each)
+* ``index.rst`` in the docs/api subdirectory
+
+If there is no subpackages table of contents (TOC) block in the API docs index.rst file, such a TOC block will be created using a specific template.
+
+For details, see the :class:`pymetacode.coding.SubpackageCreator` class documentation.
+
+
+The subpackage API documentation template
+-----------------------------------------
+
+.. literalinclude:: ../pymetacode/templates/docs/api_subpackage_index.j2.rst
+   :language: rst
+
+
+The subpackage API index TOC template
+-------------------------------------
+
+.. literalinclude:: ../pymetacode/templates/docs/api_index_subpackages_block.j2.rst
+   :language: rst
 
 
 Customising templates
