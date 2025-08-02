@@ -11,6 +11,8 @@ pymetacode
 
 **Code that writes code** -- yes, that's correct. Automating the boring stuff, one could say, or helping to focus on the creative part of programming. In any case, the idea for this package stems from experience with a couple of Python projects, and as such it is pretty *opinionated*, focussing on personal needs regarding structure and layout. Nevertheless, it tries to be as user-friendly as possible, coming with an intuitive command-line interface (CLI).
 
+What is the difference to CookieCutter and alike? It does not only create a project structure for you once, but **it helps you to maintain your projects**, *i.e.*, adding modules, classes, functions together with documentation stubs and tests -- **following good practices of software development**.
+
 Want to get an idea? Here you go. **Creating a new package** would be a two-step process:
 
 1) Write a configuration file for your new package (and afterwards fill it with sensible content)
