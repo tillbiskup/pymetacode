@@ -10,6 +10,11 @@ Version 0.7.0
 
 Not yet released
 
+New features
+------------
+
+* Minimal ``pyproject.toml`` file
+
 
 Version 0.6.0
 =============

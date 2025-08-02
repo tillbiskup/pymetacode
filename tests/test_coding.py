@@ -410,6 +410,18 @@ class TestPackageCreator(unittest.TestCase):
             content = file.read()
         self.assertIn("extension-pkg-allow-list: PySide6", content)
 
+    def test_create_creates_pyproject_toml_file(self):
+        self.creator.create(name=self.name)
+        self.assertTrue(
+            os.path.exists(os.path.join(self.name, "pyproject.toml"))
+        )
+
+    def test_create_fills_pyproject_toml_file(self):
+        self.creator.create(name=self.name)
+        with open(os.path.join(self.name, "pyproject.toml")) as file:
+            contents = file.read()
+        self.assertIn("[build-system]", contents)
+
 
 class TestModuleCreator(unittest.TestCase):
     def setUp(self):
