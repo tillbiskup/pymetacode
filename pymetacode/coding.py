@@ -43,6 +43,7 @@ Each of these generators uses templates in the ``templates`` subdirectory of
 the pymetacode package.
 
 """
+
 import os
 import stat
 import subprocess  # noqa: bandit B404
@@ -169,6 +170,7 @@ class PackageCreator:
         self._create_license_file()
         self._create_manifest_file()
         self._create_setup_py_file()
+        self._create_pyproject_toml_file()
         self._create_readme_file()
         self._create_makefile()
         self._create_citation_cff_file()
@@ -257,6 +259,15 @@ class PackageCreator:
             template="setup.j2.py",
             context=context,
             destination=os.path.join(self.name, "setup.py"),
+        )
+        template.create()
+
+    def _create_pyproject_toml_file(self):
+        template = utils.Template(
+            path="",
+            template="pyproject.j2.toml",
+            context=self.configuration.to_dict(),
+            destination=os.path.join(self.name, "pyproject.toml"),
         )
         template.create()
 

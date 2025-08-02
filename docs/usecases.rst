@@ -164,6 +164,28 @@ This works similarly for nested subpackages. However, note that you need to *fir
 
 But why would one want to add nested subpackages? Suppose you had a rather complicated Python package in mind and wanted to separate functional and technical layers, with the former being the first line of organisation of your package. A typical layer structure for technical layers according to Jacobson would be "boundaries", "controllers", and "entities" (BCE). Hence, for each functional layer you would end up with (at least) three technical layers. All these could be modelled as subpackages in Python. In such cases, however, it might be sensible to import the facades of the individual functional layers to the main namespace of your package for easier access by the users.
 
+For convenience, if you follow the BCE pattern for the technical layers, for each of your functional layers (that would be separate subpackages themselves) you could use a bit if bash magic to make your life easier:
+
+.. code-block:: bash
+
+    for layer in {boundaries,controllers,entities}
+    do
+        pymeta add subpackage $layer
+    done
+
+If you would want to add a module to one of your subpackages, use the familiar dot notation:
+
+.. code-block:: bash
+
+    pymeta add module mysubpackage.mymodule
+
+The same is true for classes and functions:
+
+.. code-block:: bash
+
+    pymeta add class MyClass to mysubpackage.mymodule
+    pymeta add function my_functoin to mysubpackage.mymodule
+
 
 Adding a GUI and GUI windows
 ============================

@@ -53,8 +53,7 @@ templates_path = ["_templates"]
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = [".rst", ".md"]
-source_suffix = ".rst"
+source_suffix = {".rst": "restructuredtext"}
 
 # The master toctree document.
 master_doc = "index"
@@ -126,6 +125,8 @@ html_logo = "{{ documentation.logo }}"
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
 html_favicon = "{{ documentation.favicon }}"
+
+html_last_updated_fmt = "%Y-%m-%d"
 
 
 # Add any paths that contain custom static files (such as style sheets) here,

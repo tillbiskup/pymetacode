@@ -11,6 +11,7 @@ creating a default configuration file as well as for reading the
 configuration from a file for use with the code generators.
 
 """
+
 import datetime
 
 import yaml
